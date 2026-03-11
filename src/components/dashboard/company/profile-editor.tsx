@@ -185,7 +185,7 @@ export function ProfileEditor({ initialData }: ProfileEditorProps) {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label>Industry</Label>
-              <Select value={industry} onValueChange={setIndustry}>
+              <Select value={industry} onValueChange={(v) => v !== null && setIndustry(v)}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select industry" />
                 </SelectTrigger>
@@ -201,7 +201,7 @@ export function ProfileEditor({ initialData }: ProfileEditorProps) {
 
             <div className="space-y-2">
               <Label>Company Size</Label>
-              <Select value={size} onValueChange={setSize}>
+              <Select value={size} onValueChange={(v) => v !== null && setSize(v)}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select size" />
                 </SelectTrigger>

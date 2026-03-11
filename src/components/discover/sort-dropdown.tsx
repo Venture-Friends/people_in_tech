@@ -25,7 +25,7 @@ export function SortDropdown({ value, onChange }: SortDropdownProps) {
   const t = useTranslations("discover");
 
   return (
-    <Select value={value} onValueChange={onChange}>
+    <Select value={value} onValueChange={(v) => v !== null && onChange(v)}>
       <SelectTrigger className="w-[180px]">
         <SelectValue />
       </SelectTrigger>

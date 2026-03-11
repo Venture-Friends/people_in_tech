@@ -264,7 +264,7 @@ export function EventManager() {
               </div>
               <div className="space-y-2">
                 <Label>Type</Label>
-                <Select value={newType} onValueChange={setNewType}>
+                <Select value={newType} onValueChange={(v) => v !== null && setNewType(v)}>
                   <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
@@ -446,7 +446,7 @@ export function EventManager() {
             </div>
             <div className="space-y-2">
               <Label>Type</Label>
-              <Select value={editType} onValueChange={setEditType}>
+              <Select value={editType} onValueChange={(v) => v !== null && setEditType(v)}>
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>

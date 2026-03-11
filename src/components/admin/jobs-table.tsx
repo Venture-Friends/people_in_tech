@@ -130,7 +130,7 @@ export function JobsTable() {
             className="pl-9"
           />
         </div>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
+        <Select value={statusFilter} onValueChange={(v) => v !== null && setStatusFilter(v)}>
           <SelectTrigger className="w-[160px]">
             <SelectValue />
           </SelectTrigger>

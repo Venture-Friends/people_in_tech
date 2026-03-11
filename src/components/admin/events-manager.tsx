@@ -201,7 +201,7 @@ export function EventsManager() {
           <Label>Type</Label>
           <Select
             value={formData.type}
-            onValueChange={(v) => setFormData({ ...formData, type: v })}
+            onValueChange={(v) => v !== null && setFormData({ ...formData, type: v })}
           >
             <SelectTrigger>
               <SelectValue />

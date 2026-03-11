@@ -118,7 +118,7 @@ export function CandidatesTable() {
             className="pl-9"
           />
         </div>
-        <Select value={expFilter} onValueChange={setExpFilter}>
+        <Select value={expFilter} onValueChange={(v) => v !== null && setExpFilter(v)}>
           <SelectTrigger className="w-[180px]">
             <SelectValue />
           </SelectTrigger>

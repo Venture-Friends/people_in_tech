@@ -6,6 +6,7 @@ import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface FollowButtonProps {
   companyId: string;
@@ -55,10 +56,12 @@ export function FollowButton({
         const data = await res.json();
         setFollowed(data.followed);
         setCount(data.followerCount);
+        toast.success(data.followed ? "Company followed" : "Company unfollowed");
       } catch {
         // Revert on error
         setFollowed(prevFollowed);
         setCount(prevCount);
+        toast.error("Failed to update follow status");
       }
     });
   }

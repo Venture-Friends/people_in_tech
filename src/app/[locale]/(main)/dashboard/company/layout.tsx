@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -65,7 +66,7 @@ function SidebarNav({
   );
 }
 
-export default function CompanyDashboardLayout({
+function CompanyDashboardLayoutInner({
   children,
 }: {
   children: React.ReactNode;
@@ -143,5 +144,41 @@ export default function CompanyDashboardLayout({
         <main className="min-w-0 flex-1">{children}</main>
       </div>
     </div>
+  );
+}
+
+function LayoutFallback() {
+  return (
+    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:py-10">
+      <div className="mb-6 lg:mb-8">
+        <Skeleton className="h-9 w-64" />
+        <Skeleton className="mt-2 h-5 w-96" />
+      </div>
+      <div className="flex gap-8">
+        <aside className="hidden w-56 shrink-0 lg:block">
+          <Skeleton className="h-12 w-full rounded-lg" />
+          <div className="mt-4 space-y-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-9 w-full rounded-lg" />
+            ))}
+          </div>
+        </aside>
+        <main className="min-w-0 flex-1">
+          <Skeleton className="h-96 w-full" />
+        </main>
+      </div>
+    </div>
+  );
+}
+
+export default function CompanyDashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <Suspense fallback={<LayoutFallback />}>
+      <CompanyDashboardLayoutInner>{children}</CompanyDashboardLayoutInner>
+    </Suspense>
   );
 }
