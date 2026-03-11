@@ -50,7 +50,7 @@ export function EventCard({ event }: { event: EventCardData }) {
       <CardContent className="flex gap-4">
         {/* Date block */}
         <div className="flex flex-col items-center justify-center rounded-lg bg-surface-2 px-3 py-2">
-          <span className="text-xl font-bold text-primary">
+          <span className="text-xl font-bold text-foreground">
             {dayNumber}
           </span>
           <span className="text-[10px] font-semibold tracking-wider text-muted-foreground">

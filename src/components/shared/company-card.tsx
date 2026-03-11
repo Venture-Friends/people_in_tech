@@ -55,7 +55,7 @@ export function CompanyCard({ company }: { company: CompanyCardData }) {
                 {company.name}
               </Link>
               {company.status === "VERIFIED" && (
-                <CheckCircle className="size-3.5 shrink-0 text-[oklch(0.85_0.15_140)]" />
+                <CheckCircle className="size-3.5 shrink-0 text-primary" />
               )}
             </div>
             <span className="mt-1 inline-flex items-center rounded-md bg-white/[0.06] border border-white/[0.04] px-2 py-0.5 text-xs text-muted-foreground">
@@ -75,7 +75,7 @@ export function CompanyCard({ company }: { company: CompanyCardData }) {
           <div className="flex items-center gap-3">
             <span
               className={`flex items-center gap-1 text-xs font-medium ${
-                company.jobCount > 0 ? "text-[oklch(0.85_0.15_140)]" : "text-muted-foreground"
+                company.jobCount > 0 ? "text-primary" : "text-muted-foreground"
               }`}
             >
               <Briefcase className="size-3.5" />
