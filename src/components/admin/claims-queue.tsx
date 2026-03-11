@@ -193,7 +193,7 @@ export function ClaimsQueue() {
                       </span>
                     </div>
                   </div>
-                  <Badge className="bg-amber-500/20 text-amber-400">
+                  <Badge className="bg-yellow-500/10 text-yellow-400 border-yellow-500/20">
                     PENDING
                   </Badge>
                 </div>
