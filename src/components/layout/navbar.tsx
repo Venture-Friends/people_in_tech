@@ -87,10 +87,12 @@ export function Navbar() {
           {/* Mobile Hamburger */}
           <div className="md:hidden">
             <Sheet>
-              <SheetTrigger>
-                <Button variant="ghost" size="icon" aria-label="Open menu">
-                  <Menu className="size-5" />
-                </Button>
+              <SheetTrigger className={cn(
+                "group/button inline-flex shrink-0 items-center justify-center rounded-lg size-8",
+                "text-sm font-medium transition-all outline-none select-none",
+                "hover:bg-muted/50 hover:text-foreground"
+              )} aria-label="Open menu">
+                <Menu className="size-5" />
               </SheetTrigger>
               <SheetContent side="right" className="max-w-[280px] w-[85vw] p-0">
                 <SheetHeader className="border-b border-white/[0.06] p-4">
