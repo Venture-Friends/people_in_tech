@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FollowButton } from "@/components/shared/follow-button";
 import { ClaimCompanyModal } from "@/components/company/claim-company-modal";
@@ -40,26 +39,6 @@ const SIZE_LABELS: Record<string, string> = {
   LARGE: "200+",
 };
 
-function getIndustryColor(industry: string): string {
-  const colors: Record<string, string> = {
-    Fintech: "bg-emerald-600",
-    "E-commerce": "bg-blue-600",
-    SaaS: "bg-violet-600",
-    AI: "bg-amber-600",
-    Healthtech: "bg-rose-600",
-    Edtech: "bg-cyan-600",
-    Cybersecurity: "bg-red-600",
-    Gaming: "bg-purple-600",
-    Logistics: "bg-orange-600",
-    Greentech: "bg-green-600",
-    "HR Tech": "bg-teal-600",
-    PropTech: "bg-indigo-600",
-    TravelTech: "bg-sky-600",
-    DevTools: "bg-slate-600",
-  };
-  return colors[industry] || "bg-primary/80";
-}
-
 export function CompanyHero({
   id,
   name,
@@ -87,7 +66,7 @@ export function CompanyHero({
   const firstLetter = name.charAt(0).toUpperCase();
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-card">
+    <div className="overflow-hidden rounded-xl border border-white/[0.06] bg-gradient-to-b from-card to-surface-2">
       {/* Cover image area */}
       <div className="relative h-32 sm:h-48">
         {coverImage ? (
@@ -109,42 +88,40 @@ export function CompanyHero({
             <img
               src={logo}
               alt={name}
-              className="size-20 rounded-xl border-4 border-card bg-card object-cover"
+              className="size-16 rounded-xl border-4 border-background bg-background object-cover"
             />
           ) : (
-            <div
-              className={`flex size-20 items-center justify-center rounded-xl border-4 border-card text-2xl font-bold text-white ${getIndustryColor(industry)}`}
-            >
+            <div className="flex size-16 items-center justify-center rounded-xl border-4 border-background bg-surface-2 text-xl font-bold text-white">
               {firstLetter}
             </div>
           )}
         </div>
 
         {/* Name and tagline */}
-        <h1 className="text-3xl font-bold text-foreground">{name}</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-3xl font-bold text-foreground">{name}</h1>
+          {status === "VERIFIED" && <CheckCircle className="size-5 text-primary" />}
+        </div>
         {tagline && (
           <p className="mt-1 text-muted-foreground">{tagline}</p>
         )}
 
         {/* Badges row */}
         <div className="mt-4 flex flex-wrap items-center gap-2">
-          <Badge
-            variant="outline"
-            className="bg-teal-500/20 text-teal-400 border-teal-500/30"
-          >
+          <span className="rounded-md bg-white/[0.06] border border-white/[0.04] px-2 py-0.5 text-xs text-muted-foreground">
             {industry}
-          </Badge>
+          </span>
           {locations.map((loc) => (
-            <Badge key={loc} variant="secondary" className="gap-1">
+            <span key={loc} className="inline-flex items-center gap-1 rounded-md bg-white/[0.06] border border-white/[0.04] px-2 py-0.5 text-xs text-muted-foreground">
               <MapPin className="size-3" />
               {loc}
-            </Badge>
+            </span>
           ))}
           {SIZE_LABELS[size] && (
-            <Badge variant="secondary" className="gap-1">
+            <span className="inline-flex items-center gap-1 rounded-md bg-white/[0.06] border border-white/[0.04] px-2 py-0.5 text-xs text-muted-foreground">
               <Users className="size-3" />
               {SIZE_LABELS[size]}
-            </Badge>
+            </span>
           )}
         </div>
 
@@ -175,24 +152,16 @@ export function CompanyHero({
 
         {/* Status badge */}
         <div className="mt-4">
-          {status === "VERIFIED" ? (
-            <Badge
-              variant="outline"
-              className="gap-1 border-green-500/30 bg-green-500/20 text-green-400"
-            >
-              <CheckCircle className="size-3" />
-              {t("verifiedEmployer")}
-            </Badge>
-          ) : status === "CLAIMED" || userHasPendingClaim ? (
-            <Badge variant="secondary" className="gap-1">
+          {status === "CLAIMED" || userHasPendingClaim ? (
+            <span className="inline-flex items-center gap-1 rounded-md bg-white/[0.06] border border-white/[0.04] px-2 py-0.5 text-xs text-muted-foreground">
               <Clock className="size-3" />
               {t("claimPending")}
-            </Badge>
-          ) : (
+            </span>
+          ) : status !== "VERIFIED" ? (
             <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="text-muted-foreground">
+              <span className="rounded-md bg-white/[0.06] border border-white/[0.04] px-2 py-0.5 text-xs text-muted-foreground">
                 Auto-generated profile
-              </Badge>
+              </span>
               <Button
                 variant="link"
                 size="sm"
@@ -203,7 +172,7 @@ export function CompanyHero({
                 <ArrowRight className="size-3.5" />
               </Button>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
 
