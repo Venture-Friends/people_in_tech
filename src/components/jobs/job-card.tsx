@@ -4,9 +4,8 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { Link } from "@/i18n/navigation";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Bookmark, ExternalLink, MapPin, Building2 } from "lucide-react";
+import { Bookmark, MapPin, Building2, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
 export interface JobCardData {
@@ -25,16 +24,12 @@ export interface JobCardData {
   };
 }
 
-function getTypeBadge(type: string) {
+function formatJobType(type: string): string {
   switch (type) {
-    case "REMOTE":
-      return { label: "Remote", className: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" };
-    case "HYBRID":
-      return { label: "Hybrid", className: "bg-blue-500/20 text-blue-400 border-blue-500/30" };
-    case "ONSITE":
-      return { label: "Onsite", className: "bg-zinc-500/20 text-zinc-400 border-zinc-500/30" };
-    default:
-      return { label: type, className: "bg-muted text-muted-foreground" };
+    case "REMOTE": return "Remote";
+    case "HYBRID": return "Hybrid";
+    case "ONSITE": return "Onsite";
+    default: return type;
   }
 }
 
@@ -53,22 +48,6 @@ function getRelativeTime(date: string | Date): string {
   return months === 1 ? "1 month ago" : `${months} months ago`;
 }
 
-function getIndustryColor(industry: string): string {
-  const colors: Record<string, string> = {
-    Fintech: "bg-emerald-600",
-    "E-commerce": "bg-blue-600",
-    SaaS: "bg-violet-600",
-    AI: "bg-amber-600",
-    Healthtech: "bg-rose-600",
-    Edtech: "bg-cyan-600",
-    Cybersecurity: "bg-red-600",
-    Gaming: "bg-purple-600",
-    Logistics: "bg-orange-600",
-    Greentech: "bg-green-600",
-  };
-  return colors[industry] || "bg-primary/80";
-}
-
 interface JobCardProps {
   job: JobCardData;
   isSaved?: boolean;
@@ -79,7 +58,6 @@ export function JobCard({ job, isSaved = false }: JobCardProps) {
   const [saved, setSaved] = useState(isSaved);
   const [saving, setSaving] = useState(false);
 
-  const typeBadge = getTypeBadge(job.type);
   const firstLetter = job.company.name.charAt(0).toUpperCase();
 
   async function handleSave() {
@@ -109,7 +87,7 @@ export function JobCard({ job, isSaved = false }: JobCardProps) {
   }
 
   return (
-    <Card className="rounded-xl border-border bg-card transition-all hover:border-border/80 hover:bg-card/90">
+    <Card className="rounded-xl border-white/[0.06] bg-card transition-all duration-200 hover:-translate-y-0.5 hover:border-white/[0.12] hover:bg-[oklch(0.16_0.01_260)]">
       <CardContent className="flex flex-col gap-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 min-w-0">
@@ -118,12 +96,10 @@ export function JobCard({ job, isSaved = false }: JobCardProps) {
               <img
                 src={job.company.logo}
                 alt={job.company.name}
-                className="size-10 shrink-0 rounded-lg object-cover"
+                className="size-8 shrink-0 rounded-lg object-cover border border-white/[0.08]"
               />
             ) : (
-              <div
-                className={`flex size-10 shrink-0 items-center justify-center rounded-lg text-sm font-bold text-white ${getIndustryColor(job.company.industry)}`}
-              >
+              <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-surface-2 border border-white/[0.08] text-sm font-bold text-foreground">
                 {firstLetter}
               </div>
             )}
@@ -145,9 +121,10 @@ export function JobCard({ job, isSaved = false }: JobCardProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="shrink-0"
+            className="shrink-0 hover:bg-white/[0.08] rounded-full"
             onClick={handleSave}
             disabled={saving}
+            aria-label={saved ? "Remove from saved jobs" : "Save job"}
           >
             <Bookmark
               className={`size-4 ${saved ? "fill-primary text-primary" : "text-muted-foreground"}`}
@@ -157,25 +134,25 @@ export function JobCard({ job, isSaved = false }: JobCardProps) {
 
         {/* Meta row */}
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="outline" className={typeBadge.className}>
-            {typeBadge.label}
-          </Badge>
+          <span className="inline-flex items-center rounded-md bg-white/[0.06] border border-white/[0.04] px-2 py-0.5 text-xs text-muted-foreground">
+            {formatJobType(job.type)}
+          </span>
 
           {job.location && (
             <span className="flex items-center gap-1 text-xs text-muted-foreground">
-              <MapPin className="size-3" />
+              <MapPin className="size-3.5" />
               {job.location}
             </span>
           )}
 
           <span className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Building2 className="size-3" />
+            <Building2 className="size-3.5" />
             {job.company.industry}
           </span>
         </div>
 
         {/* Footer row */}
-        <div className="flex items-center justify-between border-t border-border pt-3">
+        <div className="flex items-center justify-between border-t border-white/[0.06] pt-3">
           <span className="text-xs text-muted-foreground">
             {getRelativeTime(job.postedAt)}
           </span>
@@ -184,10 +161,10 @@ export function JobCard({ job, isSaved = false }: JobCardProps) {
             href={job.externalUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex items-center gap-1.5 rounded-md border border-white/[0.06] bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-white/[0.08] hover:border-white/[0.12]"
           >
-            View on Company Site
-            <ExternalLink className="size-3" />
+            Apply
+            <ArrowRight className="size-3" />
           </a>
         </div>
       </CardContent>
