@@ -142,5 +142,16 @@
     "loadMore": "Load More",
     "backToHome": "Back to Home",
     "poweredBy": "Powered by POS4work Innovation Hub"
+  },
+  "footer": {
+    "tagline": "Connecting talent with Greece's top tech companies",
+    "platform": "Platform",
+    "company": "Company",
+    "about": "About",
+    "contact": "Contact",
+    "legal": "Legal",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "allRightsReserved": "All rights reserved."
   }
 }

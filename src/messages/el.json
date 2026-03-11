@@ -142,5 +142,16 @@
     "loadMore": "Φόρτωση Περισσότερων",
     "backToHome": "Επιστροφή στην Αρχική",
     "poweredBy": "Powered by POS4work Innovation Hub"
+  },
+  "footer": {
+    "tagline": "Συνδέοντας ταλέντα με τις κορυφαίες εταιρείες τεχνολογίας της Ελλάδας",
+    "platform": "Πλατφόρμα",
+    "company": "Εταιρεία",
+    "about": "Σχετικά",
+    "contact": "Επικοινωνία",
+    "legal": "Νομικά",
+    "terms": "Όροι Χρήσης",
+    "privacy": "Απόρρητο",
+    "allRightsReserved": "Με επιφύλαξη παντός δικαιώματος."
   }
 }
