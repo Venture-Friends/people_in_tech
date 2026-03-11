@@ -81,20 +81,31 @@ export default async function CompanyProfilePage({ params }: PageProps) {
     notFound();
   }
 
-  // Check if current user follows this company
+  // Check if current user follows this company and has a pending claim
   let isFollowing = false;
+  let userHasPendingClaim = false;
   const session = await getServerSession(authOptions);
   if (session?.user) {
     const userId = (session.user as { id: string }).id;
-    const follow = await prisma.follow.findUnique({
-      where: {
-        userId_companyId: {
-          userId,
-          companyId: company.id,
+    const [follow, pendingClaim] = await Promise.all([
+      prisma.follow.findUnique({
+        where: {
+          userId_companyId: {
+            userId,
+            companyId: company.id,
+          },
         },
-      },
-    });
+      }),
+      prisma.companyClaim.findFirst({
+        where: {
+          companyId: company.id,
+          userId,
+          status: "PENDING",
+        },
+      }),
+    ]);
     isFollowing = !!follow;
+    userHasPendingClaim = !!pendingClaim;
   }
 
   const locations = parseJsonArray(company.locations);
@@ -143,6 +154,7 @@ export default async function CompanyProfilePage({ params }: PageProps) {
         locations={locations}
         initialFollowed={isFollowing}
         followerCount={company._count.followers}
+        userHasPendingClaim={userHasPendingClaim}
       />
 
       <div className="mt-8">

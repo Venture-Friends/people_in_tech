@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FollowButton } from "@/components/shared/follow-button";
+import { ClaimCompanyModal } from "@/components/company/claim-company-modal";
 import {
   ExternalLink,
   Linkedin,
@@ -11,6 +13,7 @@ import {
   MapPin,
   Users,
   ArrowRight,
+  Clock,
 } from "lucide-react";
 
 interface CompanyHeroProps {
@@ -27,6 +30,7 @@ interface CompanyHeroProps {
   locations: string[];
   initialFollowed: boolean;
   followerCount: number;
+  userHasPendingClaim?: boolean;
 }
 
 const SIZE_LABELS: Record<string, string> = {
@@ -70,8 +74,10 @@ export function CompanyHero({
   locations,
   initialFollowed,
   followerCount,
+  userHasPendingClaim = false,
 }: CompanyHeroProps) {
   const t = useTranslations("company");
+  const [claimModalOpen, setClaimModalOpen] = useState(false);
 
   const tagline =
     description && description.length > 150
@@ -177,8 +183,9 @@ export function CompanyHero({
               <CheckCircle className="size-3" />
               {t("verifiedEmployer")}
             </Badge>
-          ) : status === "CLAIMED" ? (
+          ) : status === "CLAIMED" || userHasPendingClaim ? (
             <Badge variant="secondary" className="gap-1">
+              <Clock className="size-3" />
               {t("claimPending")}
             </Badge>
           ) : (
@@ -186,7 +193,12 @@ export function CompanyHero({
               <Badge variant="secondary" className="text-muted-foreground">
                 Auto-generated profile
               </Badge>
-              <Button variant="link" size="sm" className="gap-1 px-0 text-primary">
+              <Button
+                variant="link"
+                size="sm"
+                className="gap-1 px-0 text-primary"
+                onClick={() => setClaimModalOpen(true)}
+              >
                 {t("claimPage")}
                 <ArrowRight className="size-3.5" />
               </Button>
@@ -194,6 +206,14 @@ export function CompanyHero({
           )}
         </div>
       </div>
+
+      {/* Claim modal */}
+      <ClaimCompanyModal
+        companyId={id}
+        companyName={name}
+        isOpen={claimModalOpen}
+        onOpenChange={setClaimModalOpen}
+      />
     </div>
   );
 }
