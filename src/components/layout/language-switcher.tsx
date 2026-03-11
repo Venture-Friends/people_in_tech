@@ -17,13 +17,13 @@ export function LanguageSwitcher() {
 
   return (
     <Button
-      variant="ghost"
+      variant="outline"
       size="sm"
       onClick={toggleLocale}
-      className="gap-1.5 text-muted-foreground hover:text-foreground"
+      className="gap-1.5 rounded-full border-white/[0.06] bg-transparent px-3 py-1 text-muted-foreground hover:border-white/[0.12] hover:text-foreground"
       aria-label={`Switch to ${locale === "en" ? "Greek" : "English"}`}
     >
-      <Globe className="size-4" />
+      <Globe className="size-3.5" />
       <span className="text-xs font-medium uppercase">{locale === "en" ? "EN" : "EL"}</span>
     </Button>
   );
