@@ -58,8 +58,8 @@ export function CompanyGrid({ companies, total, loading }: CompanyGridProps) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
         <Search className="size-12 text-muted-foreground/40" />
-        <p className="text-lg text-muted-foreground">{t("noResults")}</p>
-        <p className="text-sm text-muted-foreground/70">Try different filters or search terms</p>
+        <p className="text-lg font-semibold text-foreground">{t("noResults")}</p>
+        <p className="text-sm text-muted-foreground">Try different filters or search terms</p>
       </div>
     );
   }
