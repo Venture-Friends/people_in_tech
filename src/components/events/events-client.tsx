@@ -125,11 +125,11 @@ export function EventsClient({
         </div>
       ) : upcomingEvents.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-          <Calendar className="size-12 text-muted-foreground/50" />
-          <p className="text-lg font-medium text-muted-foreground">
+          <Calendar className="size-12 text-muted-foreground/40" />
+          <p className="text-lg font-semibold text-foreground">
             No events found
           </p>
-          <p className="text-sm text-muted-foreground/70">
+          <p className="text-sm text-muted-foreground">
             Try different filters or check back later
           </p>
         </div>

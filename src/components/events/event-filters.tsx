@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 
 interface EventFiltersProps {
   type: string;
@@ -10,6 +11,12 @@ interface EventFiltersProps {
   onDateRangeChange: (value: string) => void;
   online: string;
   onOnlineChange: (value: string) => void;
+}
+
+function chipClass(active: boolean) {
+  return active
+    ? "border-primary text-primary bg-transparent hover:bg-primary/10"
+    : "bg-white/[0.04] border-white/[0.08] text-muted-foreground hover:border-white/[0.12]";
 }
 
 export function EventFilters({
@@ -49,10 +56,10 @@ export function EventFilters({
         {typeOptions.map((option) => (
           <Button
             key={option.value}
-            variant={type === option.value ? "default" : "outline"}
+            variant="outline"
             size="sm"
             onClick={() => onTypeChange(option.value)}
-            className="rounded-full text-xs"
+            className={cn("rounded-full text-xs", chipClass(type === option.value))}
           >
             {option.label}
           </Button>
@@ -65,10 +72,10 @@ export function EventFilters({
           {dateOptions.map((option) => (
             <Button
               key={option.value}
-              variant={dateRange === option.value ? "secondary" : "ghost"}
+              variant="outline"
               size="sm"
               onClick={() => onDateRangeChange(option.value)}
-              className="text-xs"
+              className={cn("rounded-full text-xs", chipClass(dateRange === option.value))}
             >
               {option.label}
             </Button>
@@ -80,10 +87,10 @@ export function EventFilters({
           {locationOptions.map((option) => (
             <Button
               key={option.value}
-              variant={online === option.value ? "secondary" : "ghost"}
+              variant="outline"
               size="sm"
               onClick={() => onOnlineChange(option.value)}
-              className="text-xs"
+              className={cn("rounded-full text-xs", chipClass(online === option.value))}
             >
               {option.label}
             </Button>
