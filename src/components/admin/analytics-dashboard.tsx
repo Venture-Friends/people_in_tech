@@ -157,9 +157,10 @@ export function AnalyticsDashboard() {
                   />
                   <Tooltip
                     contentStyle={{
-                      background: "#1a1a2e",
-                      border: "1px solid #333",
+                      backgroundColor: "oklch(0.14 0.01 260)",
+                      border: "1px solid rgba(255,255,255,0.06)",
                       borderRadius: "8px",
+                      color: "#f8fafc",
                       fontSize: "12px",
                     }}
                   />
@@ -203,9 +204,10 @@ export function AnalyticsDashboard() {
                   />
                   <Tooltip
                     contentStyle={{
-                      background: "#1a1a2e",
-                      border: "1px solid #333",
+                      backgroundColor: "oklch(0.14 0.01 260)",
+                      border: "1px solid rgba(255,255,255,0.06)",
                       borderRadius: "8px",
+                      color: "#f8fafc",
                       fontSize: "12px",
                     }}
                   />
