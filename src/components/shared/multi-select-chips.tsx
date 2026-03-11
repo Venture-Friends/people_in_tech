@@ -35,10 +35,10 @@ export function MultiSelectChips({
               type="button"
               onClick={() => toggleOption(option)}
               className={cn(
-                "rounded-full px-4 py-2 text-sm border cursor-pointer transition-all",
+                "rounded-full px-4 py-2 text-sm border cursor-pointer transition-all duration-150",
                 isSelected
-                  ? "bg-primary/10 border-primary text-primary"
-                  : "bg-muted border-border text-muted-foreground hover:border-foreground/30"
+                  ? "border-primary text-primary bg-transparent"
+                  : "bg-white/[0.06] border-white/[0.04] text-muted-foreground hover:border-white/[0.12]"
               )}
             >
               {option}
