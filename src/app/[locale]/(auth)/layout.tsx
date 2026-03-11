@@ -15,7 +15,7 @@ export default function AuthLayout({
       <Link href="/" className="text-2xl font-bold text-primary mb-8">
         Hiring Partners
       </Link>
-      <div className="w-full max-w-md">{children}</div>
+      <div className="w-full max-w-[400px]">{children}</div>
       <Link
         href="/"
         className="mt-6 text-sm text-muted-foreground hover:text-foreground transition-colors"
