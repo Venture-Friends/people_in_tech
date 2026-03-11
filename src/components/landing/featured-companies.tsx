@@ -15,27 +15,27 @@ export function FeaturedCompanies({ companies }: FeaturedCompaniesProps) {
   if (companies.length === 0) return null;
 
   return (
-    <section className="w-full py-16 md:py-20">
+    <section className="w-full py-16 md:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8 flex items-center justify-between">
-          <h2 className="text-2xl font-bold md:text-3xl">
-            {t("featuredCompanies")}
-          </h2>
-          <Link
-            href="/discover"
-            className="flex items-center gap-1 text-sm font-medium text-primary transition-colors hover:text-primary/80"
-          >
+          <h2 className="text-2xl font-bold md:text-3xl">{t("featuredCompanies")}</h2>
+          <Link href="/discover" className="flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-white">
             {t("viewAll")}
             <ArrowRight className="size-4" />
           </Link>
         </div>
 
-        <div className="flex gap-4 overflow-x-auto pb-4 snap-x">
-          {companies.map((company) => (
-            <div key={company.slug} className="min-w-[280px] snap-start">
-              <CompanyCard company={company} />
-            </div>
-          ))}
+        <div className="relative">
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-background to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-background to-transparent" />
+
+          <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
+            {companies.map((company) => (
+              <div key={company.slug} className="min-w-[280px] snap-start">
+                <CompanyCard company={company} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
