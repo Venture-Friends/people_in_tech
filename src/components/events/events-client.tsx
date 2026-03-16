@@ -38,10 +38,6 @@ export function EventsClient({
   const [loading, setLoading] = useState(false);
   const [showPast, setShowPast] = useState(false);
 
-  // Registered event ids
-  const [registeredIds, setRegisteredIds] = useState<Set<string>>(new Set());
-  const [registeringId, setRegisteringId] = useState<string | null>(null);
-
   // Saved event ids
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set(initialSavedIds));
   const [savingId, setSavingId] = useState<string | null>(null);
@@ -74,43 +70,6 @@ export function EventsClient({
   useEffect(() => {
     fetchEvents();
   }, [fetchEvents]);
-
-  async function handleRegister(eventId: string) {
-    if (!session?.user) {
-      toast.error("Please sign in to register for events");
-      return;
-    }
-
-    setRegisteringId(eventId);
-    try {
-      const res = await fetch(`/api/events/${eventId}/register`, {
-        method: "POST",
-      });
-
-      if (!res.ok) throw new Error("Failed to register");
-
-      const data = await res.json();
-      setRegisteredIds((prev) => {
-        const next = new Set(prev);
-        if (data.registered) {
-          next.add(eventId);
-        } else {
-          next.delete(eventId);
-        }
-        return next;
-      });
-
-      toast.success(
-        data.registered
-          ? "Registered for event"
-          : "Registration cancelled"
-      );
-    } catch {
-      toast.error("Failed to register");
-    } finally {
-      setRegisteringId(null);
-    }
-  }
 
   async function handleSave(eventId: string) {
     if (!session?.user) {
@@ -196,30 +155,32 @@ export function EventsClient({
                     />
                   </button>
 
-                  {/* Register button */}
-                  <Button
-                    size="sm"
-                    variant={registeredIds.has(event.id) ? "secondary" : "default"}
-                    className="flex-1 text-xs"
-                    disabled={registeringId === event.id}
-                    onClick={() => handleRegister(event.id)}
-                  >
-                    {registeredIds.has(event.id)
-                      ? t("registered")
-                      : t("register")}
-                  </Button>
-
-                  {/* External link */}
-                  {event.registrationUrl && (
+                  {/* View Event external link or disabled placeholder */}
+                  {event.registrationUrl ? (
                     <a
                       href={event.registrationUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center size-8 rounded-lg border border-white/[0.08] bg-white/[0.05] text-white/40 hover:text-primary transition-colors shrink-0"
-                      title="External registration"
+                      className="flex-1"
                     >
-                      <ExternalLink className="size-4" />
+                      <Button
+                        size="sm"
+                        variant="default"
+                        className="w-full text-xs gap-1"
+                      >
+                        View Event
+                        <ExternalLink className="size-3" />
+                      </Button>
                     </a>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="flex-1 text-xs"
+                      disabled
+                    >
+                      No link available
+                    </Button>
                   )}
                 </div>
               </div>

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Bookmark, MapPin, Briefcase, Calendar, ChevronRight } from "lucide-react";
+import { ArrowRight, Bookmark, MapPin, Briefcase, Calendar, ChevronRight, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
 
 interface JobDetailProps {
@@ -15,6 +15,10 @@ interface JobDetailProps {
     type: string;
     externalUrl: string;
     postedAt: string;
+    description: string | null;
+    requirements: string | null;
+    techStack: string | null;
+    experienceLevel: string | null;
   };
   company: {
     id: string;
@@ -160,12 +164,71 @@ export function JobDetail({ job, company, moreJobs }: JobDetailProps) {
             )}
           </div>
 
-          {/* Placeholder for future description sections */}
-          <div className="mt-8 rounded-2xl border border-white/[0.05] bg-white/[0.02] p-6">
-            <p className="text-sm text-white/30 leading-relaxed">
-              Full job description will be available soon. Visit the company&apos;s careers page for complete details.
-            </p>
-          </div>
+          {/* Job content sections */}
+          {(() => {
+            let parsedRequirements: string[] = [];
+            if (job.requirements) {
+              try { parsedRequirements = JSON.parse(job.requirements); } catch { /* ignore */ }
+            }
+            let parsedTechStack: string[] = [];
+            if (job.techStack) {
+              try { parsedTechStack = JSON.parse(job.techStack); } catch { /* ignore */ }
+            }
+            const companyTech = !parsedTechStack.length && company.technologies
+              ? company.technologies.split(",").map((t) => t.trim()).filter(Boolean)
+              : [];
+            const techTags = parsedTechStack.length > 0 ? parsedTechStack : companyTech;
+            const hasContent = job.description || parsedRequirements.length > 0 || techTags.length > 0;
+
+            if (!hasContent) {
+              return (
+                <div className="mt-8 rounded-2xl border border-white/[0.05] bg-white/[0.02] p-6">
+                  <p className="text-sm text-white/30 leading-relaxed">
+                    Full job description will be available soon. Visit the company&apos;s careers page for complete details.
+                  </p>
+                </div>
+              );
+            }
+
+            return (
+              <div className="mt-8 flex flex-col gap-6">
+                {job.description && (
+                  <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] p-6">
+                    <h2 className="font-display text-[16px] font-semibold text-foreground mb-3">About the Role</h2>
+                    <p className="text-sm text-white/50 leading-relaxed whitespace-pre-line">{job.description}</p>
+                  </div>
+                )}
+                {parsedRequirements.length > 0 && (
+                  <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] p-6">
+                    <h2 className="font-display text-[16px] font-semibold text-foreground mb-3">Requirements</h2>
+                    <ul className="flex flex-col gap-1.5">
+                      {parsedRequirements.map((req, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-white/50 leading-relaxed">
+                          <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary/60" />
+                          {req}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {techTags.length > 0 && (
+                  <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] p-6">
+                    <h2 className="font-display text-[16px] font-semibold text-foreground mb-3">Tech Stack</h2>
+                    <div className="flex flex-wrap gap-2">
+                      {techTags.map((tech, i) => (
+                        <span
+                          key={i}
+                          className="rounded-md border border-primary/20 bg-primary/[0.06] px-2.5 py-1 text-[12px] text-primary"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </div>
 
         {/* Sidebar */}
@@ -219,6 +282,15 @@ export function JobDetail({ job, company, moreJobs }: JobDetailProps) {
                   <p className="text-sm text-foreground">{getRelativeTime(job.postedAt)}</p>
                 </div>
               </div>
+              {job.experienceLevel && (
+                <div className="flex items-center gap-3 text-sm">
+                  <GraduationCap className="size-4 shrink-0 text-white/25" />
+                  <div>
+                    <p className="text-xs text-white/25">Experience</p>
+                    <p className="text-sm text-foreground">{job.experienceLevel}</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

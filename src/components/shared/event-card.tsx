@@ -8,6 +8,7 @@ export interface EventCardData {
   startTime: string;
   location: string | null;
   isOnline: boolean;
+  registrationUrl?: string | null;
   company: {
     name: string;
   } | null;
@@ -67,6 +68,16 @@ export function EventCard({ event }: { event: EventCardData }) {
               {event.isOnline ? "Online" : event.location || "TBA"} · {event.startTime}
             </span>
           </div>
+          {event.registrationUrl && (
+            <a
+              href={event.registrationUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-block text-[13px] text-primary hover:underline"
+            >
+              {"View Event \u2192"}
+            </a>
+          )}
         </div>
       </div>
     </div>

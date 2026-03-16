@@ -35,6 +35,7 @@ export function DashboardClient({
   profile,
   alerts: initialAlerts = [],
   savedEvents = [],
+  userName,
   alertsCount = 0,
   savedEventsCount = 0,
 }: DashboardClientProps) {
@@ -61,7 +62,7 @@ export function DashboardClient({
       <h1 className="font-display text-[42px] font-bold tracking-[-0.03em] text-foreground">
         Dashboard
       </h1>
-      <p className="mt-1 text-[15px] text-white/[0.35]">Welcome back</p>
+      <p className="mt-1 text-[15px] text-white/[0.35]">{userName ? `Welcome back, ${userName}` : "Welcome back"}</p>
 
       {/* Stats row */}
       <div className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-4">

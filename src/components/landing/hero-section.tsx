@@ -9,6 +9,7 @@ interface HeroSectionProps {
   stats: {
     companies: number;
     candidates: number;
+    openRoles: number;
     events: number;
     sectors: number;
   };
@@ -32,11 +33,11 @@ export function HeroSection({ stats }: HeroSectionProps) {
           </p>
 
           {/* Search bar */}
-          <div className="mt-8 flex w-full max-w-[540px] items-center gap-3 rounded-[14px] border border-white/[0.07] bg-white/[0.03] px-4 py-3 backdrop-blur-[12px]">
+          <Link href="/discover" className="mt-8 flex w-full max-w-[540px] items-center gap-3 rounded-[14px] border border-white/[0.07] bg-white/[0.03] px-4 py-3 backdrop-blur-[12px] transition-colors hover:border-white/[0.12] hover:bg-white/[0.05]">
             <Search className="size-5 text-white/30" />
             <span className="flex-1 text-[15px] text-white/25">Search companies, roles, events...</span>
             <kbd className="hidden rounded-md border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-white/30 sm:inline-block">⌘K</kbd>
-          </div>
+          </Link>
 
           {/* CTA row */}
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -46,7 +47,7 @@ export function HeroSection({ stats }: HeroSectionProps) {
                 <ArrowRight className="size-4" />
               </Button>
             </Link>
-            <Link href="/discover">
+            <Link href="/list-company">
               <Button variant="outline" size="lg" className="h-11 rounded-lg border-white/[0.08] bg-transparent px-7 text-[13px] font-medium text-white/60 hover:border-white/[0.15] hover:text-white">
                 I&apos;m a Company
               </Button>
@@ -61,7 +62,7 @@ export function HeroSection({ stats }: HeroSectionProps) {
             </div>
             <div className="h-8 w-px bg-white/[0.06]" />
             <div className="flex flex-col items-center">
-              <span className="font-display text-3xl font-bold text-foreground">{stats.events}+</span>
+              <span className="font-display text-3xl font-bold text-foreground">{stats.openRoles}+</span>
               <span className="mt-1 text-xs text-white/30">Open Roles</span>
             </div>
             <div className="h-8 w-px bg-white/[0.06]" />

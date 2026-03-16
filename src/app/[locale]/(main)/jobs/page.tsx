@@ -57,15 +57,6 @@ export default async function JobsPage({
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-          Job Openings
-        </h1>
-        <p className="mt-2 text-muted-foreground">
-          Discover opportunities at Greece&apos;s top tech companies
-        </p>
-      </div>
-
       <JobsClient initialJobs={jobs} initialTotal={total} />
     </div>
   );

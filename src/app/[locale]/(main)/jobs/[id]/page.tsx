@@ -51,6 +51,10 @@ export default async function JobDetailPage({
         type: job.type,
         externalUrl: job.externalUrl,
         postedAt: job.postedAt.toISOString(),
+        description: job.description,
+        requirements: job.requirements,
+        techStack: job.techStack,
+        experienceLevel: job.experienceLevel,
       }}
       company={{
         id: job.company.id,

@@ -1,5 +1,4 @@
 import { setRequestLocale } from "next-intl/server";
-import { getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 import { DiscoverClient } from "@/components/discover/discover-client";
 import type { CompanyCardData } from "@/components/shared/company-card";
@@ -48,14 +47,10 @@ export default async function DiscoverPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const t = await getTranslations("discover");
   const { companies, total } = await getInitialCompanies();
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <h1 className="mb-8 text-3xl font-bold text-foreground">
-        {t("title")}
-      </h1>
       <DiscoverClient initialCompanies={companies} initialTotal={total} />
     </div>
   );

@@ -103,14 +103,16 @@ async function getUpcomingEvents(): Promise<EventCardData[]> {
     startTime: e.startTime,
     location: e.location,
     isOnline: e.isOnline,
+    registrationUrl: e.registrationUrl,
     company: e.company,
   }));
 }
 
 async function getStats() {
-  const [companyCount, eventCount, allCompanies] = await Promise.all([
+  const [companyCount, eventCount, jobCount, allCompanies] = await Promise.all([
     prisma.company.count(),
     prisma.event.count(),
+    prisma.jobListing.count({ where: { status: "ACTIVE" } }),
     prisma.company.findMany({
       select: { industry: true, technologies: true, locations: true },
     }),
@@ -146,6 +148,7 @@ async function getStats() {
   return {
     companies: companyCount,
     candidates: 500,
+    openRoles: jobCount,
     events: eventCount,
     sectors: industries.length,
     industries,

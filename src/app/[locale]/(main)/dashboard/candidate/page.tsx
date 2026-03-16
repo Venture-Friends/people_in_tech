@@ -189,7 +189,7 @@ export default async function CandidateDashboardPage({
       companySlug: job.company.slug,
       date: job.postedAt.toISOString(),
       isNew: job.postedAt > alertCutoff,
-      linkUrl: `/companies/${job.company.slug}`,
+      linkUrl: `/jobs/${job.id}`,
     }));
 
     const eventAlerts: AlertItem[] = recentEvents.map((event) => ({

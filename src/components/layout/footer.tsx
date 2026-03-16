@@ -63,20 +63,20 @@ export function Footer() {
             </h3>
             <ul className="mt-3 flex flex-col gap-2">
               <li>
-                <Link
-                  href="/about"
-                  className="text-[13px] text-white/40 hover:text-white transition-colors"
+                <a
+                  href="#"
+                  className="text-[13px] text-white/40 cursor-default"
                 >
                   {tFooter("about")}
-                </Link>
+                </a>
               </li>
               <li>
-                <Link
-                  href="/contact"
-                  className="text-[13px] text-white/40 hover:text-white transition-colors"
+                <a
+                  href="#"
+                  className="text-[13px] text-white/40 cursor-default"
                 >
                   {tFooter("contact")}
-                </Link>
+                </a>
               </li>
             </ul>
           </nav>
@@ -88,20 +88,20 @@ export function Footer() {
             </h3>
             <ul className="mt-3 flex flex-col gap-2">
               <li>
-                <Link
-                  href="/terms"
-                  className="text-[13px] text-white/40 hover:text-white transition-colors"
+                <a
+                  href="#"
+                  className="text-[13px] text-white/40 cursor-default"
                 >
                   {tFooter("terms")}
-                </Link>
+                </a>
               </li>
               <li>
-                <Link
-                  href="/privacy"
-                  className="text-[13px] text-white/40 hover:text-white transition-colors"
+                <a
+                  href="#"
+                  className="text-[13px] text-white/40 cursor-default"
                 >
                   {tFooter("privacy")}
-                </Link>
+                </a>
               </li>
             </ul>
           </nav>
