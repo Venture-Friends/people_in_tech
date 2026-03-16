@@ -3,7 +3,6 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { CompanyCard, type CompanyCardData } from "@/components/shared/company-card";
-import { ArrowRight } from "lucide-react";
 
 interface FeaturedCompaniesProps {
   companies: CompanyCardData[];
@@ -18,24 +17,21 @@ export function FeaturedCompanies({ companies }: FeaturedCompaniesProps) {
     <section className="w-full py-16 md:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8 flex items-center justify-between">
-          <h2 className="text-2xl font-bold md:text-3xl">{t("featuredCompanies")}</h2>
-          <Link href="/discover" className="flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-white">
-            {t("viewAll")}
-            <ArrowRight className="size-4" />
+          <h2 className="font-display text-2xl font-semibold text-foreground tracking-tight">
+            {t("featuredCompanies")}
+          </h2>
+          <Link
+            href="/discover"
+            className="text-[13px] font-medium text-primary/60 hover:text-primary transition-colors"
+          >
+            View all →
           </Link>
         </div>
 
-        <div className="relative">
-          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-background to-transparent" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-background to-transparent" />
-
-          <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
-            {companies.map((company) => (
-              <div key={company.slug} className="min-w-[280px] snap-start">
-                <CompanyCard company={company} />
-              </div>
-            ))}
-          </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {companies.map((company) => (
+            <CompanyCard key={company.slug} company={company} />
+          ))}
         </div>
       </div>
     </section>
