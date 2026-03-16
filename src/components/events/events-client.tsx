@@ -107,6 +107,15 @@ export function EventsClient({
 
   return (
     <div className="flex flex-col gap-6">
+      <div className="text-center pt-12 mb-9">
+        <h1 className="font-display text-[42px] font-bold tracking-[-0.03em] text-foreground">
+          Events
+        </h1>
+        <p className="mt-2 text-base text-white/[0.35]">
+          Workshops, meetups, and talent sessions in Greek tech
+        </p>
+      </div>
+
       <EventFilters
         type={type}
         onTypeChange={setType}
