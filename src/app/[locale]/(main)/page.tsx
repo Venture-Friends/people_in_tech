@@ -1,6 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 import { HeroSection } from "@/components/landing/hero-section";
+import { Ticker } from "@/components/landing/ticker";
 import { FeaturedCompanies } from "@/components/landing/featured-companies";
 import { HowItWorks } from "@/components/landing/how-it-works";
 import { UpcomingEvents } from "@/components/landing/upcoming-events";
@@ -79,20 +80,48 @@ async function getUpcomingEvents(): Promise<EventCardData[]> {
 }
 
 async function getStats() {
-  const [companyCount, eventCount, industries] = await Promise.all([
+  const [companyCount, eventCount, allCompanies] = await Promise.all([
     prisma.company.count(),
     prisma.event.count(),
     prisma.company.findMany({
-      select: { industry: true },
-      distinct: ["industry"],
+      select: { industry: true, technologies: true, locations: true },
     }),
   ]);
+
+  // Distinct industries
+  const industries = [...new Set(allCompanies.map((c) => c.industry))];
+
+  // Technologies + locations for ticker row 2
+  const techSet = new Set<string>();
+  const locSet = new Set<string>();
+  for (const c of allCompanies) {
+    // technologies is a string (comma-separated or JSON array)
+    if (c.technologies) {
+      try {
+        const parsed = JSON.parse(c.technologies);
+        if (Array.isArray(parsed)) parsed.forEach((t: string) => techSet.add(t));
+      } catch {
+        c.technologies.split(",").forEach((t) => techSet.add(t.trim()));
+      }
+    }
+    // locations is a JSON string array
+    if (c.locations) {
+      try {
+        const parsed = JSON.parse(c.locations);
+        if (Array.isArray(parsed)) parsed.forEach((l: string) => locSet.add(l));
+      } catch {
+        locSet.add(c.locations);
+      }
+    }
+  }
 
   return {
     companies: companyCount,
     candidates: 500,
     events: eventCount,
     sectors: industries.length,
+    industries,
+    techAndLocations: [...techSet, ...locSet],
   };
 }
 
@@ -113,11 +142,12 @@ export default async function LandingPage({
   return (
     <div className="flex flex-col">
       <HeroSection stats={stats} />
-      <FeaturedCompanies companies={companies} />
+      <Ticker industries={stats.industries} techAndLocations={stats.techAndLocations} />
       <HowItWorks />
+      <FeaturedCompanies companies={companies} />
       <UpcomingEvents events={events} />
-      <NewsletterCta />
       <ForCompaniesCta />
+      <NewsletterCta />
     </div>
   );
 }
