@@ -61,6 +61,17 @@ export function RegisterForm() {
 
   return (
     <div>
+      {/* Step indicator */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between text-xs text-white/30 mb-2">
+          <span>Step 1 of 2</span>
+          <span>Create Account</span>
+        </div>
+        <div className="h-1 rounded-full bg-white/[0.06]">
+          <div className="h-full w-1/2 rounded-full bg-primary transition-all" />
+        </div>
+      </div>
+
       {/* Title & subtitle */}
       <div className="text-center mb-8">
         <h1 className="font-display text-[24px] font-bold text-foreground tracking-tight">
