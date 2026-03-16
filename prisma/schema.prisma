@@ -21,6 +21,7 @@ model User {
   candidateProfile   CandidateProfile?
   follows            Follow[]
   savedJobs          SavedJob[]
+  savedEvents        SavedEvent[]
   eventRegistrations EventRegistration[]
   companyClaims      CompanyClaim[]
   reviewedClaims     CompanyClaim[]      @relation("ReviewedBy")
@@ -39,10 +40,11 @@ model CandidateProfile {
   roleInterests      String  @default("[]")
   industries         String  @default("[]")
   preferredLocations String  @default("[]")
-  emailDigest        Boolean @default(true)
-  emailEvents        Boolean @default(true)
-  emailNewsletter    Boolean @default(false)
-  onboardingComplete Boolean @default(false)
+  emailDigest        Boolean   @default(true)
+  emailEvents        Boolean   @default(true)
+  emailNewsletter    Boolean   @default(false)
+  onboardingComplete Boolean   @default(false)
+  lastSeenAlertsAt   DateTime?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -105,10 +107,14 @@ model JobListing {
   title       String
   location    String?
   type        String    @default("ONSITE")
-  externalUrl String
-  status      String    @default("ACTIVE")
-  postedAt    DateTime  @default(now())
-  expiresAt   DateTime?
+  externalUrl     String
+  description     String?
+  requirements    String?
+  techStack       String?
+  experienceLevel String?
+  status          String    @default("ACTIVE")
+  postedAt        DateTime  @default(now())
+  expiresAt       DateTime?
 
   company   Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
   savedBy   SavedJob[]
@@ -133,6 +139,7 @@ model Event {
 
   company       Company?            @relation(fields: [companyId], references: [id], onDelete: SetNull)
   registrations EventRegistration[]
+  savedBy       SavedEvent[]
 
   @@map("events")
 }
@@ -174,6 +181,18 @@ model EventRegistration {
 
   @@unique([userId, eventId])
   @@map("event_registrations")
+}
+
+model SavedEvent {
+  id      String   @id @default(cuid())
+  userId  String
+  eventId String
+  savedAt DateTime @default(now())
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event   Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@map("saved_events")
 }
 
 model GalleryImage {
