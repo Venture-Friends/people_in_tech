@@ -1,73 +1,140 @@
 "use client";
 
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useState } from "react";
 import { FollowedCompanies } from "./followed-companies";
 import { SavedJobs, type SavedJobData } from "./saved-jobs";
 import { ProfileSettings, type ProfileData } from "./profile-settings";
+import { AlertsTab, type AlertItem } from "./alerts-tab";
+import { SavedEventsTab, type SavedEventData } from "./saved-events-tab";
 import { type CompanyCardData } from "@/components/shared/company-card";
-import { Heart, Bookmark, Settings } from "lucide-react";
+import { Heart, Bookmark, Bell, Calendar, Settings } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface DashboardClientProps {
   companies: (CompanyCardData & { id: string })[];
   savedJobs: SavedJobData[];
   profile: ProfileData;
+  alerts?: AlertItem[];
+  savedEvents?: SavedEventData[];
+  userName?: string;
+  alertsCount?: number;
+  savedEventsCount?: number;
 }
 
-export function DashboardClient({ companies, savedJobs, profile }: DashboardClientProps) {
+const TABS = [
+  { value: "following", label: "Saved Companies", icon: Heart },
+  { value: "saved-jobs", label: "Saved Jobs", icon: Bookmark },
+  { value: "alerts", label: "Alerts", icon: Bell },
+  { value: "saved-events", label: "Saved Events", icon: Calendar },
+  { value: "settings", label: "Settings", icon: Settings },
+] as const;
+
+export function DashboardClient({
+  companies,
+  savedJobs,
+  profile,
+  alerts: initialAlerts = [],
+  savedEvents = [],
+  alertsCount = 0,
+  savedEventsCount = 0,
+}: DashboardClientProps) {
+  const [activeTab, setActiveTab] = useState("following");
+  const [alerts, setAlerts] = useState(initialAlerts);
+  const [localAlertsCount, setLocalAlertsCount] = useState(alertsCount);
+
+  async function handleMarkAllRead() {
+    try {
+      const res = await fetch("/api/candidate/alerts/read", {
+        method: "POST",
+      });
+      if (!res.ok) throw new Error("Failed to mark alerts as read");
+      setAlerts((prev) => prev.map((a) => ({ ...a, isNew: false })));
+      setLocalAlertsCount(0);
+    } catch {
+      // Silently fail, the UI still shows the alerts
+    }
+  }
+
   return (
     <div>
-      <Tabs defaultValue="following">
-        <TabsList className="mb-6 w-full sm:w-auto bg-transparent gap-1">
-          <TabsTrigger value="following" className="gap-1.5 rounded-lg data-[state=active]:bg-white/[0.06] data-[state=active]:text-white">
-            <Heart className="size-4" />
-            Following
-          </TabsTrigger>
-          <TabsTrigger value="saved-jobs" className="gap-1.5 rounded-lg data-[state=active]:bg-white/[0.06] data-[state=active]:text-white">
-            <Bookmark className="size-4" />
-            Saved Jobs
-          </TabsTrigger>
-          <TabsTrigger value="settings" className="gap-1.5 rounded-lg data-[state=active]:bg-white/[0.06] data-[state=active]:text-white">
-            <Settings className="size-4" />
-            Settings
-          </TabsTrigger>
-        </TabsList>
+      {/* Welcome header */}
+      <h1 className="font-display text-[42px] font-bold tracking-[-0.03em] text-foreground">
+        Dashboard
+      </h1>
+      <p className="mt-1 text-[15px] text-white/[0.35]">Welcome back</p>
 
-        <TabsContent value="following">
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold text-foreground">
-              Companies You Follow
-            </h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Stay updated on job openings and events from your favorite companies.
-            </p>
+      {/* Stats row */}
+      <div className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-5">
+          <div className="font-display text-2xl font-bold text-primary">
+            {companies.length}
           </div>
-          <FollowedCompanies companies={companies} />
-        </TabsContent>
+          <div className="text-xs text-white/30 mt-1">Saved Companies</div>
+        </div>
+        <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-5">
+          <div className="font-display text-2xl font-bold text-primary">
+            {savedJobs.length}
+          </div>
+          <div className="text-xs text-white/30 mt-1">Saved Jobs</div>
+        </div>
+        <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-5">
+          <div className="font-display text-2xl font-bold text-primary">
+            {localAlertsCount}
+          </div>
+          <div className="text-xs text-white/30 mt-1">New Alerts</div>
+        </div>
+        <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-5">
+          <div className="font-display text-2xl font-bold text-primary">
+            {savedEventsCount}
+          </div>
+          <div className="text-xs text-white/30 mt-1">Saved Events</div>
+        </div>
+      </div>
 
-        <TabsContent value="saved-jobs">
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold text-foreground">
-              Saved Jobs
-            </h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Jobs you&apos;ve bookmarked for later review.
-            </p>
-          </div>
-          <SavedJobs jobs={savedJobs} />
-        </TabsContent>
+      {/* Custom tab bar */}
+      <div className="mt-10 flex gap-6 border-b border-white/[0.04] mb-8 overflow-x-auto">
+        {TABS.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.value;
+          return (
+            <button
+              key={tab.value}
+              type="button"
+              onClick={() => setActiveTab(tab.value)}
+              className={cn(
+                "flex items-center gap-1.5 pb-3 text-[13px] font-medium whitespace-nowrap transition-colors cursor-pointer",
+                isActive
+                  ? "text-primary border-b-2 border-primary"
+                  : "text-white/40 hover:text-white/60"
+              )}
+            >
+              <Icon className="size-4" />
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
 
-        <TabsContent value="settings">
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold text-foreground">
-              Profile Settings
-            </h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Manage your profile information and preferences.
-            </p>
-          </div>
-          <ProfileSettings profile={profile} />
-        </TabsContent>
-      </Tabs>
+      {/* Tab content */}
+      {activeTab === "following" && (
+        <FollowedCompanies companies={companies} />
+      )}
+
+      {activeTab === "saved-jobs" && (
+        <SavedJobs jobs={savedJobs} />
+      )}
+
+      {activeTab === "alerts" && (
+        <AlertsTab alerts={alerts} onMarkAllRead={handleMarkAllRead} />
+      )}
+
+      {activeTab === "saved-events" && (
+        <SavedEventsTab events={savedEvents} />
+      )}
+
+      {activeTab === "settings" && (
+        <ProfileSettings profile={profile} />
+      )}
     </div>
   );
 }

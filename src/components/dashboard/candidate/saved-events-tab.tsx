@@ -1,0 +1,143 @@
+"use client";
+
+import { useState } from "react";
+import { Link } from "@/i18n/navigation";
+import { Calendar, BookmarkX } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { format } from "date-fns";
+
+export interface SavedEventData {
+  id: string;
+  eventId: string;
+  title: string;
+  type: string;
+  date: string;
+  startTime: string;
+  location: string | null;
+  isOnline: boolean;
+  companyName: string;
+  companySlug: string;
+}
+
+interface SavedEventsTabProps {
+  events: SavedEventData[];
+}
+
+function formatEventType(type: string): string {
+  switch (type) {
+    case "WORKSHOP": return "Workshop";
+    case "MEETUP": return "Meetup";
+    case "WEBINAR": return "Webinar";
+    case "TALENT_SESSION": return "Talent Session";
+    default: return type;
+  }
+}
+
+function getTypeBadgeStyle(type: string): string {
+  switch (type) {
+    case "WORKSHOP": return "border-blue-400/20 bg-blue-400/[0.06] text-blue-400";
+    case "MEETUP": return "border-purple-400/20 bg-purple-400/[0.06] text-purple-400";
+    case "WEBINAR": return "border-amber-400/20 bg-amber-400/[0.06] text-amber-400";
+    case "TALENT_SESSION": return "border-primary/20 bg-primary/[0.06] text-primary";
+    default: return "border-white/[0.04] bg-white/[0.03] text-white/40";
+  }
+}
+
+export function SavedEventsTab({ events: initialEvents }: SavedEventsTabProps) {
+  const [events, setEvents] = useState(initialEvents);
+  const [removing, setRemoving] = useState<string | null>(null);
+
+  async function handleUnsave(eventId: string) {
+    setRemoving(eventId);
+    try {
+      const res = await fetch(`/api/events/${eventId}/save`, {
+        method: "POST",
+      });
+      if (!res.ok) throw new Error("Failed to unsave event");
+      setEvents((prev) => prev.filter((e) => e.eventId !== eventId));
+      toast.success("Event removed from saved");
+    } catch {
+      toast.error("Failed to remove saved event");
+    } finally {
+      setRemoving(null);
+    }
+  }
+
+  if (events.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-12 text-center">
+        <Calendar className="size-12 text-white/20 mb-4" />
+        <h3 className="font-display text-lg font-semibold text-foreground mb-2">
+          No saved events
+        </h3>
+        <p className="text-[14px] text-white/[0.35] mb-6">
+          Browse events and save the ones you want to attend.
+        </p>
+        <Link href="/events">
+          <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+            Browse Events
+          </Button>
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {events.map((event) => {
+        const dateObj = new Date(event.date);
+        const dayNumber = format(dateObj, "dd");
+        const monthShort = format(dateObj, "MMM").toUpperCase();
+
+        return (
+          <div
+            key={event.id}
+            className="flex items-center gap-4 rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-4"
+          >
+            {/* Date block */}
+            <div className="flex flex-col items-center rounded-[10px] bg-primary/[0.06] border border-primary/[0.1] px-[14px] py-2 shrink-0">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-primary">
+                {monthShort}
+              </span>
+              <span className="font-display text-[22px] font-bold leading-none text-foreground">
+                {dayNumber}
+              </span>
+            </div>
+
+            {/* Event info */}
+            <div className="min-w-0 flex-1">
+              <h3 className="text-[15px] font-semibold text-foreground truncate">
+                {event.title}
+              </h3>
+              <Link
+                href={`/companies/${event.companySlug}`}
+                className="text-xs text-primary/60 hover:text-primary transition-colors"
+              >
+                {event.companyName}
+              </Link>
+              <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                <span className={`rounded-md border px-2 py-0.5 text-[11px] ${getTypeBadgeStyle(event.type)}`}>
+                  {formatEventType(event.type)}
+                </span>
+                <span className="text-[11px] text-white/30">
+                  {event.isOnline ? "Online" : event.location || "TBA"} · {event.startTime}
+                </span>
+              </div>
+            </div>
+
+            {/* Unsave button */}
+            <button
+              type="button"
+              className="shrink-0 flex items-center justify-center size-8 rounded-lg border border-white/[0.08] bg-white/[0.05] text-white/40 hover:text-red-400 hover:border-red-400/20 transition-colors cursor-pointer disabled:opacity-50"
+              onClick={() => handleUnsave(event.eventId)}
+              disabled={removing === event.eventId}
+            >
+              <BookmarkX className="size-4" />
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  );
+}

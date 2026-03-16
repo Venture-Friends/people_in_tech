@@ -7,6 +7,8 @@ import { DashboardClient } from "@/components/dashboard/candidate/dashboard-clie
 import type { CompanyCardData } from "@/components/shared/company-card";
 import type { SavedJobData } from "@/components/dashboard/candidate/saved-jobs";
 import type { ProfileData } from "@/components/dashboard/candidate/profile-settings";
+import type { AlertItem } from "@/components/dashboard/candidate/alerts-tab";
+import type { SavedEventData } from "@/components/dashboard/candidate/saved-events-tab";
 
 export default async function CandidateDashboardPage({
   params,
@@ -29,7 +31,7 @@ export default async function CandidateDashboardPage({
   const userId = session.user.id;
 
   // Fetch all data in parallel
-  const [user, candidateProfile, follows, savedJobs] = await Promise.all([
+  const [user, candidateProfile, follows, savedJobs, savedEventsRaw] = await Promise.all([
     prisma.user.findUnique({
       where: { id: userId },
       select: { name: true },
@@ -74,6 +76,23 @@ export default async function CandidateDashboardPage({
       },
       orderBy: { savedAt: "desc" },
     }),
+    prisma.savedEvent.findMany({
+      where: { userId },
+      include: {
+        event: {
+          include: {
+            company: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: { savedAt: "desc" },
+    }),
   ]);
 
   // Map followed companies to CompanyCardData format
@@ -106,6 +125,91 @@ export default async function CandidateDashboardPage({
     },
   }));
 
+  // Map saved events to SavedEventData format
+  const savedEventsData: SavedEventData[] = savedEventsRaw.map((s) => ({
+    id: s.id,
+    eventId: s.event.id,
+    title: s.event.title,
+    type: s.event.type,
+    date: s.event.date.toISOString(),
+    startTime: s.event.startTime,
+    location: s.event.location,
+    isOnline: s.event.isOnline,
+    companyName: s.event.company?.name || "Community",
+    companySlug: s.event.company?.slug || "",
+  }));
+
+  // Build alerts from followed companies' recent jobs and events
+  const lastSeenAlertsAt = candidateProfile?.lastSeenAlertsAt;
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const alertCutoff = lastSeenAlertsAt || thirtyDaysAgo;
+
+  const followedCompanyIds = follows.map((f) => f.companyId);
+
+  let alerts: AlertItem[] = [];
+  let alertsCount = 0;
+
+  if (followedCompanyIds.length > 0) {
+    const [recentJobs, recentEvents] = await Promise.all([
+      prisma.jobListing.findMany({
+        where: {
+          companyId: { in: followedCompanyIds },
+          postedAt: { gte: thirtyDaysAgo },
+          status: "ACTIVE",
+        },
+        include: {
+          company: {
+            select: { name: true, slug: true },
+          },
+        },
+        orderBy: { postedAt: "desc" },
+        take: 50,
+      }),
+      prisma.event.findMany({
+        where: {
+          companyId: { in: followedCompanyIds },
+          createdAt: { gte: thirtyDaysAgo },
+        },
+        include: {
+          company: {
+            select: { name: true, slug: true },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+        take: 50,
+      }),
+    ]);
+
+    const jobAlerts: AlertItem[] = recentJobs.map((job) => ({
+      id: `job-${job.id}`,
+      type: "job" as const,
+      title: job.title,
+      companyName: job.company.name,
+      companySlug: job.company.slug,
+      date: job.postedAt.toISOString(),
+      isNew: job.postedAt > alertCutoff,
+      linkUrl: `/companies/${job.company.slug}`,
+    }));
+
+    const eventAlerts: AlertItem[] = recentEvents.map((event) => ({
+      id: `event-${event.id}`,
+      type: "event" as const,
+      title: event.title,
+      companyName: event.company?.name || "Community",
+      companySlug: event.company?.slug || "",
+      date: event.createdAt.toISOString(),
+      isNew: event.createdAt > alertCutoff,
+      linkUrl: event.company?.slug ? `/companies/${event.company.slug}` : "/events",
+    }));
+
+    alerts = [...jobAlerts, ...eventAlerts].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+
+    alertsCount = alerts.filter((a) => a.isNew).length;
+  }
+
   // Build profile data
   const profile: ProfileData = {
     name: user?.name || "",
@@ -123,19 +227,15 @@ export default async function CandidateDashboardPage({
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-          Dashboard
-        </h1>
-        <p className="mt-2 text-muted-foreground">
-          Manage your followed companies, saved jobs, and profile settings.
-        </p>
-      </div>
-
       <DashboardClient
         companies={companies}
         savedJobs={savedJobsData}
         profile={profile}
+        alerts={alerts}
+        savedEvents={savedEventsData}
+        userName={user?.name || undefined}
+        alertsCount={alertsCount}
+        savedEventsCount={savedEventsData.length}
       />
     </div>
   );

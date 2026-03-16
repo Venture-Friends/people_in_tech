@@ -1,4 +1,6 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { EventsClient } from "@/components/events/events-client";
 import type { EventCardData } from "@/components/shared/event-card";
@@ -79,6 +81,17 @@ export default async function EventsPage({
   const t = await getTranslations("events");
   const { upcoming, past } = await getEvents();
 
+  // Fetch saved event IDs for logged-in user
+  let savedEventIds: string[] = [];
+  const session = await getServerSession(authOptions);
+  if (session?.user) {
+    const savedEvents = await prisma.savedEvent.findMany({
+      where: { userId: session.user.id },
+      select: { eventId: true },
+    });
+    savedEventIds = savedEvents.map((s) => s.eventId);
+  }
+
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
       <div className="mb-8">
@@ -88,7 +101,11 @@ export default async function EventsPage({
         <p className="mt-2 text-muted-foreground">{t("subtitle")}</p>
       </div>
 
-      <EventsClient initialUpcoming={upcoming} initialPast={past} />
+      <EventsClient
+        initialUpcoming={upcoming}
+        initialPast={past}
+        initialSavedIds={savedEventIds}
+      />
     </div>
   );
 }

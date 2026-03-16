@@ -8,7 +8,7 @@ import { EventFilters } from "@/components/events/event-filters";
 import { PageHeader } from "@/components/shared/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Calendar, ChevronDown, ChevronUp } from "lucide-react";
+import { Calendar, ChevronDown, ChevronUp, Bookmark, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 
 interface EventWithRegistration extends EventCardData {
@@ -21,11 +21,13 @@ interface EventWithRegistration extends EventCardData {
 interface EventsClientProps {
   initialUpcoming: EventWithRegistration[];
   initialPast: EventWithRegistration[];
+  initialSavedIds?: string[];
 }
 
 export function EventsClient({
   initialUpcoming,
   initialPast,
+  initialSavedIds = [],
 }: EventsClientProps) {
   const t = useTranslations("events");
   const { data: session } = useSession();
@@ -39,6 +41,10 @@ export function EventsClient({
   // Registered event ids
   const [registeredIds, setRegisteredIds] = useState<Set<string>>(new Set());
   const [registeringId, setRegisteringId] = useState<string | null>(null);
+
+  // Saved event ids
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set(initialSavedIds));
+  const [savingId, setSavingId] = useState<string | null>(null);
 
   // Filter state
   const [type, setType] = useState("ALL");
@@ -106,6 +112,39 @@ export function EventsClient({
     }
   }
 
+  async function handleSave(eventId: string) {
+    if (!session?.user) {
+      toast.error("Please sign in to save events");
+      return;
+    }
+
+    setSavingId(eventId);
+    try {
+      const res = await fetch(`/api/events/${eventId}/save`, {
+        method: "POST",
+      });
+
+      if (!res.ok) throw new Error("Failed to save event");
+
+      const data = await res.json();
+      setSavedIds((prev) => {
+        const next = new Set(prev);
+        if (data.saved) {
+          next.add(eventId);
+        } else {
+          next.delete(eventId);
+        }
+        return next;
+      });
+
+      toast.success(data.saved ? "Event saved" : "Event unsaved");
+    } catch {
+      toast.error("Failed to save event");
+    } finally {
+      setSavingId(null);
+    }
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <PageHeader title="Events" subtitle="Workshops, meetups, and talent sessions in Greek tech" />
@@ -138,34 +177,54 @@ export function EventsClient({
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {upcomingEvents.map((event) => (
-            <div key={event.id} className="flex flex-col gap-2">
-              <EventCard event={event} />
-              <div className="flex items-center gap-2 px-1">
-                <Button
-                  size="sm"
-                  variant={registeredIds.has(event.id) ? "secondary" : "default"}
-                  className="flex-1 text-xs"
-                  disabled={registeringId === event.id}
-                  onClick={() => handleRegister(event.id)}
-                >
-                  {registeredIds.has(event.id)
-                    ? t("registered")
-                    : t("register")}
-                </Button>
-                {event.registrationUrl && (
-                  <a
-                    href={event.registrationUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-primary hover:underline"
+          {upcomingEvents.map((event) => {
+            const isSaved = savedIds.has(event.id);
+            return (
+              <div key={event.id} className="flex flex-col gap-2">
+                <EventCard event={event} />
+                <div className="flex items-center gap-2 px-1">
+                  {/* Bookmark toggle */}
+                  <button
+                    type="button"
+                    className="flex items-center justify-center size-8 rounded-lg border border-white/[0.08] bg-white/[0.05] transition-colors cursor-pointer disabled:opacity-50 shrink-0"
+                    onClick={() => handleSave(event.id)}
+                    disabled={savingId === event.id}
+                    title={isSaved ? "Unsave event" : "Save event"}
                   >
-                    External link
-                  </a>
-                )}
+                    <Bookmark
+                      className={`size-4 ${isSaved ? "fill-primary text-primary" : "text-white/40 hover:text-white/60"}`}
+                    />
+                  </button>
+
+                  {/* Register button */}
+                  <Button
+                    size="sm"
+                    variant={registeredIds.has(event.id) ? "secondary" : "default"}
+                    className="flex-1 text-xs"
+                    disabled={registeringId === event.id}
+                    onClick={() => handleRegister(event.id)}
+                  >
+                    {registeredIds.has(event.id)
+                      ? t("registered")
+                      : t("register")}
+                  </Button>
+
+                  {/* External link */}
+                  {event.registrationUrl && (
+                    <a
+                      href={event.registrationUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center size-8 rounded-lg border border-white/[0.08] bg-white/[0.05] text-white/40 hover:text-primary transition-colors shrink-0"
+                      title="External registration"
+                    >
+                      <ExternalLink className="size-4" />
+                    </a>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

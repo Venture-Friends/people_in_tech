@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { CompanyCard, type CompanyCardData } from "@/components/shared/company-card";
 import { Button } from "@/components/ui/button";
-import { Building2, UserMinus } from "lucide-react";
+import { Building2, X } from "lucide-react";
 import { toast } from "sonner";
 
 interface FollowedCompaniesProps {
@@ -37,16 +37,18 @@ export function FollowedCompanies({ companies: initialCompanies }: FollowedCompa
 
   if (companies.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <Building2 className="size-12 text-muted-foreground/50 mb-4" />
-        <h3 className="text-lg font-semibold text-foreground mb-2">
-          You&apos;re not following any companies yet.
+      <div className="flex flex-col items-center justify-center rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-12 text-center">
+        <Building2 className="size-12 text-white/20 mb-4" />
+        <h3 className="font-display text-lg font-semibold text-foreground mb-2">
+          You&apos;re not following any companies yet
         </h3>
-        <p className="text-sm text-muted-foreground mb-6">
+        <p className="text-[14px] text-white/[0.35] mb-6">
           Discover and follow companies to stay updated on their latest jobs and events.
         </p>
         <Link href="/discover">
-          <Button>Discover Companies</Button>
+          <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+            Discover Companies
+          </Button>
         </Link>
       </div>
     );
@@ -58,15 +60,14 @@ export function FollowedCompanies({ companies: initialCompanies }: FollowedCompa
         <div key={company.id} className="relative group">
           <CompanyCard company={company} />
           <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button
-              variant="destructive"
-              size="icon"
-              className="size-8"
+            <button
+              type="button"
+              className="flex items-center justify-center size-8 rounded-lg border border-white/[0.08] bg-white/[0.05] backdrop-blur-sm text-white/60 hover:text-white hover:bg-white/[0.1] transition-colors cursor-pointer disabled:opacity-50"
               onClick={() => handleUnfollow(company.id, company.name)}
               disabled={unfollowing === company.id}
             >
-              <UserMinus className="size-4" />
-            </Button>
+              <X className="size-4" />
+            </button>
           </div>
         </div>
       ))}
