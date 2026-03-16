@@ -28,13 +28,11 @@ export function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/[0.06] bg-background/80 backdrop-blur-md">
+    <header className="fixed inset-x-0 top-0 z-50 bg-[oklch(0.07_0.01_260_/_0.6)] backdrop-blur-[16px] backdrop-saturate-[1.2] border-b border-white/[0.04]">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <span className="text-lg font-bold text-primary">
-            Hiring Partners
-          </span>
+        <Link href="/" className="font-display text-lg font-bold text-foreground tracking-tight">
+          Hiring<span className="text-primary">.</span>
         </Link>
 
         {/* Desktop Nav Links */}
@@ -46,10 +44,10 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "relative rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-150",
+                  "px-3 py-1.5 text-[13px] font-medium transition-colors",
                   isActive
-                    ? "bg-white/[0.08] text-white"
-                    : "text-muted-foreground hover:bg-white/[0.06] hover:text-white"
+                    ? "text-foreground"
+                    : "text-white/40 hover:text-white/80"
                 )}
               >
                 {t(link.labelKey)}
@@ -71,12 +69,19 @@ export function Navbar() {
             ) : (
               <>
                 <Link href="/login">
-                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-white">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-[13px] font-medium text-white/50 hover:text-white"
+                  >
                     {t("signIn")}
                   </Button>
                 </Link>
                 <Link href="/register">
-                  <Button size="sm">
+                  <Button
+                    size="sm"
+                    className="bg-primary text-primary-foreground text-[13px] font-semibold rounded-lg px-[18px] py-2 hover:bg-[oklch(0.92_0.27_128)] hover:shadow-[0_4px_16px_oklch(0.88_0.27_128_/_0.25)]"
+                  >
                     {t("getStarted")}
                   </Button>
                 </Link>
@@ -87,17 +92,23 @@ export function Navbar() {
           {/* Mobile Hamburger */}
           <div className="md:hidden">
             <Sheet>
-              <SheetTrigger className={cn(
-                "group/button inline-flex shrink-0 items-center justify-center rounded-lg size-8",
-                "text-sm font-medium transition-all outline-none select-none",
-                "hover:bg-muted/50 hover:text-foreground"
-              )} aria-label="Open menu">
+              <SheetTrigger
+                className={cn(
+                  "group/button inline-flex shrink-0 items-center justify-center rounded-lg size-8",
+                  "text-sm font-medium transition-all outline-none select-none",
+                  "hover:bg-muted/50 hover:text-foreground"
+                )}
+                aria-label="Open menu"
+              >
                 <Menu className="size-5" />
               </SheetTrigger>
-              <SheetContent side="right" className="max-w-[280px] w-[85vw] p-0">
-                <SheetHeader className="border-b border-white/[0.06] p-4">
-                  <SheetTitle className="text-left text-primary font-bold">
-                    Hiring Partners
+              <SheetContent
+                side="right"
+                className="max-w-[280px] w-[85vw] p-0 bg-[oklch(0.07_0.01_260_/_0.9)] backdrop-blur-[16px]"
+              >
+                <SheetHeader className="border-b border-white/[0.04] p-4">
+                  <SheetTitle className="text-left font-display text-lg font-bold text-foreground tracking-tight">
+                    Hiring<span className="text-primary">.</span>
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-1 p-4">
@@ -108,10 +119,10 @@ export function Navbar() {
                         key={link.href}
                         href={link.href}
                         className={cn(
-                          "flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors min-h-[44px]",
+                          "flex items-center rounded-lg px-3 py-3 text-[13px] font-medium transition-colors min-h-[44px]",
                           isActive
-                            ? "bg-white/[0.08] text-white"
-                            : "text-muted-foreground hover:bg-white/[0.06] hover:text-foreground"
+                            ? "text-foreground"
+                            : "text-white/40 hover:text-white/80"
                         )}
                       >
                         {t(link.labelKey)}
@@ -119,7 +130,7 @@ export function Navbar() {
                     );
                   })}
                 </div>
-                <div className="mt-auto border-t border-white/[0.06] p-4">
+                <div className="mt-auto border-t border-white/[0.04] p-4">
                   {session?.user ? (
                     <div className="flex flex-col gap-2">
                       <div className="text-sm font-medium text-foreground">
@@ -127,7 +138,7 @@ export function Navbar() {
                       </div>
                       <Link
                         href="/dashboard"
-                        className="flex items-center rounded-lg px-3 py-3 text-sm font-medium min-h-[44px] text-muted-foreground hover:bg-white/[0.06] hover:text-foreground"
+                        className="flex items-center rounded-lg px-3 py-3 text-[13px] font-medium min-h-[44px] text-white/40 hover:text-white/80 transition-colors"
                       >
                         {t("dashboard")}
                       </Link>
@@ -135,12 +146,15 @@ export function Navbar() {
                   ) : (
                     <div className="flex flex-col gap-2">
                       <Link href="/login">
-                        <Button variant="ghost" className="w-full justify-center text-muted-foreground hover:text-white">
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-center text-[13px] font-medium text-white/50 hover:text-white"
+                        >
                           {t("signIn")}
                         </Button>
                       </Link>
                       <Link href="/register">
-                        <Button className="w-full justify-center">
+                        <Button className="w-full justify-center bg-primary text-primary-foreground text-[13px] font-semibold rounded-lg hover:bg-[oklch(0.92_0.27_128)] hover:shadow-[0_4px_16px_oklch(0.88_0.27_128_/_0.25)]">
                           {t("getStarted")}
                         </Button>
                       </Link>
