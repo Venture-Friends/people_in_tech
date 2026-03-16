@@ -8,6 +8,7 @@ import { FilterBar, type Filters } from "./filter-bar";
 import { SortDropdown } from "./sort-dropdown";
 import { CompanyGrid } from "./company-grid";
 import type { CompanyCardData } from "@/components/shared/company-card";
+import { PageHeader } from "@/components/shared/page-header";
 
 interface CompanyApiResponse {
   companies: CompanyCardData[];
@@ -136,14 +137,7 @@ export function DiscoverClient({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="text-center pt-12 mb-9">
-        <h1 className="font-display text-[42px] font-bold tracking-[-0.03em] text-foreground">
-          Discover Companies
-        </h1>
-        <p className="mt-2 text-base text-white/[0.35]">
-          Find top tech employers in Greece
-        </p>
-      </div>
+      <PageHeader title="Discover Companies" subtitle="Find top tech employers in Greece" />
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex-1">

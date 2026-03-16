@@ -5,6 +5,7 @@ import { JobCard, type JobCardData } from "@/components/jobs/job-card";
 import { JobFilters } from "@/components/jobs/job-filters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Briefcase } from "lucide-react";
+import { PageHeader } from "@/components/shared/page-header";
 
 interface JobsClientProps {
   initialJobs: JobCardData[];
@@ -53,14 +54,7 @@ export function JobsClient({ initialJobs, initialTotal }: JobsClientProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="text-center pt-12 mb-9">
-        <h1 className="font-display text-[42px] font-bold tracking-[-0.03em] text-foreground">
-          Job Openings
-        </h1>
-        <p className="mt-2 text-base text-white/[0.35]">
-          Find your next opportunity in Greek tech
-        </p>
-      </div>
+      <PageHeader title="Job Openings" subtitle="Find your next opportunity in Greek tech" />
 
       <JobFilters
         search={search}
