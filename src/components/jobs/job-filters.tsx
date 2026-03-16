@@ -28,8 +28,8 @@ const sortOptions = [
 
 function chipClass(active: boolean) {
   return active
-    ? "border-primary text-primary bg-transparent hover:bg-primary/10"
-    : "bg-white/[0.04] border-white/[0.08] text-muted-foreground hover:border-white/[0.12]";
+    ? "rounded-full border-primary/[0.25] bg-primary/[0.05] text-primary hover:bg-primary/10"
+    : "rounded-full border-white/[0.06] bg-white/[0.02] text-xs text-white/[0.45] hover:border-white/[0.12]";
 }
 
 export function JobFilters({
@@ -50,7 +50,7 @@ export function JobFilters({
           placeholder="Search jobs by title, company, or location..."
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="h-11 w-full pl-10 text-sm"
+          className="h-12 w-full rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] pl-10 text-sm transition-all focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
         />
       </div>
 

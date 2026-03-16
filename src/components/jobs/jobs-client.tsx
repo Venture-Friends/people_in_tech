@@ -53,6 +53,15 @@ export function JobsClient({ initialJobs, initialTotal }: JobsClientProps) {
 
   return (
     <div className="flex flex-col gap-6">
+      <div className="text-center pt-12 mb-9">
+        <h1 className="font-display text-[42px] font-bold tracking-[-0.03em] text-foreground">
+          Job Openings
+        </h1>
+        <p className="mt-2 text-base text-white/[0.35]">
+          Find your next opportunity in Greek tech
+        </p>
+      </div>
+
       <JobFilters
         search={search}
         onSearchChange={setSearch}
