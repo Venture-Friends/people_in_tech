@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { Loader2 } from "lucide-react";
+import { Loader2, Linkedin } from "lucide-react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
 import { Button } from "@/components/ui/button";
@@ -60,16 +60,46 @@ export function RegisterForm() {
   }
 
   return (
-    <div className="border border-white/[0.06] bg-card rounded-xl p-6 md:p-8">
+    <div>
+      {/* Title & subtitle */}
+      <div className="text-center mb-8">
+        <h1 className="font-display text-[24px] font-bold text-foreground tracking-tight">
+          Create Account
+        </h1>
+        <p className="text-[15px] text-white/[0.35] mt-1.5">
+          Join the Greek tech community
+        </p>
+      </div>
+
+      {/* LinkedIn button */}
+      <button
+        type="button"
+        disabled
+        className="w-full flex items-center justify-center gap-2.5 rounded-[10px] border border-white/[0.08] bg-white/[0.03] text-white/50 py-3 text-sm font-medium cursor-not-allowed transition-colors"
+      >
+        <Linkedin className="size-4" />
+        Continue with LinkedIn (Coming soon)
+      </button>
+
+      {/* Divider */}
+      <div className="flex items-center gap-3 my-6">
+        <div className="h-px flex-1 bg-white/[0.08]" />
+        <span className="text-xs text-white/20">or</span>
+        <div className="h-px flex-1 bg-white/[0.08]" />
+      </div>
+
+      {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
-          <Label htmlFor="name">{t("name")}</Label>
+          <Label htmlFor="name" className="text-sm text-white/50">
+            {t("name")}
+          </Label>
           <Input
             id="name"
             type="text"
             autoComplete="name"
             {...register("name")}
-            className="mt-1.5 bg-background border-white/[0.06] px-3.5 py-2.5 focus:border-white/[0.12] focus:ring-1 focus:ring-white/10"
+            className="mt-1.5 rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] px-3.5 py-2.5 text-foreground placeholder:text-white/20 focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
             aria-describedby={errors.name ? "name-error" : undefined}
           />
           {errors.name && (
@@ -80,13 +110,15 @@ export function RegisterForm() {
         </div>
 
         <div>
-          <Label htmlFor="email">{t("email")}</Label>
+          <Label htmlFor="email" className="text-sm text-white/50">
+            {t("email")}
+          </Label>
           <Input
             id="email"
             type="email"
             autoComplete="email"
             {...register("email")}
-            className="mt-1.5 bg-background border-white/[0.06] px-3.5 py-2.5 focus:border-white/[0.12] focus:ring-1 focus:ring-white/10"
+            className="mt-1.5 rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] px-3.5 py-2.5 text-foreground placeholder:text-white/20 focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
             aria-describedby={errors.email ? "email-error" : undefined}
           />
           {errors.email && (
@@ -97,13 +129,15 @@ export function RegisterForm() {
         </div>
 
         <div>
-          <Label htmlFor="password">{t("password")}</Label>
+          <Label htmlFor="password" className="text-sm text-white/50">
+            {t("password")}
+          </Label>
           <Input
             id="password"
             type="password"
             autoComplete="new-password"
             {...register("password")}
-            className="mt-1.5 bg-background border-white/[0.06] px-3.5 py-2.5 focus:border-white/[0.12] focus:ring-1 focus:ring-white/10"
+            className="mt-1.5 rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] px-3.5 py-2.5 text-foreground placeholder:text-white/20 focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
             aria-describedby={errors.password ? "password-error" : undefined}
           />
           {errors.password && (
@@ -123,11 +157,12 @@ export function RegisterForm() {
           size="lg"
           disabled={isLoading}
         >
-          {isLoading ? <Loader2 className="size-4 animate-spin" /> : t("signUp")}
+          {isLoading ? <Loader2 className="size-4 animate-spin" /> : "Get Started"}
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-muted-foreground">
+      {/* Sign in link */}
+      <p className="mt-6 text-center text-sm text-white/30">
         {t("hasAccount")}{" "}
         <Link href="/login" className="text-primary hover:underline">
           {t("signIn")}
