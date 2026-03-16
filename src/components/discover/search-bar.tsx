@@ -20,7 +20,7 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
         placeholder={t("searchPlaceholder")}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-12 w-full bg-card border-white/[0.06] pl-11 text-sm transition-all duration-150 focus:border-white/[0.12] focus:bg-surface-2 focus:ring-1 focus:ring-white/10"
+        className="h-12 w-full rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] pl-11 text-sm transition-all focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
       />
     </div>
   );

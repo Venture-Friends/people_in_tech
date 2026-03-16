@@ -42,8 +42,8 @@ export function FilterBar({ filters, onFilterChange }: FilterBarProps) {
 
   function chipClass(active: boolean) {
     return active
-      ? "border-primary text-primary bg-transparent hover:bg-primary/10"
-      : "bg-white/[0.04] border-white/[0.08] text-muted-foreground hover:border-white/[0.12]";
+      ? "rounded-full border-primary/[0.25] bg-primary/[0.05] text-primary hover:bg-primary/10"
+      : "rounded-full border-white/[0.06] bg-white/[0.02] text-xs text-white/[0.45] hover:border-white/[0.12]";
   }
 
   return (
