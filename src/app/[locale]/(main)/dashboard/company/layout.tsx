@@ -15,23 +15,23 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import {
-  LayoutDashboard,
+  BarChart3,
   Building2,
   Briefcase,
   Calendar,
   Image,
-  BarChart3,
+  TrendingUp,
   Menu,
   BadgeCheck,
 } from "lucide-react";
 
 const sidebarItems = [
-  { id: "overview", label: "Overview", icon: LayoutDashboard },
+  { id: "overview", label: "Overview", icon: BarChart3 },
   { id: "profile", label: "Company Profile", icon: Building2 },
   { id: "jobs", label: "Job Listings", icon: Briefcase },
   { id: "events", label: "Events", icon: Calendar },
   { id: "gallery", label: "Gallery", icon: Image },
-  { id: "analytics", label: "Analytics", icon: BarChart3 },
+  { id: "analytics", label: "Analytics", icon: TrendingUp },
 ];
 
 function SidebarNav({
@@ -51,10 +51,8 @@ function SidebarNav({
             key={item.id}
             onClick={() => onTabChange(item.id)}
             className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-              isActive
-                ? "bg-white/[0.06] text-white"
-                : "text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
+              "flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] text-white/40 hover:text-white/60 hover:bg-white/[0.03] transition-colors",
+              isActive && "text-primary bg-primary/[0.05]"
             )}
           >
             <Icon className="size-4 shrink-0" />
@@ -97,51 +95,51 @@ function CompanyDashboardLayoutInner({
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger
             render={
-              <Button variant="outline" size="icon" className="lg:hidden" />
+              <Button variant="outline" size="icon" className="lg:hidden border-white/[0.08] bg-transparent" />
             }
           >
             <Menu className="size-4" />
           </SheetTrigger>
-          <SheetContent side="left" className="w-72">
+          <SheetContent side="left" className="w-72 border-r border-white/[0.04] bg-black/90 backdrop-blur-xl">
             <SheetHeader>
-              <SheetTitle className="flex items-center gap-2">
-                <Building2 className="size-5" />
+              <SheetTitle className="flex items-center gap-2 font-display text-sm font-semibold">
+                <Building2 className="size-4 text-primary" />
                 Company Dashboard
-                <BadgeCheck className="size-4 text-primary" />
+                <BadgeCheck className="size-3.5 text-primary" />
               </SheetTitle>
             </SheetHeader>
-            <Separator className="my-2" />
+            <Separator className="my-2 bg-white/[0.06]" />
             <SidebarNav activeTab={activeTab} onTabChange={handleTabChange} />
           </SheetContent>
         </Sheet>
 
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-            Company Dashboard
+          <h1 className="font-display text-[42px] font-bold tracking-[-0.03em] text-white">
+            Dashboard
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 text-[13px] text-white/[0.35]">
             Manage your company profile, job listings, events, and more.
           </p>
         </div>
       </div>
 
-      <div className="flex gap-8">
+      <div className="flex gap-0">
         {/* Desktop sidebar */}
-        <aside className="hidden w-56 shrink-0 lg:block">
-          <div className="sticky top-24 space-y-4">
-            <div className="flex items-center gap-2 rounded-lg bg-card p-3 ring-1 ring-foreground/10">
-              <Building2 className="size-5 text-primary" />
-              <span className="text-sm font-medium text-foreground truncate">
-                Company Dashboard
+        <aside className="hidden w-[220px] shrink-0 lg:block">
+          <div className="sticky top-24 bg-white/[0.02] border-r border-white/[0.04] p-4 rounded-2xl">
+            <div className="flex items-center gap-2 mb-4 px-1">
+              <Building2 className="size-4 text-primary" />
+              <span className="font-display text-sm font-semibold text-white truncate">
+                Dashboard
               </span>
-              <BadgeCheck className="size-4 shrink-0 text-primary" />
+              <BadgeCheck className="size-3.5 shrink-0 text-primary" />
             </div>
             <SidebarNav activeTab={activeTab} onTabChange={handleTabChange} />
           </div>
         </aside>
 
         {/* Main content */}
-        <main className="min-w-0 flex-1">{children}</main>
+        <main className="flex-1 min-w-0 p-6 lg:p-8">{children}</main>
       </div>
     </div>
   );
@@ -151,20 +149,22 @@ function LayoutFallback() {
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:py-10">
       <div className="mb-6 lg:mb-8">
-        <Skeleton className="h-9 w-64" />
+        <Skeleton className="h-12 w-64" />
         <Skeleton className="mt-2 h-5 w-96" />
       </div>
-      <div className="flex gap-8">
-        <aside className="hidden w-56 shrink-0 lg:block">
-          <Skeleton className="h-12 w-full rounded-lg" />
-          <div className="mt-4 space-y-2">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-9 w-full rounded-lg" />
-            ))}
+      <div className="flex gap-0">
+        <aside className="hidden w-[220px] shrink-0 lg:block">
+          <div className="bg-white/[0.02] border-r border-white/[0.04] p-4 rounded-2xl">
+            <Skeleton className="h-8 w-full rounded-lg mb-4" />
+            <div className="space-y-2">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} className="h-9 w-full rounded-lg" />
+              ))}
+            </div>
           </div>
         </aside>
-        <main className="min-w-0 flex-1">
-          <Skeleton className="h-96 w-full" />
+        <main className="min-w-0 flex-1 p-6 lg:p-8">
+          <Skeleton className="h-96 w-full rounded-2xl" />
         </main>
       </div>
     </div>

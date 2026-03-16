@@ -18,7 +18,6 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface AnalyticsData {
@@ -28,15 +27,18 @@ interface AnalyticsData {
   followersByLevel: { level: string; count: number }[];
 }
 
-const PIE_COLORS = ["#9fef00", "#38bdf8", "#f59e0b", "#a78bfa", "#fb7185"];
+const PIE_COLORS = ["#9fef00", "#38bdf8", "#a78bfa", "#fb7185", "#f59e0b"];
 
 const tooltipStyle = {
-  backgroundColor: "oklch(0.14 0.01 260)",
+  backgroundColor: "rgba(10,12,18,0.9)",
   border: "1px solid rgba(255,255,255,0.06)",
   borderRadius: "8px",
   color: "#f8fafc",
   fontSize: "12px",
 };
+
+const axisStroke = "rgba(255,255,255,0.3)";
+const gridStroke = "rgba(255,255,255,0.04)";
 
 export function Analytics() {
   const [data, setData] = useState<AnalyticsData | null>(null);
@@ -63,18 +65,18 @@ export function Analytics() {
   if (loading) {
     return (
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Skeleton className="h-80" />
-        <Skeleton className="h-80" />
-        <Skeleton className="h-80" />
-        <Skeleton className="h-80" />
+        <Skeleton className="h-80 rounded-2xl" />
+        <Skeleton className="h-80 rounded-2xl" />
+        <Skeleton className="h-80 rounded-2xl" />
+        <Skeleton className="h-80 rounded-2xl" />
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="rounded-lg border border-dashed border-border p-8 text-center">
-        <p className="text-muted-foreground">
+      <div className="rounded-2xl border border-dashed border-white/[0.08] p-8 text-center">
+        <p className="text-white/[0.35]">
           Unable to load analytics data. Please try again later.
         </p>
       </div>
@@ -102,184 +104,168 @@ export function Analytics() {
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Profile Views */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Profile Views</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[280px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={formattedViews}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                  <XAxis
-                    dataKey="date"
-                    stroke="#64748b"
-                    fontSize={11}
-                    tickLine={false}
-                    axisLine={false}
-                    interval="preserveStartEnd"
-                  />
-                  <YAxis
-                    stroke="#64748b"
-                    fontSize={11}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <Tooltip contentStyle={tooltipStyle} />
-                  <Line
-                    type="monotone"
-                    dataKey="views"
-                    stroke="#9fef00"
-                    strokeWidth={2}
-                    dot={false}
-                    activeDot={{ r: 4, fill: "#9fef00" }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-5">
+          <h3 className="font-display text-lg font-semibold text-white mb-4">Profile Views</h3>
+          <div className="h-[280px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={formattedViews}>
+                <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+                <XAxis
+                  dataKey="date"
+                  stroke={axisStroke}
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                  interval="preserveStartEnd"
+                />
+                <YAxis
+                  stroke={axisStroke}
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <Tooltip contentStyle={tooltipStyle} />
+                <Line
+                  type="monotone"
+                  dataKey="views"
+                  stroke="#9fef00"
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 4, fill: "#9fef00" }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
 
         {/* Follower Growth */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Follower Growth</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[280px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={formattedGrowth}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                  <XAxis
-                    dataKey="date"
-                    stroke="#64748b"
-                    fontSize={11}
-                    tickLine={false}
-                    axisLine={false}
-                    interval="preserveStartEnd"
-                  />
-                  <YAxis
-                    stroke="#64748b"
-                    fontSize={11}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <Tooltip contentStyle={tooltipStyle} />
-                  <defs>
-                    <linearGradient
-                      id="followerGradient"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop offset="0%" stopColor="#9fef00" stopOpacity={0.3} />
-                      <stop
-                        offset="100%"
-                        stopColor="#9fef00"
-                        stopOpacity={0.02}
-                      />
-                    </linearGradient>
-                  </defs>
-                  <Area
-                    type="monotone"
-                    dataKey="followers"
-                    stroke="#9fef00"
-                    strokeWidth={2}
-                    fill="url(#followerGradient)"
-                    dot={false}
-                    activeDot={{ r: 4, fill: "#9fef00" }}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-5">
+          <h3 className="font-display text-lg font-semibold text-white mb-4">Follower Growth</h3>
+          <div className="h-[280px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={formattedGrowth}>
+                <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+                <XAxis
+                  dataKey="date"
+                  stroke={axisStroke}
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                  interval="preserveStartEnd"
+                />
+                <YAxis
+                  stroke={axisStroke}
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <Tooltip contentStyle={tooltipStyle} />
+                <defs>
+                  <linearGradient
+                    id="followerGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop offset="0%" stopColor="#9fef00" stopOpacity={0.3} />
+                    <stop
+                      offset="100%"
+                      stopColor="#9fef00"
+                      stopOpacity={0.02}
+                    />
+                  </linearGradient>
+                </defs>
+                <Area
+                  type="monotone"
+                  dataKey="followers"
+                  stroke="#9fef00"
+                  strokeWidth={2}
+                  fill="url(#followerGradient)"
+                  dot={false}
+                  activeDot={{ r: 4, fill: "#9fef00" }}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
 
         {/* Job Listing Clicks */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Job Listing Clicks</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[280px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data.jobClicks} layout="vertical">
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="rgba(255,255,255,0.04)"
-                    horizontal={false}
-                  />
-                  <XAxis
-                    type="number"
-                    stroke="#64748b"
-                    fontSize={11}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <YAxis
-                    type="category"
-                    dataKey="title"
-                    stroke="#64748b"
-                    fontSize={11}
-                    tickLine={false}
-                    axisLine={false}
-                    width={150}
-                  />
-                  <Tooltip contentStyle={tooltipStyle} />
-                  <Bar
-                    dataKey="clicks"
-                    fill="#9fef00"
-                    radius={[0, 4, 4, 0]}
-                    maxBarSize={24}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-5">
+          <h3 className="font-display text-lg font-semibold text-white mb-4">Job Listing Clicks</h3>
+          <div className="h-[280px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data.jobClicks} layout="vertical">
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={gridStroke}
+                  horizontal={false}
+                />
+                <XAxis
+                  type="number"
+                  stroke={axisStroke}
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  type="category"
+                  dataKey="title"
+                  stroke={axisStroke}
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                  width={150}
+                />
+                <Tooltip contentStyle={tooltipStyle} />
+                <Bar
+                  dataKey="clicks"
+                  fill="#9fef00"
+                  radius={[0, 4, 4, 0]}
+                  maxBarSize={24}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
 
         {/* Followers by Experience Level */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Followers by Experience Level</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[280px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={data.followersByLevel}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={3}
-                    dataKey="count"
-                    nameKey="level"
-                    label={({ name, percent }: { name?: string; percent?: number }) =>
-                      `${name ?? ""} ${((percent ?? 0) * 100).toFixed(0)}%`
-                    }
-                    labelLine={false}
-                  >
-                    {data.followersByLevel.map((_, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={PIE_COLORS[index % PIE_COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip contentStyle={tooltipStyle} />
-                  <Legend
-                    verticalAlign="bottom"
-                    iconSize={8}
-                    wrapperStyle={{ fontSize: "12px", color: "#94a3b8" }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-5">
+          <h3 className="font-display text-lg font-semibold text-white mb-4">Followers by Experience Level</h3>
+          <div className="h-[280px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={data.followersByLevel}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={100}
+                  paddingAngle={3}
+                  dataKey="count"
+                  nameKey="level"
+                  label={({ name, percent }: { name?: string; percent?: number }) =>
+                    `${name ?? ""} ${((percent ?? 0) * 100).toFixed(0)}%`
+                  }
+                  labelLine={false}
+                >
+                  {data.followersByLevel.map((_, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={PIE_COLORS[index % PIE_COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip contentStyle={tooltipStyle} />
+                <Legend
+                  verticalAlign="bottom"
+                  iconSize={8}
+                  wrapperStyle={{ fontSize: "12px", color: "rgba(255,255,255,0.3)" }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
     </div>
   );

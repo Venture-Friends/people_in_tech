@@ -9,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -183,27 +182,27 @@ export function JobManager() {
     setEditOpen(true);
   }
 
-  const statusVariant = (status: string) => {
+  const statusClasses = (status: string) => {
     switch (status) {
       case "ACTIVE":
-        return "default" as const;
+        return "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
       case "PAUSED":
-        return "secondary" as const;
+        return "bg-amber-500/20 text-amber-400 border border-amber-500/30";
       case "EXPIRED":
-        return "destructive" as const;
+        return "bg-red-500/20 text-red-400 border border-red-500/30";
       default:
-        return "outline" as const;
+        return "bg-white/10 text-white/50 border border-white/10";
     }
   };
 
-  const typeVariant = (type: string) => {
+  const typeClasses = (type: string) => {
     switch (type) {
       case "REMOTE":
-        return "default" as const;
+        return "bg-sky-500/20 text-sky-400 border border-sky-500/30";
       case "HYBRID":
-        return "secondary" as const;
+        return "bg-violet-500/20 text-violet-400 border border-violet-500/30";
       default:
-        return "outline" as const;
+        return "bg-white/10 text-white/50 border border-white/10";
     }
   };
 
@@ -211,7 +210,7 @@ export function JobManager() {
     return (
       <div className="space-y-3">
         <Skeleton className="h-8 w-32" />
-        <Skeleton className="h-64 w-full" />
+        <Skeleton className="h-64 w-full rounded-2xl" />
       </div>
     );
   }
@@ -219,13 +218,13 @@ export function JobManager() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-foreground">
+        <h3 className="font-display text-2xl font-semibold tracking-tight text-white">
           Job Listings ({jobs.length})
         </h3>
         <Dialog open={addOpen} onOpenChange={setAddOpen}>
           <DialogTrigger
             render={
-              <Button size="sm">
+              <Button size="sm" className="bg-primary text-primary-foreground rounded-lg">
                 <Plus className="size-4" />
                 Add Job
               </Button>
@@ -233,31 +232,33 @@ export function JobManager() {
           />
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Add Job Listing</DialogTitle>
+              <DialogTitle className="font-display">Add Job Listing</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-2">
               <div className="space-y-2">
-                <Label htmlFor="add-title">Title</Label>
+                <Label htmlFor="add-title" className="text-[13px] font-medium text-white/50">Title</Label>
                 <Input
                   id="add-title"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="e.g. Senior Frontend Engineer"
+                  className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="add-location">Location</Label>
+                <Label htmlFor="add-location" className="text-[13px] font-medium text-white/50">Location</Label>
                 <Input
                   id="add-location"
                   value={newLocation}
                   onChange={(e) => setNewLocation(e.target.value)}
                   placeholder="e.g. Dublin, Ireland"
+                  className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
                 />
               </div>
               <div className="space-y-2">
-                <Label>Type</Label>
+                <Label className="text-[13px] font-medium text-white/50">Type</Label>
                 <Select value={newType} onValueChange={(v) => v !== null && setNewType(v)}>
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="w-full rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -268,21 +269,22 @@ export function JobManager() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="add-url">External URL</Label>
+                <Label htmlFor="add-url" className="text-[13px] font-medium text-white/50">External URL</Label>
                 <Input
                   id="add-url"
                   type="url"
                   value={newUrl}
                   onChange={(e) => setNewUrl(e.target.value)}
                   placeholder="https://careers.example.com/job/123"
+                  className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
                 />
               </div>
             </div>
             <DialogFooter>
-              <DialogClose render={<Button variant="outline" />}>
+              <DialogClose render={<Button variant="outline" className="border border-white/[0.08] bg-transparent text-white/50" />}>
                 Cancel
               </DialogClose>
-              <Button onClick={handleAdd} disabled={submitting}>
+              <Button onClick={handleAdd} disabled={submitting} className="bg-primary text-primary-foreground rounded-lg">
                 {submitting && <Loader2 className="size-4 animate-spin" />}
                 Create
               </Button>
@@ -292,38 +294,40 @@ export function JobManager() {
       </div>
 
       {jobs.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-border p-8 text-center">
-          <p className="text-muted-foreground">
+        <div className="rounded-2xl border border-dashed border-white/[0.08] p-8 text-center">
+          <p className="text-white/[0.35]">
             No job listings yet. Add your first job listing to get started.
           </p>
         </div>
       ) : (
-        <div className="rounded-lg border border-border">
+        <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] overflow-hidden">
           <Table>
-            <TableHeader className="bg-white/[0.05]">
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Location</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Posted</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+            <TableHeader>
+              <TableRow className="border-b border-white/[0.04] hover:bg-transparent">
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Title</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Location</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Type</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Status</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Posted</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02] text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {jobs.map((job) => (
-                <TableRow key={job.id} className="border-white/[0.06] hover:bg-white/[0.03]">
-                  <TableCell className="font-medium">{job.title}</TableCell>
-                  <TableCell>{job.location || "Not specified"}</TableCell>
+                <TableRow key={job.id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
+                  <TableCell className="text-[13px] font-medium text-white/80">{job.title}</TableCell>
+                  <TableCell className="text-[13px] text-white/40">{job.location || "Not specified"}</TableCell>
                   <TableCell>
-                    <Badge variant={typeVariant(job.type)}>{job.type}</Badge>
+                    <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${typeClasses(job.type)}`}>
+                      {job.type}
+                    </span>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={statusVariant(job.status)}>
+                    <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${statusClasses(job.status)}`}>
                       {job.status}
-                    </Badge>
+                    </span>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-[13px] text-white/40">
                     {new Date(job.postedAt).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
@@ -337,6 +341,7 @@ export function JobManager() {
                         variant="ghost"
                         size="icon-sm"
                         onClick={() => openEdit(job)}
+                        className="text-white/40 hover:text-white/60"
                       >
                         <Pencil className="size-3.5" />
                       </Button>
@@ -344,8 +349,9 @@ export function JobManager() {
                         variant="ghost"
                         size="icon-sm"
                         onClick={() => handleDelete(job.id)}
+                        className="text-red-400/60 hover:text-red-400"
                       >
-                        <Trash2 className="size-3.5 text-destructive" />
+                        <Trash2 className="size-3.5" />
                       </Button>
                     </div>
                   </TableCell>
@@ -360,29 +366,31 @@ export function JobManager() {
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Edit Job Listing</DialogTitle>
+            <DialogTitle className="font-display">Edit Job Listing</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label htmlFor="edit-title">Title</Label>
+              <Label htmlFor="edit-title" className="text-[13px] font-medium text-white/50">Title</Label>
               <Input
                 id="edit-title"
                 value={editTitle}
                 onChange={(e) => setEditTitle(e.target.value)}
+                className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-location">Location</Label>
+              <Label htmlFor="edit-location" className="text-[13px] font-medium text-white/50">Location</Label>
               <Input
                 id="edit-location"
                 value={editLocation}
                 onChange={(e) => setEditLocation(e.target.value)}
+                className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
               />
             </div>
             <div className="space-y-2">
-              <Label>Type</Label>
+              <Label className="text-[13px] font-medium text-white/50">Type</Label>
               <Select value={editType} onValueChange={(v) => v !== null && setEditType(v)}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -393,20 +401,21 @@ export function JobManager() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-url">External URL</Label>
+              <Label htmlFor="edit-url" className="text-[13px] font-medium text-white/50">External URL</Label>
               <Input
                 id="edit-url"
                 type="url"
                 value={editUrl}
                 onChange={(e) => setEditUrl(e.target.value)}
+                className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
               />
             </div>
           </div>
           <DialogFooter>
-            <DialogClose render={<Button variant="outline" />}>
+            <DialogClose render={<Button variant="outline" className="border border-white/[0.08] bg-transparent text-white/50" />}>
               Cancel
             </DialogClose>
-            <Button onClick={handleEdit} disabled={submitting}>
+            <Button onClick={handleEdit} disabled={submitting} className="bg-primary text-primary-foreground rounded-lg">
               {submitting && <Loader2 className="size-4 animate-spin" />}
               Save
             </Button>

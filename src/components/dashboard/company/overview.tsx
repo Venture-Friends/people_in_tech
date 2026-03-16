@@ -11,7 +11,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Users, Briefcase, Calendar, Activity } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatsCard } from "@/components/shared/stats-card";
 
 interface OverviewProps {
@@ -98,78 +97,75 @@ export function OverviewClient({
         />
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Follower Growth</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={followerGrowthData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                <XAxis
-                  dataKey="date"
-                  stroke="#64748b"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis
-                  stroke="#64748b"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#1e1b2e",
-                    border: "1px solid #2d3a4d",
-                    borderRadius: "8px",
-                    color: "#f8fafc",
-                  }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="followers"
-                  stroke="#9fef00"
-                  strokeWidth={2}
-                  dot={false}
-                  activeDot={{ r: 4, fill: "#9fef00" }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Follower Growth Chart */}
+      <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-5">
+        <h3 className="font-display text-2xl font-semibold tracking-tight text-white mb-4">
+          Follower Growth
+        </h3>
+        <div className="h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={followerGrowthData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+              <XAxis
+                dataKey="date"
+                stroke="rgba(255,255,255,0.3)"
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis
+                stroke="rgba(255,255,255,0.3)"
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "rgba(10,12,18,0.9)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                  borderRadius: "8px",
+                  color: "#f8fafc",
+                  fontSize: "12px",
+                }}
+              />
+              <Line
+                type="monotone"
+                dataKey="followers"
+                stroke="#9fef00"
+                strokeWidth={2}
+                dot={false}
+                activeDot={{ r: 4, fill: "#9fef00" }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Activity className="size-4" />
-            Recent Activity
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {recentActivity.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-start justify-between border-b border-border/50 pb-3 last:border-0 last:pb-0"
-              >
-                <div>
-                  <p className="text-sm font-medium text-foreground">
-                    {item.action}
-                  </p>
-                  <p className="text-sm text-muted-foreground">{item.detail}</p>
-                </div>
-                <span className="shrink-0 text-xs text-muted-foreground">
-                  {item.time}
-                </span>
+      {/* Recent Activity */}
+      <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-5">
+        <h3 className="font-display text-2xl font-semibold tracking-tight text-white mb-4 flex items-center gap-2">
+          <Activity className="size-5 text-white/40" />
+          Recent Activity
+        </h3>
+        <div className="space-y-3">
+          {recentActivity.map((item) => (
+            <div
+              key={item.id}
+              className="flex items-start justify-between rounded-xl border border-white/[0.05] bg-white/[0.02] p-3"
+            >
+              <div>
+                <p className="text-[13px] font-medium text-white/80">
+                  {item.action}
+                </p>
+                <p className="text-[13px] text-white/[0.35]">{item.detail}</p>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              <span className="shrink-0 text-[11px] text-white/30 ml-3">
+                {item.time}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

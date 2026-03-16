@@ -12,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { TagInput } from "@/components/shared/tag-input";
 import { toast } from "sonner";
@@ -149,25 +148,25 @@ export function ProfileEditor({ initialData }: ProfileEditorProps) {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Basic Information</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      {/* Basic Information */}
+      <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-6">
+        <h3 className="font-display text-lg font-semibold text-white mb-5">Basic Information</h3>
+        <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Company Name</Label>
+            <Label htmlFor="name" className="text-[13px] font-medium text-white/50">Company Name</Label>
             <Input
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Company name"
+              className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">
+            <Label htmlFor="description" className="text-[13px] font-medium text-white/50">
               Description
-              <span className="ml-2 text-xs text-muted-foreground">
+              <span className="ml-2 text-[11px] text-white/30">
                 {descriptionLength}/{maxDescription}
               </span>
             </Label>
@@ -179,14 +178,15 @@ export function ProfileEditor({ initialData }: ProfileEditorProps) {
               }
               placeholder="Tell candidates about your company..."
               rows={4}
+              className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
             />
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label>Industry</Label>
+              <Label className="text-[13px] font-medium text-white/50">Industry</Label>
               <Select value={industry} onValueChange={(v) => v !== null && setIndustry(v)}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px]">
                   <SelectValue placeholder="Select industry" />
                 </SelectTrigger>
                 <SelectContent>
@@ -200,9 +200,9 @@ export function ProfileEditor({ initialData }: ProfileEditorProps) {
             </div>
 
             <div className="space-y-2">
-              <Label>Company Size</Label>
+              <Label className="text-[13px] font-medium text-white/50">Company Size</Label>
               <Select value={size} onValueChange={(v) => v !== null && setSize(v)}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px]">
                   <SelectValue placeholder="Select size" />
                 </SelectTrigger>
                 <SelectContent>
@@ -217,7 +217,7 @@ export function ProfileEditor({ initialData }: ProfileEditorProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="founded">Year Founded</Label>
+            <Label htmlFor="founded" className="text-[13px] font-medium text-white/50">Year Founded</Label>
             <Input
               id="founded"
               type="number"
@@ -226,88 +226,91 @@ export function ProfileEditor({ initialData }: ProfileEditorProps) {
               placeholder="e.g. 2020"
               min={1900}
               max={new Date().getFullYear()}
+              className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Links</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      {/* Links */}
+      <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-6">
+        <h3 className="font-display text-lg font-semibold text-white mb-5">Links</h3>
+        <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="website">Website URL</Label>
+            <Label htmlFor="website" className="text-[13px] font-medium text-white/50">Website URL</Label>
             <Input
               id="website"
               type="url"
               value={website}
               onChange={(e) => setWebsite(e.target.value)}
               placeholder="https://example.com"
+              className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="linkedin">LinkedIn URL</Label>
+            <Label htmlFor="linkedin" className="text-[13px] font-medium text-white/50">LinkedIn URL</Label>
             <Input
               id="linkedin"
               type="url"
               value={linkedinUrl}
               onChange={(e) => setLinkedinUrl(e.target.value)}
               placeholder="https://linkedin.com/company/..."
+              className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Branding</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      {/* Branding */}
+      <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-6">
+        <h3 className="font-display text-lg font-semibold text-white mb-5">Branding</h3>
+        <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="logo">Logo URL</Label>
+            <Label htmlFor="logo" className="text-[13px] font-medium text-white/50">Logo URL</Label>
             <Input
               id="logo"
               type="url"
               value={logo}
               onChange={(e) => setLogo(e.target.value)}
               placeholder="https://example.com/logo.png"
+              className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
             />
             {logo && (
               <div className="mt-2 flex items-center gap-3">
                 <img
                   src={logo}
                   alt="Logo preview"
-                  className="size-12 rounded-lg border border-border object-cover"
+                  className="size-12 rounded-xl border border-white/[0.05] overflow-hidden object-cover"
                   onError={(e) => {
                     (e.target as HTMLImageElement).style.display = "none";
                   }}
                 />
-                <span className="text-xs text-muted-foreground">
+                <span className="text-[11px] text-white/30">
                   Logo preview
                 </span>
               </div>
             )}
           </div>
 
-          <Separator />
+          <Separator className="bg-white/[0.06]" />
 
           <div className="space-y-2">
-            <Label htmlFor="cover">Cover Image URL</Label>
+            <Label htmlFor="cover" className="text-[13px] font-medium text-white/50">Cover Image URL</Label>
             <Input
               id="cover"
               type="url"
               value={coverImage}
               onChange={(e) => setCoverImage(e.target.value)}
               placeholder="https://example.com/cover.jpg"
+              className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
             />
             {coverImage && (
               <div className="mt-2">
                 <img
                   src={coverImage}
                   alt="Cover preview"
-                  className="h-32 w-full rounded-lg border border-border object-cover"
+                  className="h-32 w-full rounded-xl border border-white/[0.05] overflow-hidden object-cover"
                   onError={(e) => {
                     (e.target as HTMLImageElement).style.display = "none";
                   }}
@@ -315,16 +318,15 @@ export function ProfileEditor({ initialData }: ProfileEditorProps) {
               </div>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Locations & Technologies</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      {/* Locations & Technologies */}
+      <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-6">
+        <h3 className="font-display text-lg font-semibold text-white mb-5">Locations & Technologies</h3>
+        <div className="space-y-4">
           <div className="space-y-2">
-            <Label>Locations</Label>
+            <Label className="text-[13px] font-medium text-white/50">Locations</Label>
             <TagInput
               tags={locations}
               onChange={setLocations}
@@ -333,21 +335,21 @@ export function ProfileEditor({ initialData }: ProfileEditorProps) {
             />
           </div>
 
-          <Separator />
+          <Separator className="bg-white/[0.06]" />
 
           <div className="space-y-2">
-            <Label>Technologies</Label>
+            <Label className="text-[13px] font-medium text-white/50">Technologies</Label>
             <TagInput
               tags={technologies}
               onChange={setTechnologies}
               placeholder="Add technology..."
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       <div className="flex justify-end">
-        <Button onClick={handleSave} disabled={saving}>
+        <Button onClick={handleSave} disabled={saving} className="bg-primary text-primary-foreground rounded-lg">
           {saving ? (
             <Loader2 className="size-4 animate-spin" />
           ) : (

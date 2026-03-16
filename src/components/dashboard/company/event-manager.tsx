@@ -9,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -218,7 +217,7 @@ export function EventManager() {
     return (
       <div className="space-y-3">
         <Skeleton className="h-8 w-32" />
-        <Skeleton className="h-64 w-full" />
+        <Skeleton className="h-64 w-full rounded-2xl" />
       </div>
     );
   }
@@ -226,13 +225,13 @@ export function EventManager() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-foreground">
+        <h3 className="font-display text-2xl font-semibold tracking-tight text-white">
           Events ({events.length})
         </h3>
         <Dialog open={addOpen} onOpenChange={setAddOpen}>
           <DialogTrigger
             render={
-              <Button size="sm">
+              <Button size="sm" className="bg-primary text-primary-foreground rounded-lg">
                 <Plus className="size-4" />
                 Add Event
               </Button>
@@ -240,32 +239,34 @@ export function EventManager() {
           />
           <DialogContent className="sm:max-w-lg">
             <DialogHeader>
-              <DialogTitle>Add Event</DialogTitle>
+              <DialogTitle className="font-display">Add Event</DialogTitle>
             </DialogHeader>
             <div className="max-h-[60vh] space-y-4 overflow-y-auto py-2 pr-1">
               <div className="space-y-2">
-                <Label htmlFor="add-event-title">Title</Label>
+                <Label htmlFor="add-event-title" className="text-[13px] font-medium text-white/50">Title</Label>
                 <Input
                   id="add-event-title"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="e.g. Tech Talk: AI in Production"
+                  className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="add-event-desc">Description</Label>
+                <Label htmlFor="add-event-desc" className="text-[13px] font-medium text-white/50">Description</Label>
                 <Textarea
                   id="add-event-desc"
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
                   placeholder="Event description..."
                   rows={3}
+                  className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
                 />
               </div>
               <div className="space-y-2">
-                <Label>Type</Label>
+                <Label className="text-[13px] font-medium text-white/50">Type</Label>
                 <Select value={newType} onValueChange={(v) => v !== null && setNewType(v)}>
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="w-full rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -279,52 +280,57 @@ export function EventManager() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <Label htmlFor="add-event-date">Date</Label>
+                  <Label htmlFor="add-event-date" className="text-[13px] font-medium text-white/50">Date</Label>
                   <Input
                     id="add-event-date"
                     type="date"
                     value={newDate}
                     onChange={(e) => setNewDate(e.target.value)}
+                    className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="add-event-start">Start Time</Label>
+                  <Label htmlFor="add-event-start" className="text-[13px] font-medium text-white/50">Start Time</Label>
                   <Input
                     id="add-event-start"
                     type="time"
                     value={newStartTime}
                     onChange={(e) => setNewStartTime(e.target.value)}
+                    className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <Label htmlFor="add-event-end">End Time</Label>
+                  <Label htmlFor="add-event-end" className="text-[13px] font-medium text-white/50">End Time</Label>
                   <Input
                     id="add-event-end"
                     type="time"
                     value={newEndTime}
                     onChange={(e) => setNewEndTime(e.target.value)}
+                    className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="add-event-capacity">Capacity</Label>
+                  <Label htmlFor="add-event-capacity" className="text-[13px] font-medium text-white/50">Capacity</Label>
                   <Input
                     id="add-event-capacity"
                     type="number"
                     value={newCapacity}
                     onChange={(e) => setNewCapacity(e.target.value)}
                     placeholder="e.g. 100"
+                    className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="add-event-location">Location</Label>
+                <Label htmlFor="add-event-location" className="text-[13px] font-medium text-white/50">Location</Label>
                 <Input
                   id="add-event-location"
                   value={newLocation}
                   onChange={(e) => setNewLocation(e.target.value)}
                   placeholder="e.g. Dublin Convention Centre"
+                  className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
                 />
               </div>
               <div className="flex items-center gap-3">
@@ -332,14 +338,14 @@ export function EventManager() {
                   checked={newIsOnline}
                   onCheckedChange={setNewIsOnline}
                 />
-                <Label>Online Event</Label>
+                <Label className="text-[13px] font-medium text-white/50">Online Event</Label>
               </div>
             </div>
             <DialogFooter>
-              <DialogClose render={<Button variant="outline" />}>
+              <DialogClose render={<Button variant="outline" className="border border-white/[0.08] bg-transparent text-white/50" />}>
                 Cancel
               </DialogClose>
-              <Button onClick={handleAdd} disabled={submitting}>
+              <Button onClick={handleAdd} disabled={submitting} className="bg-primary text-primary-foreground rounded-lg">
                 {submitting && <Loader2 className="size-4 animate-spin" />}
                 Create
               </Button>
@@ -349,47 +355,49 @@ export function EventManager() {
       </div>
 
       {events.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-border p-8 text-center">
-          <p className="text-muted-foreground">
+        <div className="rounded-2xl border border-dashed border-white/[0.08] p-8 text-center">
+          <p className="text-white/[0.35]">
             No events yet. Create your first event to engage with candidates.
           </p>
         </div>
       ) : (
-        <div className="rounded-lg border border-border">
+        <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Location</TableHead>
-                <TableHead>Registrations</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+              <TableRow className="border-b border-white/[0.04] hover:bg-transparent">
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Title</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Type</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Date</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Location</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Registrations</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02] text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {events.map((event) => (
-                <TableRow key={event.id}>
-                  <TableCell className="font-medium">{event.title}</TableCell>
+                <TableRow key={event.id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
+                  <TableCell className="text-[13px] font-medium text-white/80">{event.title}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary">{typeLabel(event.type)}</Badge>
+                    <span className="inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium bg-violet-500/20 text-violet-400 border border-violet-500/30">
+                      {typeLabel(event.type)}
+                    </span>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-[13px] text-white/40">
                     {new Date(event.date).toLocaleDateString()}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-[13px] text-white/40">
                     {event.isOnline
                       ? "Online"
                       : event.location || "Not specified"}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1.5">
-                      <Users className="size-3.5 text-muted-foreground" />
-                      <span className="font-display text-sm">
+                      <Users className="size-3.5 text-white/30" />
+                      <span className="font-display text-[13px] text-white/80">
                         {event.registrationCount}
                       </span>
                       {event.capacity && (
-                        <span className="text-muted-foreground">
+                        <span className="text-[13px] text-white/30">
                           / {event.capacity}
                         </span>
                       )}
@@ -401,6 +409,7 @@ export function EventManager() {
                         variant="ghost"
                         size="icon-sm"
                         onClick={() => openEdit(event)}
+                        className="text-white/40 hover:text-white/60"
                       >
                         <Pencil className="size-3.5" />
                       </Button>
@@ -408,8 +417,9 @@ export function EventManager() {
                         variant="ghost"
                         size="icon-sm"
                         onClick={() => handleDelete(event.id)}
+                        className="text-red-400/60 hover:text-red-400"
                       >
-                        <Trash2 className="size-3.5 text-destructive" />
+                        <Trash2 className="size-3.5" />
                       </Button>
                     </div>
                   </TableCell>
@@ -424,30 +434,32 @@ export function EventManager() {
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Edit Event</DialogTitle>
+            <DialogTitle className="font-display">Edit Event</DialogTitle>
           </DialogHeader>
           <div className="max-h-[60vh] space-y-4 overflow-y-auto py-2 pr-1">
             <div className="space-y-2">
-              <Label htmlFor="edit-event-title">Title</Label>
+              <Label htmlFor="edit-event-title" className="text-[13px] font-medium text-white/50">Title</Label>
               <Input
                 id="edit-event-title"
                 value={editTitle}
                 onChange={(e) => setEditTitle(e.target.value)}
+                className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-event-desc">Description</Label>
+              <Label htmlFor="edit-event-desc" className="text-[13px] font-medium text-white/50">Description</Label>
               <Textarea
                 id="edit-event-desc"
                 value={editDescription}
                 onChange={(e) => setEditDescription(e.target.value)}
                 rows={3}
+                className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
               />
             </div>
             <div className="space-y-2">
-              <Label>Type</Label>
+              <Label className="text-[13px] font-medium text-white/50">Type</Label>
               <Select value={editType} onValueChange={(v) => v !== null && setEditType(v)}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -461,50 +473,55 @@ export function EventManager() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label htmlFor="edit-event-date">Date</Label>
+                <Label htmlFor="edit-event-date" className="text-[13px] font-medium text-white/50">Date</Label>
                 <Input
                   id="edit-event-date"
                   type="date"
                   value={editDate}
                   onChange={(e) => setEditDate(e.target.value)}
+                  className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-event-start">Start Time</Label>
+                <Label htmlFor="edit-event-start" className="text-[13px] font-medium text-white/50">Start Time</Label>
                 <Input
                   id="edit-event-start"
                   type="time"
                   value={editStartTime}
                   onChange={(e) => setEditStartTime(e.target.value)}
+                  className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
                 />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label htmlFor="edit-event-end">End Time</Label>
+                <Label htmlFor="edit-event-end" className="text-[13px] font-medium text-white/50">End Time</Label>
                 <Input
                   id="edit-event-end"
                   type="time"
                   value={editEndTime}
                   onChange={(e) => setEditEndTime(e.target.value)}
+                  className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-event-capacity">Capacity</Label>
+                <Label htmlFor="edit-event-capacity" className="text-[13px] font-medium text-white/50">Capacity</Label>
                 <Input
                   id="edit-event-capacity"
                   type="number"
                   value={editCapacity}
                   onChange={(e) => setEditCapacity(e.target.value)}
+                  className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-event-location">Location</Label>
+              <Label htmlFor="edit-event-location" className="text-[13px] font-medium text-white/50">Location</Label>
               <Input
                 id="edit-event-location"
                 value={editLocation}
                 onChange={(e) => setEditLocation(e.target.value)}
+                className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
               />
             </div>
             <div className="flex items-center gap-3">
@@ -512,14 +529,14 @@ export function EventManager() {
                 checked={editIsOnline}
                 onCheckedChange={setEditIsOnline}
               />
-              <Label>Online Event</Label>
+              <Label className="text-[13px] font-medium text-white/50">Online Event</Label>
             </div>
           </div>
           <DialogFooter>
-            <DialogClose render={<Button variant="outline" />}>
+            <DialogClose render={<Button variant="outline" className="border border-white/[0.08] bg-transparent text-white/50" />}>
               Cancel
             </DialogClose>
-            <Button onClick={handleEdit} disabled={submitting}>
+            <Button onClick={handleEdit} disabled={submitting} className="bg-primary text-primary-foreground rounded-lg">
               {submitting && <Loader2 className="size-4 animate-spin" />}
               Save
             </Button>

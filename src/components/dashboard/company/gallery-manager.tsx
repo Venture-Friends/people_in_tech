@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -154,9 +153,9 @@ export function GalleryManager() {
       <div className="space-y-3">
         <Skeleton className="h-8 w-32" />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Skeleton className="h-48" />
-          <Skeleton className="h-48" />
-          <Skeleton className="h-48" />
+          <Skeleton className="h-48 rounded-xl" />
+          <Skeleton className="h-48 rounded-xl" />
+          <Skeleton className="h-48 rounded-xl" />
         </div>
       </div>
     );
@@ -165,13 +164,13 @@ export function GalleryManager() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-foreground">
+        <h3 className="font-display text-2xl font-semibold tracking-tight text-white">
           Gallery ({images.length})
         </h3>
         <Dialog open={addOpen} onOpenChange={setAddOpen}>
           <DialogTrigger
             render={
-              <Button size="sm">
+              <Button size="sm" className="bg-primary text-primary-foreground rounded-lg">
                 <Plus className="size-4" />
                 Upload Image
               </Button>
@@ -179,30 +178,32 @@ export function GalleryManager() {
           />
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Add Gallery Image</DialogTitle>
+              <DialogTitle className="font-display">Add Gallery Image</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-2">
               <div className="space-y-2">
-                <Label htmlFor="add-img-url">Image URL</Label>
+                <Label htmlFor="add-img-url" className="text-[13px] font-medium text-white/50">Image URL</Label>
                 <Input
                   id="add-img-url"
                   type="url"
                   value={newUrl}
                   onChange={(e) => setNewUrl(e.target.value)}
                   placeholder="https://example.com/image.jpg"
+                  className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="add-img-caption">Caption</Label>
+                <Label htmlFor="add-img-caption" className="text-[13px] font-medium text-white/50">Caption</Label>
                 <Input
                   id="add-img-caption"
                   value={newCaption}
                   onChange={(e) => setNewCaption(e.target.value)}
                   placeholder="Describe the image..."
+                  className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
                 />
               </div>
               {newUrl && (
-                <div className="overflow-hidden rounded-lg border border-border">
+                <div className="overflow-hidden rounded-xl border border-white/[0.05]">
                   <img
                     src={newUrl}
                     alt="Preview"
@@ -215,10 +216,10 @@ export function GalleryManager() {
               )}
             </div>
             <DialogFooter>
-              <DialogClose render={<Button variant="outline" />}>
+              <DialogClose render={<Button variant="outline" className="border border-white/[0.08] bg-transparent text-white/50" />}>
                 Cancel
               </DialogClose>
-              <Button onClick={handleAdd} disabled={submitting}>
+              <Button onClick={handleAdd} disabled={submitting} className="bg-primary text-primary-foreground rounded-lg">
                 {submitting && <Loader2 className="size-4 animate-spin" />}
                 Add Image
               </Button>
@@ -228,9 +229,9 @@ export function GalleryManager() {
       </div>
 
       {images.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-border p-8 text-center">
-          <ImageIcon className="mx-auto mb-3 size-8 text-muted-foreground" />
-          <p className="text-muted-foreground">
+        <div className="rounded-2xl border border-dashed border-white/[0.08] p-8 text-center">
+          <ImageIcon className="mx-auto mb-3 size-8 text-white/30" />
+          <p className="text-white/[0.35]">
             No gallery images yet. Add images to showcase your workspace and
             culture.
           </p>
@@ -238,7 +239,7 @@ export function GalleryManager() {
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {images.map((img, idx) => (
-            <Card key={img.id} className="overflow-hidden">
+            <div key={img.id} className="rounded-xl border border-white/[0.05] bg-white/[0.02] overflow-hidden">
               <div className="relative aspect-video">
                 <img
                   src={img.url}
@@ -255,6 +256,7 @@ export function GalleryManager() {
                     size="icon-xs"
                     onClick={() => handleReorder(img.id, "up")}
                     disabled={idx === 0}
+                    className="border border-white/[0.08] bg-black/50 backdrop-blur-sm text-white/50 hover:text-white/80"
                   >
                     <ChevronUp className="size-3" />
                   </Button>
@@ -263,6 +265,7 @@ export function GalleryManager() {
                     size="icon-xs"
                     onClick={() => handleReorder(img.id, "down")}
                     disabled={idx === images.length - 1}
+                    className="border border-white/[0.08] bg-black/50 backdrop-blur-sm text-white/50 hover:text-white/80"
                   >
                     <ChevronDown className="size-3" />
                   </Button>
@@ -270,12 +273,13 @@ export function GalleryManager() {
                     variant="destructive"
                     size="icon-xs"
                     onClick={() => handleDelete(img.id)}
+                    className="bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30"
                   >
                     <Trash2 className="size-3" />
                   </Button>
                 </div>
               </div>
-              <CardContent className="pt-3">
+              <div className="p-3">
                 {editingCaption?.id === img.id ? (
                   <div className="flex gap-2">
                     <Input
@@ -294,7 +298,7 @@ export function GalleryManager() {
                           setEditingCaption(null);
                         }
                       }}
-                      className="h-7 text-xs"
+                      className="h-7 text-xs rounded-[14px] border-white/[0.07] bg-white/[0.03]"
                       autoFocus
                     />
                     <Button
@@ -302,13 +306,14 @@ export function GalleryManager() {
                       onClick={() =>
                         handleUpdateCaption(img.id, editingCaption.value)
                       }
+                      className="bg-primary text-primary-foreground rounded-lg"
                     >
                       Save
                     </Button>
                   </div>
                 ) : (
                   <p
-                    className="cursor-pointer text-sm text-muted-foreground hover:text-foreground"
+                    className="cursor-pointer text-[13px] text-white/[0.35] hover:text-white/60 transition-colors"
                     onClick={() =>
                       setEditingCaption({
                         id: img.id,
@@ -319,8 +324,8 @@ export function GalleryManager() {
                     {img.caption || "Click to add caption..."}
                   </p>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       )}
