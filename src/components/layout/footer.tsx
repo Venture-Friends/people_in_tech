@@ -5,38 +5,34 @@ import { Link } from "@/i18n/navigation";
 
 export function Footer() {
   const tNav = useTranslations("nav");
-  const tCommon = useTranslations("common");
   const tFooter = useTranslations("footer");
 
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative bg-card">
-      {/* Gradient top border */}
-      <div className="h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
-
+    <footer className="relative border-t border-white/[0.04]">
       <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {/* Logo & Tagline */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <Link href="/" className="text-lg font-bold text-primary">
-              Hiring Partners
+            <Link href="/" className="font-display text-lg font-bold text-foreground tracking-tight">
+              Hiring<span className="text-primary">.</span>
             </Link>
-            <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
-              {tFooter("tagline")}
+            <p className="mt-3 max-w-xs text-[13px] text-white/30 leading-relaxed">
+              Discover Greece&apos;s tech ecosystem. Powered by POS4work Innovation Hub.
             </p>
           </div>
 
           {/* Platform Links */}
           <nav aria-label="Platform">
-            <h3 className="text-sm font-semibold text-foreground">
+            <h3 className="text-[11px] uppercase tracking-[1.5px] font-semibold text-white/30">
               {tFooter("platform")}
             </h3>
             <ul className="mt-3 flex flex-col gap-2">
               <li>
                 <Link
                   href="/discover"
-                  className="text-sm text-muted-foreground transition-all duration-150 hover:text-white hover:translate-x-0.5"
+                  className="text-[13px] text-white/40 hover:text-white transition-colors"
                 >
                   {tNav("discover")}
                 </Link>
@@ -44,7 +40,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/jobs"
-                  className="text-sm text-muted-foreground transition-all duration-150 hover:text-white hover:translate-x-0.5"
+                  className="text-[13px] text-white/40 hover:text-white transition-colors"
                 >
                   {tNav("jobs")}
                 </Link>
@@ -52,7 +48,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/events"
-                  className="text-sm text-muted-foreground transition-all duration-150 hover:text-white hover:translate-x-0.5"
+                  className="text-[13px] text-white/40 hover:text-white transition-colors"
                 >
                   {tNav("events")}
                 </Link>
@@ -62,14 +58,14 @@ export function Footer() {
 
           {/* Company Links */}
           <nav aria-label="Company">
-            <h3 className="text-sm font-semibold text-foreground">
+            <h3 className="text-[11px] uppercase tracking-[1.5px] font-semibold text-white/30">
               {tFooter("company")}
             </h3>
             <ul className="mt-3 flex flex-col gap-2">
               <li>
                 <Link
                   href="/about"
-                  className="text-sm text-muted-foreground transition-all duration-150 hover:text-white hover:translate-x-0.5"
+                  className="text-[13px] text-white/40 hover:text-white transition-colors"
                 >
                   {tFooter("about")}
                 </Link>
@@ -77,7 +73,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/contact"
-                  className="text-sm text-muted-foreground transition-all duration-150 hover:text-white hover:translate-x-0.5"
+                  className="text-[13px] text-white/40 hover:text-white transition-colors"
                 >
                   {tFooter("contact")}
                 </Link>
@@ -87,14 +83,14 @@ export function Footer() {
 
           {/* Legal Links */}
           <nav aria-label="Legal">
-            <h3 className="text-sm font-semibold text-foreground">
+            <h3 className="text-[11px] uppercase tracking-[1.5px] font-semibold text-white/30">
               {tFooter("legal")}
             </h3>
             <ul className="mt-3 flex flex-col gap-2">
               <li>
                 <Link
                   href="/terms"
-                  className="text-sm text-muted-foreground transition-all duration-150 hover:text-white hover:translate-x-0.5"
+                  className="text-[13px] text-white/40 hover:text-white transition-colors"
                 >
                   {tFooter("terms")}
                 </Link>
@@ -102,7 +98,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/privacy"
-                  className="text-sm text-muted-foreground transition-all duration-150 hover:text-white hover:translate-x-0.5"
+                  className="text-[13px] text-white/40 hover:text-white transition-colors"
                 >
                   {tFooter("privacy")}
                 </Link>
@@ -112,9 +108,8 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-10 flex flex-col items-center gap-2 border-t border-white/[0.06] pt-6 text-center text-xs text-muted-foreground sm:flex-row sm:justify-between">
-          <span>{tCommon("poweredBy")}</span>
-          <span>
+        <div className="mt-10 flex flex-col items-center gap-2 border-t border-white/[0.04] pt-6 text-center sm:flex-row sm:justify-between">
+          <span className="text-[12px] text-white/15">
             &copy; {currentYear} Hiring Partners. {tFooter("allRightsReserved")}
           </span>
         </div>
