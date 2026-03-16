@@ -3,9 +3,7 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { Link } from "@/i18n/navigation";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Bookmark, MapPin, Building2, ArrowRight } from "lucide-react";
+import { Bookmark, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
 export interface JobCardData {
@@ -28,24 +26,9 @@ function formatJobType(type: string): string {
   switch (type) {
     case "REMOTE": return "Remote";
     case "HYBRID": return "Hybrid";
-    case "ONSITE": return "Onsite";
+    case "ONSITE": return "On-site";
     default: return type;
   }
-}
-
-function getRelativeTime(date: string | Date): string {
-  const postedDate = typeof date === "string" ? new Date(date) : date;
-  const days = Math.floor((Date.now() - postedDate.getTime()) / (1000 * 60 * 60 * 24));
-
-  if (days === 0) return "Today";
-  if (days === 1) return "1 day ago";
-  if (days < 7) return `${days} days ago`;
-  if (days < 30) {
-    const weeks = Math.floor(days / 7);
-    return weeks === 1 ? "1 week ago" : `${weeks} weeks ago`;
-  }
-  const months = Math.floor(days / 30);
-  return months === 1 ? "1 month ago" : `${months} months ago`;
 }
 
 interface JobCardProps {
@@ -65,17 +48,10 @@ export function JobCard({ job, isSaved = false }: JobCardProps) {
       toast.error("Please sign in to save jobs");
       return;
     }
-
     setSaving(true);
     try {
-      const res = await fetch(`/api/jobs/${job.id}/save`, {
-        method: "POST",
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to save job");
-      }
-
+      const res = await fetch(`/api/jobs/${job.id}/save`, { method: "POST" });
+      if (!res.ok) throw new Error("Failed to save job");
       const data = await res.json();
       setSaved(data.saved);
       toast.success(data.saved ? "Job saved" : "Job removed from saved");
@@ -87,87 +63,65 @@ export function JobCard({ job, isSaved = false }: JobCardProps) {
   }
 
   return (
-    <Card className="rounded-xl border-white/[0.06] bg-card transition-all duration-200 hover:-translate-y-0.5 hover:border-white/[0.12] hover:bg-[oklch(0.16_0.01_260)]">
-      <CardContent className="flex flex-col gap-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-start gap-3 min-w-0">
-            {/* Company logo / letter avatar */}
-            {job.company.logo ? (
-              <img
-                src={job.company.logo}
-                alt={job.company.name}
-                className="size-8 shrink-0 rounded-lg object-cover border border-white/[0.08]"
-              />
-            ) : (
-              <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-surface-2 border border-white/[0.08] text-sm font-bold text-foreground">
-                {firstLetter}
-              </div>
-            )}
-
-            <div className="min-w-0 flex-1">
-              <h3 className="font-semibold text-foreground truncate">
-                {job.title}
-              </h3>
-              <Link
-                href={`/companies/${job.company.slug}`}
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                {job.company.name}
-              </Link>
-            </div>
-          </div>
-
-          {/* Save button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="shrink-0 hover:bg-white/[0.08] rounded-full"
-            onClick={handleSave}
-            disabled={saving}
-            aria-label={saved ? "Remove from saved jobs" : "Save job"}
-          >
-            <Bookmark
-              className={`size-4 ${saved ? "fill-primary text-primary" : "text-muted-foreground"}`}
-            />
-          </Button>
+    <div className="rounded-[14px] border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] flex items-center gap-4 p-[18px_22px] transition-all duration-300 hover:border-white/[0.1] hover:bg-white/[0.04] hover:-translate-y-[2px]">
+      {/* Company logo */}
+      {job.company.logo ? (
+        <img
+          src={job.company.logo}
+          alt={job.company.name}
+          className="size-10 shrink-0 rounded-[10px] object-cover"
+        />
+      ) : (
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-[10px] bg-white/[0.06] text-sm font-bold text-foreground">
+          {firstLetter}
         </div>
+      )}
 
-        {/* Meta row */}
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="inline-flex items-center rounded-md bg-white/[0.06] border border-white/[0.04] px-2 py-0.5 text-xs text-muted-foreground">
-            {formatJobType(job.type)}
-          </span>
+      {/* Center: title + company/location */}
+      <div className="min-w-0 flex-1">
+        <h3 className="truncate text-[14px] font-semibold text-foreground">
+          {job.title}
+        </h3>
+        <p className="mt-0.5 truncate text-xs text-white/30">
+          <Link href={`/companies/${job.company.slug}`} className="hover:text-primary transition-colors">
+            {job.company.name}
+          </Link>
+          {job.location && ` · ${job.location}`}
+        </p>
+      </div>
 
-          {job.location && (
-            <span className="flex items-center gap-1 text-xs text-muted-foreground">
-              <MapPin className="size-3.5" />
-              {job.location}
-            </span>
-          )}
+      {/* Badges */}
+      <div className="hidden items-center gap-2 sm:flex">
+        <span className="rounded-md bg-white/[0.03] border border-white/[0.04] px-2 py-0.5 text-[11px] text-white/40">
+          Full-time
+        </span>
+        <span className={`rounded-md border px-2 py-0.5 text-[11px] ${
+          job.type === "REMOTE"
+            ? "border-primary/20 bg-primary/[0.06] text-primary"
+            : "border-white/[0.04] bg-white/[0.03] text-white/40"
+        }`}>
+          {formatJobType(job.type)}
+        </span>
+      </div>
 
-          <span className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Building2 className="size-3.5" />
-            {job.company.industry}
-          </span>
-        </div>
+      {/* Save button */}
+      <button
+        onClick={handleSave}
+        disabled={saving}
+        className="shrink-0 rounded-full p-2 text-white/30 hover:text-white/60 hover:bg-white/[0.04] transition-colors"
+        aria-label={saved ? "Remove from saved jobs" : "Save job"}
+      >
+        <Bookmark className={`size-4 ${saved ? "fill-primary text-primary" : ""}`} />
+      </button>
 
-        {/* Footer row */}
-        <div className="flex items-center justify-between border-t border-white/[0.06] pt-3">
-          <span className="text-xs text-muted-foreground">
-            {getRelativeTime(job.postedAt)}
-          </span>
-
-          <a
-            href={job.externalUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md border border-white/[0.06] bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-white/[0.08] hover:border-white/[0.12]"
-          >
-            Apply
-            <ArrowRight className="size-3" />
-          </a>
-        </div>
-      </CardContent>
-    </Card>
+      {/* View button */}
+      <Link
+        href={`/jobs/${job.id}`}
+        className="hidden shrink-0 items-center gap-1 rounded-lg border border-white/[0.06] bg-white/[0.03] px-4 py-2 text-[12px] font-medium text-foreground transition-colors hover:bg-white/[0.06] sm:inline-flex"
+      >
+        View
+        <ArrowRight className="size-3" />
+      </Link>
+    </div>
   );
 }
