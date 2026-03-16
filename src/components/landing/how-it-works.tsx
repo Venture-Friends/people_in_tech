@@ -1,50 +1,59 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { Search, Heart, Bell } from "lucide-react";
+import { Search, Bookmark, Bell } from "lucide-react";
 
 const steps = [
   {
     icon: Search,
-    titleKey: "discoverTitle" as const,
-    descKey: "discoverDesc" as const,
+    number: "01",
+    title: "Explore",
+    description: "Browse 20+ innovative tech companies in Greece. Filter by industry, location, and tech stack.",
   },
   {
-    icon: Heart,
-    titleKey: "followTitle" as const,
-    descKey: "followDesc" as const,
+    icon: Bookmark,
+    number: "02",
+    title: "Save & Track",
+    description: "Bookmark companies you're interested in. Build your personal watchlist of employers you care about.",
   },
   {
     icon: Bell,
-    titleKey: "getAlertedTitle" as const,
-    descKey: "getAlertedDesc" as const,
+    number: "03",
+    title: "Get Notified",
+    description: "Receive alerts when your saved companies post new roles or host events. Never miss an opportunity.",
   },
 ];
 
 export function HowItWorks() {
-  const t = useTranslations("landing");
-
   return (
     <section className="w-full py-16 md:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h2 className="mb-4 text-center text-2xl font-bold md:text-3xl">{t("howItWorks")}</h2>
-        <p className="mb-12 text-center text-muted-foreground">{t("heroSubtitle")}</p>
+        <h2 className="mb-4 text-center font-display text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
+          How It Works
+        </h2>
+        <p className="mb-12 text-center text-[15px] text-white/[0.35]">
+          Three simple steps to find your next opportunity
+        </p>
 
-        <div className="relative grid grid-cols-1 gap-8 md:grid-cols-3">
-          <div className="absolute top-12 left-[16.67%] right-[16.67%] hidden h-px bg-white/[0.06] md:block" />
-
-          {steps.map((step, index) => {
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          {steps.map((step) => {
             const Icon = step.icon;
             return (
-              <div key={step.titleKey} className="flex flex-col items-center text-center">
-                <div className="relative mb-4 flex size-12 items-center justify-center rounded-full bg-surface-2 ring-4 ring-background">
+              <div
+                key={step.number}
+                className="relative rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-6 text-center"
+              >
+                <span className="absolute top-4 right-4 font-display text-xs font-semibold text-primary/30">
+                  {step.number}
+                </span>
+                <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-xl bg-primary/[0.08]">
                   <Icon className="size-5 text-primary" />
-                  <span className="absolute -top-1 -right-1 flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
-                    {index + 1}
-                  </span>
                 </div>
-                <h3 className="text-lg font-semibold text-foreground">{t(step.titleKey)}</h3>
-                <p className="mt-2 max-w-xs text-sm text-muted-foreground">{t(step.descKey)}</p>
+                <h3 className="font-display text-base font-semibold text-foreground">
+                  {step.title}
+                </h3>
+                <p className="mt-2 text-[13px] leading-relaxed text-white/[0.35]">
+                  {step.description}
+                </p>
               </div>
             );
           })}
