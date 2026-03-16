@@ -29,13 +29,15 @@ export function Navbar() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 bg-[oklch(0.07_0.01_260_/_0.6)] backdrop-blur-[16px] backdrop-saturate-[1.2] border-b border-white/[0.04]">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Logo */}
-        <Link href="/" className="font-display text-lg font-bold text-foreground tracking-tight">
-          Hiring<span className="text-primary">.</span>
-        </Link>
+      <div className="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-4 sm:px-6 lg:px-8">
+        {/* Logo — left */}
+        <div className="flex items-center">
+          <Link href="/" className="font-display text-lg font-bold text-foreground tracking-tight">
+            Hiring<span className="text-primary">.</span>
+          </Link>
+        </div>
 
-        {/* Desktop Nav Links */}
+        {/* Desktop Nav Links — true center */}
         <nav className="hidden items-center gap-1 md:flex">
           {navLinks.map((link) => {
             const isActive = pathname.startsWith(link.href);
@@ -57,7 +59,7 @@ export function Navbar() {
         </nav>
 
         {/* Right Side */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-end gap-2">
           <LanguageSwitcher />
 
           {/* Desktop Auth Buttons / User Menu */}

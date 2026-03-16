@@ -224,48 +224,49 @@
    ANIMATED BACKGROUND
    ======================================== */
 
-/* Orbs */
+/* Orbs — softened for organic feel */
 .orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(90px);
+  filter: blur(120px);
   will-change: transform;
+  opacity: 0.7;
 }
 
 .orb-1 {
   width: 1000px; height: 1000px;
   top: -15%; left: 25%;
-  background: radial-gradient(circle, oklch(0.88 0.27 128 / 0.18) 0%, oklch(0.88 0.27 128 / 0.06) 35%, transparent 65%);
+  background: radial-gradient(circle, oklch(0.88 0.27 128 / 0.14) 0%, oklch(0.88 0.27 128 / 0.04) 35%, transparent 65%);
   animation: orb-drift-1 18s ease-in-out infinite;
 }
 .orb-2 {
   width: 800px; height: 800px;
   top: 5%; right: -8%;
-  background: radial-gradient(circle, oklch(0.58 0.18 255 / 0.12) 0%, transparent 65%);
+  background: radial-gradient(circle, oklch(0.58 0.18 255 / 0.08) 0%, transparent 65%);
   animation: orb-drift-2 22s ease-in-out infinite;
 }
 .orb-3 {
   width: 600px; height: 600px;
   bottom: 25%; left: -5%;
-  background: radial-gradient(circle, oklch(0.88 0.27 128 / 0.10) 0%, transparent 55%);
+  background: radial-gradient(circle, oklch(0.88 0.27 128 / 0.07) 0%, transparent 55%);
   animation: orb-drift-3 15s ease-in-out infinite;
 }
 .orb-4 {
   width: 700px; height: 700px;
   top: 35%; left: 55%;
-  background: radial-gradient(circle, oklch(0.48 0.2 290 / 0.08) 0%, transparent 55%);
+  background: radial-gradient(circle, oklch(0.48 0.2 290 / 0.06) 0%, transparent 55%);
   animation: orb-drift-4 20s ease-in-out infinite;
 }
 .orb-5 {
   width: 900px; height: 900px;
   bottom: -5%; right: 15%;
-  background: radial-gradient(circle, oklch(0.88 0.27 128 / 0.12) 0%, oklch(0.88 0.27 128 / 0.04) 35%, transparent 60%);
+  background: radial-gradient(circle, oklch(0.88 0.27 128 / 0.08) 0%, oklch(0.88 0.27 128 / 0.03) 35%, transparent 60%);
   animation: orb-drift-5 25s ease-in-out infinite;
 }
 .orb-6 {
   width: 500px; height: 500px;
   top: 60%; left: 10%;
-  background: radial-gradient(circle, oklch(0.58 0.18 255 / 0.07) 0%, transparent 50%);
+  background: radial-gradient(circle, oklch(0.58 0.18 255 / 0.05) 0%, transparent 50%);
   animation: orb-drift-3 17s ease-in-out infinite reverse;
 }
 
@@ -305,16 +306,16 @@
   height: 1100px;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.7;
-  mask-image: radial-gradient(ellipse 55% 55% at 50% 25%, black, transparent);
+  opacity: 0.4;
+  mask-image: radial-gradient(ellipse 45% 45% at 50% 25%, black, transparent);
 }
 .perspective-grid::before {
   content: '';
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(oklch(0.88 0.27 128 / 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, oklch(0.88 0.27 128 / 0.08) 1px, transparent 1px);
+    linear-gradient(oklch(0.88 0.27 128 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(0.88 0.27 128 / 0.05) 1px, transparent 1px);
   background-size: 50px 50px;
   animation: grid-pulse 6s ease-in-out infinite;
 }
@@ -347,7 +348,7 @@
 .particle {
   position: absolute;
   border-radius: 50%;
-  background: oklch(0.88 0.27 128 / 0.4);
+  background: oklch(0.88 0.27 128 / 0.25);
   animation: particle-float linear infinite;
 }
 
