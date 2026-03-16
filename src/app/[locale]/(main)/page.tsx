@@ -7,8 +7,11 @@ import { HowItWorks } from "@/components/landing/how-it-works";
 import { UpcomingEvents } from "@/components/landing/upcoming-events";
 import { NewsletterCta } from "@/components/landing/newsletter-cta";
 import { ForCompaniesCta } from "@/components/landing/for-companies-cta";
+import { LatestJobs } from "@/components/landing/latest-jobs";
+import { Divider } from "@/components/shared/divider";
 import type { CompanyCardData } from "@/components/shared/company-card";
 import type { EventCardData } from "@/components/shared/event-card";
+import type { JobCardData } from "@/components/jobs/job-card";
 
 async function getFeaturedCompanies(): Promise<CompanyCardData[]> {
   // First try to get featured companies
@@ -49,6 +52,31 @@ async function getFeaturedCompanies(): Promise<CompanyCardData[]> {
     status: c.status,
     followerCount: c._count.followers,
     jobCount: c._count.jobs,
+    founded: c.founded ?? undefined,
+    technologies: c.technologies ?? undefined,
+    size: c.size ?? undefined,
+  }));
+}
+
+async function getLatestJobs(): Promise<JobCardData[]> {
+  const jobs = await prisma.jobListing.findMany({
+    take: 6,
+    orderBy: { postedAt: "desc" },
+    include: {
+      company: {
+        select: { id: true, name: true, slug: true, logo: true, industry: true },
+      },
+    },
+  });
+
+  return jobs.map((j) => ({
+    id: j.id,
+    title: j.title,
+    location: j.location,
+    type: j.type,
+    externalUrl: j.externalUrl,
+    postedAt: j.postedAt.toISOString(),
+    company: j.company,
   }));
 }
 
@@ -133,10 +161,11 @@ export default async function LandingPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [companies, events, stats] = await Promise.all([
+  const [companies, events, stats, latestJobs] = await Promise.all([
     getFeaturedCompanies(),
     getUpcomingEvents(),
     getStats(),
+    getLatestJobs(),
   ]);
 
   return (
@@ -145,6 +174,9 @@ export default async function LandingPage({
       <Ticker industries={stats.industries} techAndLocations={stats.techAndLocations} />
       <HowItWorks />
       <FeaturedCompanies companies={companies} />
+      <Divider />
+      <LatestJobs jobs={latestJobs} />
+      <Divider />
       <UpcomingEvents events={events} />
       <ForCompaniesCta />
       <NewsletterCta />
