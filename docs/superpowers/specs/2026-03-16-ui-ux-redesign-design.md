@@ -34,9 +34,10 @@ Complete UI/UX redesign of the Hiring Partners platform — an employer discover
   - **Perspective grid**: Faint green grid lines in perspective (rotateX 60deg), fading radially. Pulsing opacity. Horizon glow line.
   - **Floating particles** (24 total): Tiny dots (2–4px) drifting upward. Mixed green/blue/purple. 14–23s animation duration.
   - **Noise texture**: Subtle SVG fractal noise overlay at 0.03 opacity.
-- **Base color:** `#06080c` (near-black with blue undertone, NOT pure black)
-- **Accent:** `#9fef00` (neon lime) — used sparingly: primary CTAs, active states, stat highlights, notification dots
-- **Secondary accents:** Blue `rgba(60,130,246)` and purple `rgba(130,80,220)` in background elements only
+- **Base color:** `#06080c` / `oklch(0.07 0.01 260)` (near-black with blue undertone, NOT pure black — replaces current `oklch(0.11 0.01 260)`)
+- **Accent:** `#9fef00` / `oklch(0.88 0.27 128)` (neon lime, same as current `--primary`) — used sparingly: primary CTAs, active states, stat highlights, notification dots
+- **Secondary accents:** Blue `rgba(60,130,246)` / `oklch(0.58 0.18 255)` and purple `rgba(130,80,220)` / `oklch(0.48 0.2 290)` in background elements only
+- **Color system note:** The codebase uses OKLCH throughout. All hex/rgba values in this spec have OKLCH equivalents above. Implementation should update the existing OKLCH tokens in `globals.css`, not switch to hex. The hex values here are for visual reference only.
 
 ### Typography
 
@@ -106,7 +107,7 @@ Complete UI/UX redesign of the Hiring Partners platform — an employer discover
 - Page title: "Discover Companies" (42px)
 - Subtitle text
 - Search bar (full width, centered)
-- Filter chips: All | HR Tech | FinTech | E-commerce | Cybersecurity | Gaming | EdTech | AI/MarTech | PropTech | Mobility | DevOps | HealthTech
+- Filter chips: All | HR Tech | FinTech | E-commerce | Cybersecurity | Gaming | EdTech | AI/MarTech | PropTech | Mobility | DevOps | HealthTech (sourced dynamically from distinct `company.industry` values in the database — new industries appear automatically when companies are added)
 - Results meta bar: "Showing X companies" + sort dropdown
 - Company cards in 3-column grid
 
@@ -136,16 +137,18 @@ Complete UI/UX redesign of the Hiring Partners platform — an employer discover
 
 Full detail page (not a modal). Breadcrumb navigation: Jobs › Company › Title
 
+**Schema note:** The current `JobListing` model lacks `description`, `requirements`, `techStack`, and `experienceLevel` fields. These fields must be added via migration. Since this is an aggregator, job descriptions may be sparse for auto-generated listings — the UI should gracefully handle missing fields (hide sections when empty, don't show empty headers).
+
 **Two-column layout:**
 
 Left (main):
 - Logo + title (24px Space Grotesk) + company name (green) + badges
-- Sections: About the Role, What You'll Do (bullet list), Requirements (bullet list), Tech Stack (tag chips)
+- Sections (all optional, hidden when empty): About the Role, What You'll Do (bullet list), Requirements (bullet list), Tech Stack (tag chips — can inherit from company tech stack if not set on job)
 
 Right (sidebar):
 - Apply button: "Apply on company.com →" (primary, full width) — links externally
 - Save Job button (outline, full width)
-- Info card: Location, Type, Experience, Posted date
+- Info card: Location, Type, Experience level, Posted date
 - Company mini-card (clickable → company profile)
 - "More roles at [Company]" section with mini job cards
 
@@ -182,11 +185,13 @@ Right (sidebar):
 
 ### 3.7 Auth Flows
 
+**LinkedIn OAuth:** The current auth setup only has `CredentialsProvider`. LinkedIn OAuth requires adding the `LinkedInProvider` to NextAuth config. This needs a LinkedIn Developer App with Client ID and Secret. For MVP, LinkedIn sign-in is a nice-to-have — implement credentials first, add LinkedIn OAuth as a follow-up if time allows. The UI should show the button regardless (grayed out or functional).
+
 **Sign Up (2 steps):**
 
 Step 1 — Create Account:
 - Full name, email, password
-- "Continue with LinkedIn" (OAuth)
+- "Continue with LinkedIn" (OAuth — see note above)
 - Progress bar (2 steps)
 
 Step 2 — Your Preferences (lightweight profile, Model B):
@@ -209,6 +214,11 @@ Step 2 — Your Preferences (lightweight profile, Model B):
 
 ### 3.8 Candidate Dashboard
 
+**Schema changes required:**
+- Rename/repurpose `EventRegistration` → `SavedEvent` (or add a new `SavedEvent` model), since the platform doesn't handle event registration — saving is a watchlist action, consistent with saved jobs.
+- Add `SavedEvent` model: `id`, `userId`, `eventId`, `savedAt`.
+- **Alerts:** Computed at query time, not stored. The "Alerts" feed is built by querying: new `JobListing` records from companies the user has saved (`Follow` table), and new `Event` records from those same companies, created after the user's last visit. No separate `Notification` model needed for MVP — this avoids a background job system. The "unread" dot is determined by comparing `job.createdAt` / `event.createdAt` against a `lastSeenAlertsAt` timestamp on the user profile.
+
 **Nav state:** Avatar with initials replaces Sign In/Get Started buttons
 
 **Header:** "Dashboard" title + "Welcome back, [Name]"
@@ -221,11 +231,11 @@ Step 2 — Your Preferences (lightweight profile, Model B):
 
 **Saved Jobs tab:** Vertical list of saved job cards with badge showing "X new" for new postings from saved companies. Each clickable → job detail page.
 
-**Alerts tab:** Activity feed with:
-- Green dot (unread) / gray dot (read)
+**Alerts tab:** Activity feed (computed from saved companies' new jobs/events):
+- Green dot (unread) / gray dot (read) — based on `lastSeenAlertsAt`
 - Text: "[Company] posted a new role: [Title]" or "[Company] is hosting: [Event]"
 - Timestamp
-- Action button: "View →" (for jobs) or "View Event →" (for events) — each links to the appropriate detail page or external link
+- Action button: "View →" (for jobs → job detail page) or "View Event →" (for events → external link)
 
 **Saved Events tab:** List of saved events with date blocks, similar to events page cards
 
@@ -249,6 +259,7 @@ Step 2 — Your Preferences (lightweight profile, Model B):
 - Fields: Company name, Website, Contact email, Contact phone (optional), Your role, Message
 - Submit → same confirmation pattern
 - Admin gets email notification
+- **Schema note:** The current `CompanyClaim` model requires a `companyId` foreign key, so it cannot represent a claim for a non-existent company. Two implementation options: (a) Create a placeholder `Company` record (status: PENDING) and attach the claim to it, or (b) add a separate `CompanyListingRequest` model without a company FK. Option (a) is simpler and keeps claims in one queue for the admin.
 
 ### 3.10 Admin Dashboard
 
@@ -289,13 +300,19 @@ Step 2 — Your Preferences (lightweight profile, Model B):
 - Table with CRUD
 - "Add Event" → form: Title, Company (or Platform-hosted), Type, Date, Time, Location/Online, External URL, Capacity, Description
 
-**Newsletters Section:**
-- Composer with template editor
-- Preview + Send functionality
+**Newsletters Section (MVP-lite):**
+- Simple form: Subject, Body (textarea with basic markdown), Recipient filter (all candidates / by industry / by location)
+- Preview rendered email before sending
+- Send triggers email via configured SMTP/email provider
+- Sent newsletter history list
+- Full WYSIWYG editor is out of scope for MVP
 
-**Analytics Section:**
-- Platform growth charts (signups over time, follows over time)
-- Engagement metrics
+**Analytics Section (MVP-lite):**
+- Platform KPIs: total companies, total candidates, total follows, total job views
+- Signup trend line chart (Recharts, last 30 days)
+- Follow trend line chart (last 30 days)
+- Top 5 most-followed companies table
+- Advanced engagement metrics (click-through rates, retention) out of scope for MVP
 
 ### 3.11 Company Dashboard (for verified Company Reps)
 
@@ -306,7 +323,12 @@ After a company claim is approved, the rep gets access to:
 - Follower analytics (count, growth chart)
 - Gallery management
 
-This uses the same sidebar layout pattern as the admin dashboard but with company-specific navigation.
+This uses the same sidebar layout pattern as the admin dashboard but with company-specific navigation:
+- **Overview:** KPI cards (followers count, active jobs, upcoming events) + followers-over-time chart
+- **Profile Editor:** Same form fields as admin "Add Company" but pre-filled. Logo upload, cover image upload.
+- **Job Listings:** Table of company's jobs with Add/Edit/Archive actions. Same job form as admin but company is pre-selected.
+- **Events:** Table of company's events with Add/Edit actions. Same event form as admin but company is pre-selected.
+- **Gallery:** Image upload grid with drag-to-reorder and caption editing (verified companies only).
 
 ---
 
@@ -347,15 +369,35 @@ Consistent across all content types:
 - Recharts for analytics charts
 
 ### Fonts
-- Replace current font loading with: Space Grotesk (400–700) + Inter (400–600)
-- Space Grotesk for all headlines, stats, logo
-- Inter for body, UI, labels
+- Replace current font loading: keep Inter (400–600), add Space Grotesk (400–700), remove JetBrains Mono
+- Introduce CSS variable `--font-display` for Space Grotesk (replaces `--font-mono` / JetBrains Mono usage)
+- Update `--font-sans` to remain Inter
+- Update `@theme inline` to map `--font-display: var(--font-space-grotesk)` and remove `--font-mono` mapping
+- Space Grotesk for all headlines, stats, logo, section titles
+- Inter for body, UI, labels, form inputs
+- Migrate any component using `font-mono` or JetBrains Mono to use `font-display` instead
 
 ### Background Implementation
 - All animated background elements should be a shared `<AnimatedBackground />` component
 - Used on all pages (not just homepage)
 - Performance: Use CSS animations only (no JS animation libraries). `will-change: transform` on orbs. Particles use CSS `animation` not requestAnimationFrame.
 - Reduce particle count on mobile (12 instead of 24)
+- Add `@media (prefers-reduced-motion: reduce)` — disable all animations, show static gradient background instead
+- Perspective grid hidden on mobile (below `md` breakpoint)
+
+### Mobile / Responsive
+- Mobile-first with existing `<MobileNav />` component (bottom tab bar)
+- Breakpoints: `sm` (640px), `md` (768px), `lg` (1024px)
+- Card grids: 3 columns (lg+) → 2 columns (md) → 1 column (sm)
+- Job list cards stack vertically at all breakpoints (already single column)
+- Hero font scales down: 76px (lg) → 48px (md) → 36px (sm)
+- Search bar: full width on mobile with no ⌘K hint
+- Ticker: single row on mobile, double row on desktop
+
+### Search Placeholder
+- The ⌘K keyboard shortcut hint is decorative only in MVP — pressing ⌘K has no effect
+- Search bar performs client-side filtering (debounced, 300ms) on the current page's data
+- No autocomplete, no command palette in MVP
 
 ### Rollback Strategy
 - All work on a feature branch (e.g., `feat/ui-ux-redesign`)
