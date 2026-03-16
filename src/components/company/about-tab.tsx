@@ -1,8 +1,6 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Calendar, Users, MapPin, Factory, Globe } from "lucide-react";
 
@@ -46,7 +44,7 @@ export function AboutTab({
         {paragraphs.length > 0 && (
           <div className="space-y-4">
             {paragraphs.map((paragraph, i) => (
-              <p key={i} className="leading-relaxed text-muted-foreground">
+              <p key={i} className="text-[14px] text-white/40 leading-relaxed">
                 {paragraph}
               </p>
             ))}
@@ -62,9 +60,12 @@ export function AboutTab({
             </h3>
             <div className="flex flex-wrap gap-2">
               {technologies.map((tech) => (
-                <Badge key={tech} variant="secondary">
+                <span
+                  key={tech}
+                  className="rounded-md bg-white/[0.03] border border-white/[0.04] px-2.5 py-1 text-[12px] text-white/40"
+                >
                   {tech}
-                </Badge>
+                </span>
               ))}
             </div>
           </div>
@@ -73,69 +74,64 @@ export function AboutTab({
 
       {/* Company Info sidebar */}
       <div className="lg:sticky lg:top-24">
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("companyInfo")}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {founded && (
-              <div className="flex items-center gap-3 text-sm">
-                <Calendar className="size-4 shrink-0 text-muted-foreground" />
-                <div>
-                  <p className="text-xs text-muted-foreground">{t("founded")}</p>
-                  <p className="font-medium text-foreground">{founded}</p>
-                </div>
-              </div>
-            )}
+        <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-foreground">{t("companyInfo")}</h3>
 
+          {founded && (
             <div className="flex items-center gap-3 text-sm">
-              <Users className="size-4 shrink-0 text-muted-foreground" />
+              <Calendar className="size-4 shrink-0 text-muted-foreground" />
               <div>
-                <p className="text-xs text-muted-foreground">{t("size")}</p>
-                <p className="font-medium text-foreground">
-                  {SIZE_MAP[size] || size}
-                </p>
+                <p className="text-xs text-white/25">{t("founded")}</p>
+                <p className="text-sm font-medium text-foreground">{founded}</p>
               </div>
             </div>
+          )}
 
-            {locations.length > 0 && (
-              <div className="flex items-center gap-3 text-sm">
-                <MapPin className="size-4 shrink-0 text-muted-foreground" />
-                <div>
-                  <p className="text-xs text-muted-foreground">
-                    {t("headquarters")}
-                  </p>
-                  <p className="font-medium text-foreground">{locations[0]}</p>
-                </div>
-              </div>
-            )}
+          <div className="flex items-center gap-3 text-sm">
+            <Users className="size-4 shrink-0 text-muted-foreground" />
+            <div>
+              <p className="text-xs text-white/25">{t("size")}</p>
+              <p className="text-sm font-medium text-foreground">
+                {SIZE_MAP[size] || size}
+              </p>
+            </div>
+          </div>
 
+          {locations.length > 0 && (
             <div className="flex items-center gap-3 text-sm">
-              <Factory className="size-4 shrink-0 text-muted-foreground" />
+              <MapPin className="size-4 shrink-0 text-muted-foreground" />
               <div>
-                <p className="text-xs text-muted-foreground">{t("industry")}</p>
-                <p className="font-medium text-foreground">{industry}</p>
+                <p className="text-xs text-white/25">{t("headquarters")}</p>
+                <p className="text-sm font-medium text-foreground">{locations[0]}</p>
               </div>
             </div>
+          )}
 
-            {website && (
-              <div className="flex items-center gap-3 text-sm">
-                <Globe className="size-4 shrink-0 text-muted-foreground" />
-                <div>
-                  <p className="text-xs text-muted-foreground">{t("website")}</p>
-                  <a
-                    href={website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-medium text-primary hover:underline"
-                  >
-                    {new URL(website).hostname.replace("www.", "")}
-                  </a>
-                </div>
+          <div className="flex items-center gap-3 text-sm">
+            <Factory className="size-4 shrink-0 text-muted-foreground" />
+            <div>
+              <p className="text-xs text-white/25">{t("industry")}</p>
+              <p className="text-sm font-medium text-foreground">{industry}</p>
+            </div>
+          </div>
+
+          {website && (
+            <div className="flex items-center gap-3 text-sm">
+              <Globe className="size-4 shrink-0 text-muted-foreground" />
+              <div>
+                <p className="text-xs text-white/25">{t("website")}</p>
+                <a
+                  href={website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-medium text-primary hover:underline"
+                >
+                  {new URL(website).hostname.replace("www.", "")}
+                </a>
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

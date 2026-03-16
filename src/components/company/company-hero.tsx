@@ -8,7 +8,6 @@ import { ClaimCompanyModal } from "@/components/company/claim-company-modal";
 import {
   ExternalLink,
   Linkedin,
-  CheckCircle,
   MapPin,
   Users,
   ArrowRight,
@@ -66,9 +65,9 @@ export function CompanyHero({
   const firstLetter = name.charAt(0).toUpperCase();
 
   return (
-    <div className="overflow-hidden rounded-xl border border-white/[0.06] bg-gradient-to-b from-card to-surface-2">
+    <div className="overflow-hidden rounded-t-[20px] border border-white/[0.06] bg-gradient-to-b from-card to-surface-2">
       {/* Cover image area */}
-      <div className="relative h-32 sm:h-48">
+      <div className="relative h-40">
         {coverImage ? (
           <img
             src={coverImage}
@@ -76,49 +75,72 @@ export function CompanyHero({
             className="h-full w-full object-cover"
           />
         ) : (
-          <div className="h-full w-full bg-gradient-to-br from-primary/30 via-primary/10 to-card" />
+          <div className="h-full w-full bg-gradient-to-br from-primary/20 via-primary/5 to-transparent" />
         )}
       </div>
 
       {/* Content */}
       <div className="relative px-4 pb-6 sm:px-6">
         {/* Logo */}
-        <div className="-mt-10 mb-4 sm:-mt-12">
+        <div className="-mt-9 mb-4">
           {logo ? (
             <img
               src={logo}
               alt={name}
-              className="size-16 rounded-xl border-4 border-background bg-background object-cover"
+              className="size-[72px] rounded-2xl border-4 border-background bg-background object-cover"
             />
           ) : (
-            <div className="flex size-16 items-center justify-center rounded-xl border-4 border-background bg-surface-2 text-xl font-bold text-white">
+            <div className="flex size-[72px] items-center justify-center rounded-2xl border-4 border-background bg-surface-2 text-xl font-bold text-white">
               {firstLetter}
             </div>
           )}
         </div>
 
-        {/* Name and tagline */}
+        {/* Name */}
         <div className="flex items-center gap-2">
-          <h1 className="text-3xl font-bold text-foreground">{name}</h1>
-          {status === "VERIFIED" && <CheckCircle className="size-5 text-primary" />}
+          <h1 className="font-display text-[26px] font-bold text-foreground">{name}</h1>
+          {status === "VERIFIED" && (
+            <svg
+              className="size-5 shrink-0"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle cx="10" cy="10" r="10" fill="#22c55e" />
+              <path
+                d="M6 10.5l2.5 2.5 5.5-5.5"
+                stroke="white"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
         </div>
+
+        {/* Description tagline */}
         {tagline && (
-          <p className="mt-1 text-muted-foreground">{tagline}</p>
+          <p className="mt-2 text-sm text-white/40 leading-relaxed max-w-[600px]">
+            {tagline}
+          </p>
         )}
 
         {/* Badges row */}
         <div className="mt-4 flex flex-wrap items-center gap-2">
-          <span className="rounded-md bg-white/[0.06] border border-white/[0.04] px-2 py-0.5 text-xs text-muted-foreground">
+          <span className="rounded-full bg-white/[0.04] border border-white/[0.06] px-3 py-1 text-xs text-white/40">
             {industry}
           </span>
           {locations.map((loc) => (
-            <span key={loc} className="inline-flex items-center gap-1 rounded-md bg-white/[0.06] border border-white/[0.04] px-2 py-0.5 text-xs text-muted-foreground">
+            <span
+              key={loc}
+              className="inline-flex items-center gap-1 rounded-full bg-white/[0.04] border border-white/[0.06] px-3 py-1 text-xs text-white/40"
+            >
               <MapPin className="size-3" />
               {loc}
             </span>
           ))}
           {SIZE_LABELS[size] && (
-            <span className="inline-flex items-center gap-1 rounded-md bg-white/[0.06] border border-white/[0.04] px-2 py-0.5 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1 rounded-full bg-white/[0.04] border border-white/[0.06] px-3 py-1 text-xs text-white/40">
               <Users className="size-3" />
               {SIZE_LABELS[size]}
             </span>
@@ -134,7 +156,11 @@ export function CompanyHero({
           />
           {website && (
             <a href={website} target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" size="sm" className="gap-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5 border-white/[0.06] text-white/50"
+              >
                 {t("website")}
                 <ExternalLink className="size-3.5" />
               </Button>
@@ -142,7 +168,11 @@ export function CompanyHero({
           )}
           {linkedinUrl && (
             <a href={linkedinUrl} target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" size="sm" className="gap-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5 border-white/[0.06] text-white/50"
+              >
                 LinkedIn
                 <Linkedin className="size-3.5" />
               </Button>
@@ -150,16 +180,16 @@ export function CompanyHero({
           )}
         </div>
 
-        {/* Status badge */}
+        {/* Status / Claim section */}
         <div className="mt-4">
           {status === "CLAIMED" || userHasPendingClaim ? (
-            <span className="inline-flex items-center gap-1 rounded-md bg-white/[0.06] border border-white/[0.04] px-2 py-0.5 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1 rounded-full bg-white/[0.04] border border-white/[0.06] px-3 py-1 text-xs text-white/40">
               <Clock className="size-3" />
               {t("claimPending")}
             </span>
           ) : status !== "VERIFIED" ? (
             <div className="flex items-center gap-2">
-              <span className="rounded-md bg-white/[0.06] border border-white/[0.04] px-2 py-0.5 text-xs text-muted-foreground">
+              <span className="rounded-full bg-white/[0.04] border border-white/[0.06] px-3 py-1 text-xs text-white/40">
                 Auto-generated profile
               </span>
               <Button

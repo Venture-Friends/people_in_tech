@@ -56,16 +56,16 @@ export function CompanyTabs({
 
   return (
     <Tabs defaultValue="about">
-      <TabsList className="w-full justify-start">
+      <TabsList className="w-full justify-start border-b border-white/[0.04] bg-transparent">
         <TabsTrigger
           value="about"
-          className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-white transition-colors duration-150"
+          className="text-[13px] font-medium text-white/40 data-[state=active]:text-primary data-[state=active]:border-b-2 data-[state=active]:border-primary transition-colors duration-150"
         >
           {t("about")}
         </TabsTrigger>
         <TabsTrigger
           value="roles"
-          className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-white transition-colors duration-150"
+          className="text-[13px] font-medium text-white/40 data-[state=active]:text-primary data-[state=active]:border-b-2 data-[state=active]:border-primary transition-colors duration-150"
         >
           {t("openRoles")}
           {jobs.length > 0 && (
@@ -76,7 +76,7 @@ export function CompanyTabs({
         </TabsTrigger>
         <TabsTrigger
           value="events"
-          className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-white transition-colors duration-150"
+          className="text-[13px] font-medium text-white/40 data-[state=active]:text-primary data-[state=active]:border-b-2 data-[state=active]:border-primary transition-colors duration-150"
         >
           {t("events")}
           {events.length > 0 && (
@@ -88,7 +88,7 @@ export function CompanyTabs({
         {isVerified && (
           <TabsTrigger
             value="gallery"
-            className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-white transition-colors duration-150"
+            className="text-[13px] font-medium text-white/40 data-[state=active]:text-primary data-[state=active]:border-b-2 data-[state=active]:border-primary transition-colors duration-150"
           >
             {t("gallery")}
           </TabsTrigger>
