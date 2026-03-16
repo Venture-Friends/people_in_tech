@@ -385,7 +385,7 @@ export function EventManager() {
                   <TableCell>
                     <div className="flex items-center gap-1.5">
                       <Users className="size-3.5 text-muted-foreground" />
-                      <span className="font-mono text-sm">
+                      <span className="font-display text-sm">
                         {event.registrationCount}
                       </span>
                       {event.capacity && (
