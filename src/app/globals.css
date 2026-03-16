@@ -401,3 +401,19 @@
   .particle:nth-child(n+13) { display: none; }
   .orb { filter: blur(120px); } /* softer on mobile */
 }
+
+/* Ticker */
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes ticker-scroll-reverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+.animate-ticker-scroll {
+  animation: ticker-scroll 30s linear infinite;
+}
+.animate-ticker-scroll-reverse {
+  animation: ticker-scroll-reverse 35s linear infinite;
+}
