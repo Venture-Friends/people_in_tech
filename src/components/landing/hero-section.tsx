@@ -28,7 +28,7 @@ export function HeroSection({ stats }: HeroSectionProps) {
           </h1>
 
           <p className="mt-6 max-w-[440px] text-[17px] leading-relaxed text-white/[0.38]">
-            Discover top tech employers in Greece. Find companies, open roles, and events — all in one place.
+            Discover top tech employers in Greece. Find companies, open roles, and events, all in one place.
           </p>
 
           {/* Search bar */}

@@ -66,7 +66,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${company.name} — Hiring Partners`,
+    title: `${company.name} | Hiring Partners`,
     description: company.description?.slice(0, 160) || undefined,
   };
 }
