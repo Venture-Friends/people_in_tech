@@ -11,14 +11,14 @@ export default function AuthLayout({
   const t = useTranslations("common");
 
   return (
-    <div className="fixed inset-0 z-50 bg-background flex flex-col items-center justify-center p-4">
-      <Link href="/" className="text-2xl font-bold text-primary mb-8">
-        Hiring Partners
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center p-4">
+      <Link href="/" className="font-display text-2xl font-bold tracking-tight text-foreground mb-8">
+        Hiring<span className="text-primary">.</span>
       </Link>
       <div className="w-full max-w-[400px]">{children}</div>
       <Link
         href="/"
-        className="mt-6 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        className="mt-6 text-sm text-white/30 hover:text-white/50 transition-colors"
       >
         {t("backToHome")}
       </Link>
