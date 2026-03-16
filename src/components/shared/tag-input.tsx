@@ -119,9 +119,10 @@ export function TagInput({
         }}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
+        className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus-visible:border-primary/30 focus-visible:ring-1 focus-visible:ring-primary/20"
       />
       {showSuggestions && filteredSuggestions.length > 0 && (
-        <div className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-lg border border-border bg-card shadow-lg">
+        <div className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-xl border border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] shadow-lg">
           {filteredSuggestions.map((suggestion) => (
             <button
               key={suggestion}

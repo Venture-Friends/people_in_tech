@@ -61,7 +61,7 @@ export function StepInterests({ watch, setValue, errors }: StepInterestsProps) {
       </div>
 
       <div>
-        <Label className="mb-3">{t("skills")}</Label>
+        <Label className="mb-3 text-[13px] font-medium text-white/50">{t("skills")}</Label>
         <TagInput
           tags={skills || []}
           onChange={(tags) => setValue("skills", tags)}

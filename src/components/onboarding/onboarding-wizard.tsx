@@ -7,17 +7,15 @@ import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
-import { ArrowLeft, ArrowRight, Check, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import {
   onboardingSchema,
   type OnboardingInput,
 } from "@/lib/validations/onboarding";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StepAbout } from "./step-about";
 import { StepInterests } from "./step-interests";
 import { StepPreferences } from "./step-preferences";
-import { cn } from "@/lib/utils";
 
 export function OnboardingWizard() {
   const t = useTranslations("onboarding");
@@ -56,6 +54,12 @@ export function OnboardingWizard() {
     1: t("step1Title"),
     2: t("step2Title"),
     3: t("step3Title"),
+  };
+
+  const stepSubtitles: Record<number, string> = {
+    1: "Tell us about yourself",
+    2: "What are you looking for?",
+    3: "Almost done, set your preferences",
   };
 
   async function handleNext() {
@@ -98,88 +102,94 @@ export function OnboardingWizard() {
     }
   }
 
+  const progressPercent = currentStep === 1 ? 33 : currentStep === 2 ? 66 : 100;
+
   return (
     <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center p-4">
-      <div className="w-full max-w-[560px]">
-        <div className="mb-6 flex items-center justify-center gap-3">
-          {[1, 2, 3].map((step) => (
+      <div className="w-full max-w-[520px]">
+        {/* Progress bar */}
+        <div className="mb-8">
+          <div className="h-1 w-full rounded-full bg-white/[0.06]">
             <div
-              key={step}
-              className={cn(
-                "size-2.5 rounded-full transition-colors",
-                step <= currentStep ? "bg-primary" : "bg-white/10"
-              )}
+              className="h-1 rounded-full bg-primary transition-all duration-500 ease-out"
+              style={{ width: `${progressPercent}%` }}
             />
-          ))}
+          </div>
         </div>
 
-        <Card className="border-white/[0.06]">
-          <CardHeader>
-            <CardTitle className="text-xl">{stepTitles[currentStep]}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <div key={currentStep} className={direction === "forward" ? "animate-slide-in-right" : "animate-slide-in-left"}>
-                {currentStep === 1 && (
-                  <StepAbout
-                    register={register}
-                    watch={watch}
-                    setValue={setValue}
-                    errors={errors}
-                  />
-                )}
+        {/* Step title and subtitle */}
+        <div className="mb-6">
+          <h2 className="font-display text-[24px] font-bold tracking-tight">
+            {stepTitles[currentStep]}
+          </h2>
+          <p className="mt-1 text-[15px] text-white/[0.35]">
+            {stepSubtitles[currentStep]}
+          </p>
+        </div>
 
-                {currentStep === 2 && (
-                  <StepInterests
-                    watch={watch}
-                    setValue={setValue}
-                    errors={errors}
-                  />
-                )}
+        {/* Glassmorphic card */}
+        <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-6 sm:p-8">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div key={currentStep} className={direction === "forward" ? "animate-slide-in-right" : "animate-slide-in-left"}>
+              {currentStep === 1 && (
+                <StepAbout
+                  register={register}
+                  watch={watch}
+                  setValue={setValue}
+                  errors={errors}
+                />
+              )}
 
-                {currentStep === 3 && (
-                  <StepPreferences watch={watch} setValue={setValue} />
-                )}
-              </div>
+              {currentStep === 2 && (
+                <StepInterests
+                  watch={watch}
+                  setValue={setValue}
+                  errors={errors}
+                />
+              )}
 
-              <div className="flex justify-between mt-8">
-                {currentStep > 1 ? (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={handleBack}
-                    size="lg"
-                  >
-                    <ArrowLeft className="size-4 mr-1" />
-                    {t("back")}
-                  </Button>
-                ) : (
-                  <div />
-                )}
+              {currentStep === 3 && (
+                <StepPreferences watch={watch} setValue={setValue} />
+              )}
+            </div>
 
-                {currentStep < 3 ? (
-                  <Button type="button" onClick={handleNext} size="lg">
-                    {t("next")}
-                    <ArrowRight className="size-4 ml-1" />
-                  </Button>
-                ) : (
-                  <Button
-                    type="submit"
-                    size="lg"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <Loader2 className="size-4 mr-1 animate-spin" />
-                    ) : (
-                      <Check className="size-4 mr-1" />
-                    )}
-                    {t("completeSetup")}
-                  </Button>
-                )}
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+            <div className="flex justify-between mt-8">
+              {currentStep > 1 ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={handleBack}
+                  size="lg"
+                  className="text-white/50 hover:text-white/80"
+                >
+                  <ArrowLeft className="size-4 mr-1" />
+                  {t("back")}
+                </Button>
+              ) : (
+                <div />
+              )}
+
+              {currentStep < 3 ? (
+                <Button type="button" onClick={handleNext} size="lg">
+                  {t("next")}
+                  <ArrowRight className="size-4 ml-1" />
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  size="lg"
+                  disabled={isSubmitting}
+                  className="font-display"
+                >
+                  {isSubmitting && (
+                    <Loader2 className="size-4 mr-1 animate-spin" />
+                  )}
+                  {isSubmitting ? t("completeSetup") : "Start Exploring \u2192"}
+                </Button>
+              )}
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

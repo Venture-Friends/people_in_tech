@@ -40,13 +40,13 @@ export function StepPreferences({ watch, setValue }: StepPreferencesProps) {
         />
       </div>
 
-      <Separator />
+      <Separator className="border-white/[0.04]" />
 
       <div>
-        <p className="text-sm font-medium mb-4">{t("emailPreferences")}</p>
+        <p className="text-[13px] font-medium text-white/50 mb-4">{t("emailPreferences")}</p>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <Label htmlFor="emailDigest" className="cursor-pointer">
+            <Label htmlFor="emailDigest" className="cursor-pointer text-[13px] font-medium text-white/50">
               {t("weeklyDigest")}
             </Label>
             <Switch
@@ -58,7 +58,7 @@ export function StepPreferences({ watch, setValue }: StepPreferencesProps) {
             />
           </div>
           <div className="flex items-center justify-between">
-            <Label htmlFor="emailEvents" className="cursor-pointer">
+            <Label htmlFor="emailEvents" className="cursor-pointer text-[13px] font-medium text-white/50">
               {t("eventAnnouncements")}
             </Label>
             <Switch
@@ -70,7 +70,7 @@ export function StepPreferences({ watch, setValue }: StepPreferencesProps) {
             />
           </div>
           <div className="flex items-center justify-between">
-            <Label htmlFor="emailNewsletter" className="cursor-pointer">
+            <Label htmlFor="emailNewsletter" className="cursor-pointer text-[13px] font-medium text-white/50">
               {t("communityNewsletter")}
             </Label>
             <Switch
@@ -84,19 +84,19 @@ export function StepPreferences({ watch, setValue }: StepPreferencesProps) {
         </div>
       </div>
 
-      <Separator />
+      <Separator className="border-white/[0.04]" />
 
       <div>
-        <p className="text-sm font-medium mb-3">{t("languagePreference")}</p>
+        <p className="text-[13px] font-medium text-white/50 mb-3">{t("languagePreference")}</p>
         <div className="grid grid-cols-2 gap-3">
           <button
             type="button"
             onClick={() => setValue("language", "en")}
             className={cn(
-              "rounded-xl border p-3 text-center cursor-pointer transition-all",
+              "rounded-2xl border p-4 text-center cursor-pointer transition-all",
               language === "en"
-                ? "bg-primary/10 border-primary text-primary ring-1 ring-primary"
-                : "bg-card border-border text-muted-foreground hover:border-foreground/30"
+                ? "border-primary/[0.25] bg-primary/[0.05] text-primary"
+                : "border-white/[0.05] bg-white/[0.02] text-white/40 hover:border-white/[0.1]"
             )}
           >
             <span className="text-lg block mb-1">EN</span>
@@ -106,10 +106,10 @@ export function StepPreferences({ watch, setValue }: StepPreferencesProps) {
             type="button"
             onClick={() => setValue("language", "el")}
             className={cn(
-              "rounded-xl border p-3 text-center cursor-pointer transition-all",
+              "rounded-2xl border p-4 text-center cursor-pointer transition-all",
               language === "el"
-                ? "bg-primary/10 border-primary text-primary ring-1 ring-primary"
-                : "bg-card border-border text-muted-foreground hover:border-foreground/30"
+                ? "border-primary/[0.25] bg-primary/[0.05] text-primary"
+                : "border-white/[0.05] bg-white/[0.02] text-white/40 hover:border-white/[0.1]"
             )}
           >
             <span className="text-lg block mb-1">EL</span>
