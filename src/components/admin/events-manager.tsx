@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import {
   Select,
@@ -59,6 +58,15 @@ const eventTypeLabels: Record<string, string> = {
   MEETUP: "Meetup",
   CONFERENCE: "Conference",
   HACKATHON: "Hackathon",
+};
+
+const eventTypeColors: Record<string, string> = {
+  WORKSHOP: "bg-blue-500/20 text-blue-400 border border-blue-500/30",
+  WEBINAR: "bg-purple-500/20 text-purple-400 border border-purple-500/30",
+  CAREER_FAIR: "bg-amber-500/20 text-amber-400 border border-amber-500/30",
+  MEETUP: "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30",
+  CONFERENCE: "bg-rose-500/20 text-rose-400 border border-rose-500/30",
+  HACKATHON: "bg-teal-500/20 text-teal-400 border border-teal-500/30",
 };
 
 const defaultForm = {
@@ -179,31 +187,33 @@ export function EventsManager() {
   const EventForm = ({ onSubmit, submitLabel }: { onSubmit: () => void; submitLabel: string }) => (
     <div className="space-y-4 py-2">
       <div className="space-y-1.5">
-        <Label>Title</Label>
+        <Label className="text-white/[0.35] text-xs">Title</Label>
         <Input
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           placeholder="Event title"
+          className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
         />
       </div>
       <div className="space-y-1.5">
-        <Label>Description</Label>
+        <Label className="text-white/[0.35] text-xs">Description</Label>
         <Textarea
           value={formData.description}
           onChange={(e) =>
             setFormData({ ...formData, description: e.target.value })
           }
           placeholder="Event description..."
+          className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
         />
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <Label>Type</Label>
+          <Label className="text-white/[0.35] text-xs">Type</Label>
           <Select
             value={formData.type}
             onValueChange={(v) => v !== null && setFormData({ ...formData, type: v })}
           >
-            <SelectTrigger>
+            <SelectTrigger className="rounded-[14px] border-white/[0.07] bg-white/[0.03]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -216,44 +226,48 @@ export function EventsManager() {
           </Select>
         </div>
         <div className="space-y-1.5">
-          <Label>Date</Label>
+          <Label className="text-white/[0.35] text-xs">Date</Label>
           <Input
             type="date"
             value={formData.date}
             onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+            className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
           />
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <Label>Start Time</Label>
+          <Label className="text-white/[0.35] text-xs">Start Time</Label>
           <Input
             type="time"
             value={formData.startTime}
             onChange={(e) =>
               setFormData({ ...formData, startTime: e.target.value })
             }
+            className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
           />
         </div>
         <div className="space-y-1.5">
-          <Label>End Time</Label>
+          <Label className="text-white/[0.35] text-xs">End Time</Label>
           <Input
             type="time"
             value={formData.endTime}
             onChange={(e) =>
               setFormData({ ...formData, endTime: e.target.value })
             }
+            className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
           />
         </div>
       </div>
       <div className="space-y-1.5">
-        <Label>Location</Label>
+        <Label className="text-white/[0.35] text-xs">Location</Label>
         <Input
           value={formData.location}
           onChange={(e) =>
             setFormData({ ...formData, location: e.target.value })
           }
           placeholder="Venue or address"
+          className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
         />
       </div>
       <div className="grid grid-cols-2 gap-3">
@@ -265,10 +279,10 @@ export function EventsManager() {
             }
             size="sm"
           />
-          <Label>Online Event</Label>
+          <Label className="text-white/[0.35] text-xs">Online Event</Label>
         </div>
         <div className="space-y-1.5">
-          <Label>Capacity</Label>
+          <Label className="text-white/[0.35] text-xs">Capacity</Label>
           <Input
             type="number"
             value={formData.capacity}
@@ -276,14 +290,15 @@ export function EventsManager() {
               setFormData({ ...formData, capacity: e.target.value })
             }
             placeholder="Optional"
+            className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
           />
         </div>
       </div>
       <DialogFooter>
         <DialogClose>
-          <Button variant="outline">Cancel</Button>
+          <Button variant="outline" className="rounded-lg">Cancel</Button>
         </DialogClose>
-        <Button onClick={onSubmit}>{submitLabel}</Button>
+        <Button onClick={onSubmit} className="bg-primary text-primary-foreground rounded-lg">{submitLabel}</Button>
       </DialogFooter>
     </div>
   );
@@ -292,16 +307,16 @@ export function EventsManager() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">
+          <h2 className="font-display text-2xl font-semibold tracking-tight text-foreground">
             Events
           </h2>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-white/[0.35] mt-1">
             Manage all events (company and platform)
           </p>
         </div>
         <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
           <DialogTrigger>
-            <Button size="sm">
+            <Button size="sm" className="bg-primary text-primary-foreground rounded-lg">
               <Plus className="size-4 mr-1" />
               Add Platform Event
             </Button>
@@ -323,102 +338,109 @@ export function EventsManager() {
           ))}
         </div>
       ) : (
-        <Table>
-          <TableHeader className="bg-white/[0.05]">
-            <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Host</TableHead>
-              <TableHead>Location</TableHead>
-              <TableHead className="text-right">Registrations</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {events.length === 0 ? (
-              <TableRow className="border-white/[0.06] hover:bg-white/[0.03]">
-                <TableCell
-                  colSpan={7}
-                  className="text-center text-muted-foreground py-8"
-                >
-                  No events found
-                </TableCell>
+        <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-b border-white/[0.04] hover:bg-transparent">
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Title</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Type</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Date</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Host</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Location</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02] text-right">Registrations</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02] text-right">Actions</TableHead>
               </TableRow>
-            ) : (
-              events.map((event) => (
-                <TableRow key={event.id} className="border-white/[0.06] hover:bg-white/[0.03]">
-                  <TableCell className="font-medium">{event.title}</TableCell>
-                  <TableCell>
-                    <Badge variant="secondary">
-                      {eventTypeLabels[event.type] || event.type}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="size-3" />
-                      {new Date(event.date).toLocaleDateString()}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    {event.companyId ? (
-                      event.companyName
-                    ) : (
-                      <Badge className="bg-primary/20 text-primary">
-                        Platform
-                      </Badge>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      {event.isOnline ? (
-                        <>
-                          <Globe className="size-3" />
-                          Online
-                        </>
-                      ) : (
-                        <>
-                          <MapPin className="size-3" />
-                          {event.location || "TBD"}
-                        </>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <Users className="size-3 text-muted-foreground" />
-                      {event.registrations}
-                      {event.capacity && (
-                        <span className="text-muted-foreground">
-                          /{event.capacity}
-                        </span>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        onClick={() => openEdit(event)}
-                      >
-                        <Pencil className="size-3.5" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        className="text-red-400 hover:text-red-300"
-                        onClick={() => handleDelete(event)}
-                      >
-                        <Trash2 className="size-3.5" />
-                      </Button>
-                    </div>
+            </TableHeader>
+            <TableBody>
+              {events.length === 0 ? (
+                <TableRow className="border-b border-white/[0.04] hover:bg-white/[0.02]">
+                  <TableCell
+                    colSpan={7}
+                    className="text-center text-white/30 py-8"
+                  >
+                    No events found
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : (
+                events.map((event) => (
+                  <TableRow key={event.id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
+                    <TableCell className="font-medium text-[13px]">{event.title}</TableCell>
+                    <TableCell>
+                      <span
+                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
+                          eventTypeColors[event.type] || "bg-white/[0.05] text-white/30"
+                        }`}
+                      >
+                        {eventTypeLabels[event.type] || event.type}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-[13px] text-white/[0.35]">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="size-3" />
+                        {new Date(event.date).toLocaleDateString()}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-[13px]">
+                      {event.companyId ? (
+                        event.companyName
+                      ) : (
+                        <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium bg-primary/20 text-primary border border-primary/30">
+                          Platform
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-[13px] text-white/[0.35]">
+                      <div className="flex items-center gap-1">
+                        {event.isOnline ? (
+                          <>
+                            <Globe className="size-3" />
+                            Online
+                          </>
+                        ) : (
+                          <>
+                            <MapPin className="size-3" />
+                            {event.location || "TBD"}
+                          </>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right text-[13px]">
+                      <div className="flex items-center justify-end gap-1">
+                        <Users className="size-3 text-white/30" />
+                        {event.registrations}
+                        {event.capacity && (
+                          <span className="text-white/30">
+                            /{event.capacity}
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          className="text-white/30 hover:text-white/60"
+                          onClick={() => openEdit(event)}
+                        >
+                          <Pencil className="size-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          className="text-red-400/60 hover:text-red-400"
+                          onClick={() => handleDelete(event)}
+                        >
+                          <Trash2 className="size-3.5" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       {/* Edit Dialog */}

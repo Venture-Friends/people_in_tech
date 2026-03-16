@@ -5,7 +5,6 @@ import { Search, Download } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -39,6 +38,14 @@ const experienceLevelLabels: Record<string, string> = {
   SENIOR: "Senior",
   LEAD: "Lead",
   "N/A": "N/A",
+};
+
+const experienceLevelColors: Record<string, string> = {
+  STUDENT: "bg-blue-500/20 text-blue-400 border border-blue-500/30",
+  JUNIOR: "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30",
+  MID: "bg-amber-500/20 text-amber-400 border border-amber-500/30",
+  SENIOR: "bg-purple-500/20 text-purple-400 border border-purple-500/30",
+  LEAD: "bg-rose-500/20 text-rose-400 border border-rose-500/30",
 };
 
 export function CandidatesTable() {
@@ -94,14 +101,14 @@ export function CandidatesTable() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">
+          <h2 className="font-display text-2xl font-semibold tracking-tight text-foreground">
             Candidates
           </h2>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-white/[0.35] mt-1">
             All registered candidates on the platform
           </p>
         </div>
-        <Button size="sm" variant="outline" onClick={handleExportCSV}>
+        <Button size="sm" variant="outline" onClick={handleExportCSV} className="rounded-lg border-white/[0.07] text-white/40 hover:text-white/60">
           <Download className="size-4 mr-1" />
           Export CSV
         </Button>
@@ -110,16 +117,16 @@ export function CandidatesTable() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-white/30" />
           <Input
             placeholder="Search by name or email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
+            className="pl-9 rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
           />
         </div>
         <Select value={expFilter} onValueChange={(v) => v !== null && setExpFilter(v)}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[180px] rounded-[14px] border-white/[0.07] bg-white/[0.03]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -141,59 +148,65 @@ export function CandidatesTable() {
           ))}
         </div>
       ) : (
-        <Table>
-          <TableHeader className="bg-white/[0.05]">
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Experience</TableHead>
-              <TableHead>Skills</TableHead>
-              <TableHead>Joined</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {candidates.length === 0 ? (
-              <TableRow className="border-white/[0.06] hover:bg-white/[0.03]">
-                <TableCell
-                  colSpan={5}
-                  className="text-center text-muted-foreground py-8"
-                >
-                  No candidates found
-                </TableCell>
+        <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-b border-white/[0.04] hover:bg-transparent">
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Name</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Email</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Experience</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Skills</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Joined</TableHead>
               </TableRow>
-            ) : (
-              candidates.map((candidate) => (
-                <TableRow key={candidate.id} className="border-white/[0.06] hover:bg-white/[0.03]">
-                  <TableCell className="font-medium">
-                    {candidate.name}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {candidate.email}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="secondary">
-                      {experienceLevelLabels[candidate.experienceLevel] ||
-                        candidate.experienceLevel}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-muted-foreground truncate block max-w-[200px]">
-                      {candidate.skills.length > 0
-                        ? candidate.skills.slice(0, 3).join(", ") +
-                          (candidate.skills.length > 3
-                            ? ` +${candidate.skills.length - 3}`
-                            : "")
-                        : "No skills listed"}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {new Date(candidate.joinedAt).toLocaleDateString()}
+            </TableHeader>
+            <TableBody>
+              {candidates.length === 0 ? (
+                <TableRow className="border-b border-white/[0.04] hover:bg-white/[0.02]">
+                  <TableCell
+                    colSpan={5}
+                    className="text-center text-white/30 py-8"
+                  >
+                    No candidates found
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : (
+                candidates.map((candidate) => (
+                  <TableRow key={candidate.id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
+                    <TableCell className="font-medium text-[13px]">
+                      {candidate.name}
+                    </TableCell>
+                    <TableCell className="text-[13px] text-white/[0.35]">
+                      {candidate.email}
+                    </TableCell>
+                    <TableCell>
+                      <span
+                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
+                          experienceLevelColors[candidate.experienceLevel] || "bg-white/[0.05] text-white/30"
+                        }`}
+                      >
+                        {experienceLevelLabels[candidate.experienceLevel] ||
+                          candidate.experienceLevel}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-[13px] text-white/[0.35] truncate block max-w-[200px]">
+                        {candidate.skills.length > 0
+                          ? candidate.skills.slice(0, 3).join(", ") +
+                            (candidate.skills.length > 3
+                              ? ` +${candidate.skills.length - 3}`
+                              : "")
+                          : "No skills listed"}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-[13px] text-white/[0.35]">
+                      {new Date(candidate.joinedAt).toLocaleDateString()}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
       )}
     </div>
   );

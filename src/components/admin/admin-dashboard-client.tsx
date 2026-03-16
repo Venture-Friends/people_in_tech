@@ -10,11 +10,9 @@ import {
   Calendar,
   Mail,
   BarChart3,
-  ShieldCheck,
   Menu,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Sheet,
   SheetContent,
@@ -71,14 +69,13 @@ function SidebarContent({
 }) {
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center gap-2 px-4 py-4 border-b border-border">
-        <ShieldCheck className="size-5 text-primary" />
-        <span className="font-semibold text-foreground">Admin Panel</span>
-        <Badge variant="secondary" className="ml-auto text-[10px]">
-          ADMIN
-        </Badge>
+      <div className="flex items-center gap-2.5 px-5 py-5">
+        <span className="inline-block size-2 rounded-full bg-primary" />
+        <span className="font-display text-lg font-bold text-foreground">
+          Admin
+        </span>
       </div>
-      <nav className="flex-1 px-2 py-3 space-y-0.5">
+      <nav className="flex-1 px-3 py-2 space-y-0.5">
         {sidebarItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -86,18 +83,18 @@ function SidebarContent({
             <button
               key={item.id}
               onClick={() => onTabChange(item.id)}
-              className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-150 ${
+              className={`flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] transition-colors ${
                 isActive
-                  ? "bg-white/[0.06] text-white"
-                  : "text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
+                  ? "text-primary bg-primary/[0.05] font-medium"
+                  : "text-white/40 hover:text-white/60 hover:bg-white/[0.03]"
               }`}
             >
               <Icon className="size-4" />
               {item.label}
               {item.id === "claims" && pendingClaims > 0 && (
-                <Badge className="ml-auto bg-red-500/20 text-red-400 text-[10px]">
+                <span className="bg-primary/[0.1] text-primary rounded-full px-2 text-[11px] font-medium ml-auto">
                   {pendingClaims}
-                </Badge>
+                </span>
               )}
             </button>
           );
@@ -157,7 +154,7 @@ export function AdminDashboardClient({
   return (
     <div className="flex min-h-screen -m-4 sm:-m-6 lg:-m-8">
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex w-60 shrink-0 flex-col border-r border-border bg-card">
+      <aside className="w-[220px] shrink-0 hidden lg:flex flex-col bg-white/[0.02] border-r border-white/[0.04]">
         <SidebarContent
           activeTab={activeTab}
           pendingClaims={kpis.pendingClaims}
@@ -167,14 +164,14 @@ export function AdminDashboardClient({
 
       {/* Mobile header + content */}
       <div className="flex flex-1 flex-col min-w-0">
-        <header className="flex items-center gap-3 border-b border-border px-4 py-3 lg:hidden">
+        <header className="flex items-center gap-3 border-b border-white/[0.04] px-4 py-3 lg:hidden">
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger>
               <Button variant="ghost" size="icon">
                 <Menu className="size-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-60 p-0">
+            <SheetContent side="left" className="w-[220px] p-0 bg-white/[0.02] border-r border-white/[0.04]">
               <SheetHeader className="sr-only">
                 <SheetTitle>Admin Navigation</SheetTitle>
               </SheetHeader>
@@ -185,13 +182,15 @@ export function AdminDashboardClient({
               />
             </SheetContent>
           </Sheet>
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="size-5 text-primary" />
-            <span className="font-semibold text-foreground">Admin</span>
+          <div className="flex items-center gap-2.5">
+            <span className="inline-block size-2 rounded-full bg-primary" />
+            <span className="font-display text-lg font-bold text-foreground">
+              Admin
+            </span>
           </div>
         </header>
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8">{renderContent()}</main>
+        <main className="flex-1 min-w-0 p-6 lg:p-8">{renderContent()}</main>
       </div>
     </div>
   );

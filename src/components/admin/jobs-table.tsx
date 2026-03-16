@@ -5,7 +5,6 @@ import { Search, Play, Pause, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -35,15 +34,21 @@ interface Job {
 }
 
 const statusColors: Record<string, string> = {
-  ACTIVE: "bg-emerald-500/20 text-emerald-400",
-  PAUSED: "bg-amber-500/20 text-amber-400",
-  EXPIRED: "bg-gray-500/20 text-gray-400",
+  ACTIVE: "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30",
+  PAUSED: "bg-amber-500/20 text-amber-400 border border-amber-500/30",
+  EXPIRED: "bg-zinc-500/20 text-zinc-400 border border-zinc-500/30",
 };
 
 const typeLabels: Record<string, string> = {
   ONSITE: "On-site",
   REMOTE: "Remote",
   HYBRID: "Hybrid",
+};
+
+const typeColors: Record<string, string> = {
+  ONSITE: "bg-blue-500/20 text-blue-400 border border-blue-500/30",
+  REMOTE: "bg-purple-500/20 text-purple-400 border border-purple-500/30",
+  HYBRID: "bg-teal-500/20 text-teal-400 border border-teal-500/30",
 };
 
 export function JobsTable() {
@@ -111,10 +116,10 @@ export function JobsTable() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-foreground">
+        <h2 className="font-display text-2xl font-semibold tracking-tight text-foreground">
           Job Listings
         </h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-white/[0.35] mt-1">
           Manage all job listings across the platform
         </p>
       </div>
@@ -122,16 +127,16 @@ export function JobsTable() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-white/30" />
           <Input
             placeholder="Search jobs or companies..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
+            className="pl-9 rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
           />
         </div>
         <Select value={statusFilter} onValueChange={(v) => v !== null && setStatusFilter(v)}>
-          <SelectTrigger className="w-[160px]">
+          <SelectTrigger className="w-[160px] rounded-[14px] border-white/[0.07] bg-white/[0.03]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -150,85 +155,91 @@ export function JobsTable() {
           ))}
         </div>
       ) : (
-        <Table>
-          <TableHeader className="bg-white/[0.05]">
-            <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Company</TableHead>
-              <TableHead>Location</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Posted</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {jobs.length === 0 ? (
-              <TableRow className="border-white/[0.06] hover:bg-white/[0.03]">
-                <TableCell
-                  colSpan={7}
-                  className="text-center text-muted-foreground py-8"
-                >
-                  No jobs found
-                </TableCell>
+        <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-b border-white/[0.04] hover:bg-transparent">
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Title</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Company</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Location</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Type</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Status</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Posted</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02] text-right">Actions</TableHead>
               </TableRow>
-            ) : (
-              jobs.map((job) => (
-                <TableRow key={job.id} className="border-white/[0.06] hover:bg-white/[0.03]">
-                  <TableCell className="font-medium">{job.title}</TableCell>
-                  <TableCell>{job.companyName}</TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {job.location || "N/A"}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="secondary">
-                      {typeLabels[job.type] || job.type}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      className={
-                        statusColors[job.status] ||
-                        "bg-muted text-muted-foreground"
-                      }
-                    >
-                      {job.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {new Date(job.postedAt).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        onClick={() => handleToggleStatus(job)}
-                        title={
-                          job.status === "ACTIVE" ? "Pause" : "Activate"
-                        }
-                      >
-                        {job.status === "ACTIVE" ? (
-                          <Pause className="size-3.5" />
-                        ) : (
-                          <Play className="size-3.5" />
-                        )}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        className="text-red-400 hover:text-red-300"
-                        onClick={() => handleDelete(job)}
-                      >
-                        <Trash2 className="size-3.5" />
-                      </Button>
-                    </div>
+            </TableHeader>
+            <TableBody>
+              {jobs.length === 0 ? (
+                <TableRow className="border-b border-white/[0.04] hover:bg-white/[0.02]">
+                  <TableCell
+                    colSpan={7}
+                    className="text-center text-white/30 py-8"
+                  >
+                    No jobs found
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : (
+                jobs.map((job) => (
+                  <TableRow key={job.id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
+                    <TableCell className="font-medium text-[13px]">{job.title}</TableCell>
+                    <TableCell className="text-[13px]">{job.companyName}</TableCell>
+                    <TableCell className="text-[13px] text-white/[0.35]">
+                      {job.location || "N/A"}
+                    </TableCell>
+                    <TableCell>
+                      <span
+                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
+                          typeColors[job.type] || "bg-white/[0.05] text-white/30"
+                        }`}
+                      >
+                        {typeLabels[job.type] || job.type}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span
+                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
+                          statusColors[job.status] || "bg-white/[0.05] text-white/30"
+                        }`}
+                      >
+                        {job.status}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-[13px] text-white/[0.35]">
+                      {new Date(job.postedAt).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          className="text-white/30 hover:text-white/60"
+                          onClick={() => handleToggleStatus(job)}
+                          title={
+                            job.status === "ACTIVE" ? "Pause" : "Activate"
+                          }
+                        >
+                          {job.status === "ACTIVE" ? (
+                            <Pause className="size-3.5" />
+                          ) : (
+                            <Play className="size-3.5" />
+                          )}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          className="text-red-400/60 hover:text-red-400"
+                          onClick={() => handleDelete(job)}
+                        >
+                          <Trash2 className="size-3.5" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
       )}
     </div>
   );

@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import {
   Select,
@@ -47,9 +46,9 @@ interface Company {
 }
 
 const statusColors: Record<string, string> = {
-  AUTO_GENERATED: "bg-gray-500/20 text-gray-400",
-  CLAIMED: "bg-blue-500/20 text-blue-400",
-  VERIFIED: "bg-emerald-500/20 text-emerald-400",
+  AUTO_GENERATED: "bg-zinc-500/20 text-zinc-400 border border-zinc-500/30",
+  CLAIMED: "bg-amber-500/20 text-amber-400 border border-amber-500/30",
+  VERIFIED: "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30",
 };
 
 export function CompaniesTable() {
@@ -188,16 +187,16 @@ export function CompaniesTable() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">
+          <h2 className="font-display text-2xl font-semibold tracking-tight text-foreground">
             Companies
           </h2>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-white/[0.35] mt-1">
             Manage all companies on the platform
           </p>
         </div>
         <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
           <DialogTrigger>
-            <Button size="sm">
+            <Button size="sm" className="bg-primary text-primary-foreground rounded-lg">
               <Plus className="size-4 mr-1" />
               Add Company
             </Button>
@@ -208,7 +207,7 @@ export function CompaniesTable() {
             </DialogHeader>
             <div className="space-y-4 py-2">
               <div className="space-y-1.5">
-                <Label htmlFor="add-name">Name</Label>
+                <Label htmlFor="add-name" className="text-white/[0.35] text-xs">Name</Label>
                 <Input
                   id="add-name"
                   value={formData.name}
@@ -216,10 +215,11 @@ export function CompaniesTable() {
                     setFormData({ ...formData, name: e.target.value })
                   }
                   placeholder="Company name"
+                  className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="add-industry">Industry</Label>
+                <Label htmlFor="add-industry" className="text-white/[0.35] text-xs">Industry</Label>
                 <Input
                   id="add-industry"
                   value={formData.industry}
@@ -227,10 +227,11 @@ export function CompaniesTable() {
                     setFormData({ ...formData, industry: e.target.value })
                   }
                   placeholder="e.g., Technology"
+                  className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="add-website">Website</Label>
+                <Label htmlFor="add-website" className="text-white/[0.35] text-xs">Website</Label>
                 <Input
                   id="add-website"
                   value={formData.website}
@@ -238,14 +239,15 @@ export function CompaniesTable() {
                     setFormData({ ...formData, website: e.target.value })
                   }
                   placeholder="https://..."
+                  className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
                 />
               </div>
             </div>
             <DialogFooter>
               <DialogClose>
-                <Button variant="outline">Cancel</Button>
+                <Button variant="outline" className="rounded-lg">Cancel</Button>
               </DialogClose>
-              <Button onClick={handleAdd}>Create</Button>
+              <Button onClick={handleAdd} className="bg-primary text-primary-foreground rounded-lg">Create</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -254,16 +256,16 @@ export function CompaniesTable() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-white/30" />
           <Input
             placeholder="Search companies..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
+            className="pl-9 rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
           />
         </div>
         <Select value={statusFilter} onValueChange={(v) => v !== null && setStatusFilter(v)}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[180px] rounded-[14px] border-white/[0.07] bg-white/[0.03]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -283,97 +285,101 @@ export function CompaniesTable() {
           ))}
         </div>
       ) : (
-        <Table>
-          <TableHeader className="bg-white/[0.05]">
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Industry</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Followers</TableHead>
-              <TableHead className="text-right">Jobs</TableHead>
-              <TableHead>Featured</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {companies.length === 0 ? (
-              <TableRow className="border-white/[0.06] hover:bg-white/[0.03]">
-                <TableCell
-                  colSpan={7}
-                  className="text-center text-muted-foreground py-8"
-                >
-                  No companies found
-                </TableCell>
+        <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-b border-white/[0.04] hover:bg-transparent">
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Name</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Industry</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Status</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02] text-right">Followers</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02] text-right">Jobs</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Featured</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02] text-right">Actions</TableHead>
               </TableRow>
-            ) : (
-              companies.map((company) => (
-                <TableRow key={company.id} className="border-white/[0.06] hover:bg-white/[0.03]">
-                  <TableCell className="font-medium">
-                    {company.name}
-                  </TableCell>
-                  <TableCell>{company.industry}</TableCell>
-                  <TableCell>
-                    <Badge
-                      className={
-                        statusColors[company.status] || "bg-muted text-muted-foreground"
-                      }
-                    >
-                      {company.status.replace("_", " ")}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {company.followerCount}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {company.jobCount}
-                  </TableCell>
-                  <TableCell>
-                    <Switch
-                      checked={company.featured}
-                      onCheckedChange={() => handleToggleFeatured(company)}
-                      size="sm"
-                    />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        onClick={() =>
-                          handleToggleFeatured(company)
-                        }
-                        title={
-                          company.featured ? "Unfeature" : "Feature"
-                        }
-                      >
-                        {company.featured ? (
-                          <StarOff className="size-3.5" />
-                        ) : (
-                          <Star className="size-3.5" />
-                        )}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        onClick={() => openEdit(company)}
-                      >
-                        <Pencil className="size-3.5" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        className="text-red-400 hover:text-red-300"
-                        onClick={() => handleDelete(company)}
-                      >
-                        <Trash2 className="size-3.5" />
-                      </Button>
-                    </div>
+            </TableHeader>
+            <TableBody>
+              {companies.length === 0 ? (
+                <TableRow className="border-b border-white/[0.04] hover:bg-white/[0.02]">
+                  <TableCell
+                    colSpan={7}
+                    className="text-center text-white/30 py-8"
+                  >
+                    No companies found
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : (
+                companies.map((company) => (
+                  <TableRow key={company.id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
+                    <TableCell className="font-medium text-[13px]">
+                      {company.name}
+                    </TableCell>
+                    <TableCell className="text-[13px] text-white/[0.35]">{company.industry}</TableCell>
+                    <TableCell>
+                      <span
+                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
+                          statusColors[company.status] || "bg-white/[0.05] text-white/30"
+                        }`}
+                      >
+                        {company.status.replace("_", " ")}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums text-[13px]">
+                      {company.followerCount}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums text-[13px]">
+                      {company.jobCount}
+                    </TableCell>
+                    <TableCell>
+                      <Switch
+                        checked={company.featured}
+                        onCheckedChange={() => handleToggleFeatured(company)}
+                        size="sm"
+                      />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          className="text-white/30 hover:text-white/60"
+                          onClick={() =>
+                            handleToggleFeatured(company)
+                          }
+                          title={
+                            company.featured ? "Unfeature" : "Feature"
+                          }
+                        >
+                          {company.featured ? (
+                            <StarOff className="size-3.5" />
+                          ) : (
+                            <Star className="size-3.5" />
+                          )}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          className="text-white/30 hover:text-white/60"
+                          onClick={() => openEdit(company)}
+                        >
+                          <Pencil className="size-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          className="text-red-400/60 hover:text-red-400"
+                          onClick={() => handleDelete(company)}
+                        >
+                          <Trash2 className="size-3.5" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       {/* Edit Dialog */}
@@ -384,31 +390,33 @@ export function CompaniesTable() {
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
-              <Label htmlFor="edit-name">Name</Label>
+              <Label htmlFor="edit-name" className="text-white/[0.35] text-xs">Name</Label>
               <Input
                 id="edit-name"
                 value={formData.name}
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
+                className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="edit-industry">Industry</Label>
+              <Label htmlFor="edit-industry" className="text-white/[0.35] text-xs">Industry</Label>
               <Input
                 id="edit-industry"
                 value={formData.industry}
                 onChange={(e) =>
                   setFormData({ ...formData, industry: e.target.value })
                 }
+                className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
               />
             </div>
           </div>
           <DialogFooter>
             <DialogClose>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline" className="rounded-lg">Cancel</Button>
             </DialogClose>
-            <Button onClick={handleEdit}>Save Changes</Button>
+            <Button onClick={handleEdit} className="bg-primary text-primary-foreground rounded-lg">Save Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

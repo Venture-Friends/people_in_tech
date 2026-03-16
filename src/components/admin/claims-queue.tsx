@@ -11,21 +11,13 @@ import {
   Linkedin,
   MessageSquare,
   Clock,
-  Inbox,
+  CheckCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Separator } from "@/components/ui/separator";
 
 interface Claim {
   id: string;
@@ -135,10 +127,10 @@ export function ClaimsQueue() {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">
+          <h2 className="font-display text-2xl font-semibold tracking-tight text-foreground">
             Claim Requests
           </h2>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-white/[0.35] mt-1">
             Review company ownership claims
           </p>
         </div>
@@ -154,174 +146,178 @@ export function ClaimsQueue() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-foreground">
+        <h2 className="font-display text-2xl font-semibold tracking-tight text-foreground">
           Claim Requests
         </h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-white/[0.35] mt-1">
           Review and process company ownership claims
         </p>
       </div>
 
       {claims.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <Inbox className="size-12 text-muted-foreground/40 mb-3" />
+        <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-12">
+          <div className="flex flex-col items-center justify-center text-center">
+            <CheckCircle className="size-12 text-primary/40 mb-3" />
             <p className="text-lg font-medium text-foreground">
               No pending claims
             </p>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm text-white/[0.35] mt-1">
               All company claims have been processed.
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       ) : (
         <div className="space-y-4">
           {claims.map((claim) => (
-            <Card key={claim.id}>
-              <CardHeader className="pb-0">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <Building2 className="size-4 text-primary" />
-                      {claim.companyName}
-                    </CardTitle>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="secondary">{claim.companyIndustry}</Badge>
-                      <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Clock className="size-3" />
-                        {new Date(claim.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-                  <Badge className="bg-yellow-500/10 text-yellow-400 border-yellow-500/20">
-                    PENDING
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Separator className="my-3" />
-
-                {/* Requester info */}
-                <div className="grid gap-3 sm:grid-cols-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <User className="size-4 text-muted-foreground shrink-0" />
-                    <span className="text-muted-foreground">Name:</span>
-                    <span className="font-medium text-foreground">
-                      {claim.fullName}
+            <div
+              key={claim.id}
+              className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-5"
+            >
+              {/* Header */}
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h3 className="font-display text-base font-semibold text-foreground flex items-center gap-2">
+                    <Building2 className="size-4 text-primary" />
+                    {claim.companyName}
+                  </h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium bg-white/[0.05] text-white/[0.35]">
+                      {claim.companyIndustry}
+                    </span>
+                    <span className="flex items-center gap-1 text-xs text-white/30">
+                      <Clock className="size-3" />
+                      {new Date(claim.createdAt).toLocaleDateString()}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Mail className="size-4 text-muted-foreground shrink-0" />
-                    <span className="text-muted-foreground">Work Email:</span>
-                    <span className="font-medium text-foreground">
-                      {claim.workEmail}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Briefcase className="size-4 text-muted-foreground shrink-0" />
-                    <span className="text-muted-foreground">Job Title:</span>
-                    <span className="font-medium text-foreground">
-                      {claim.jobTitle}
-                    </span>
-                  </div>
-                  {claim.linkedinUrl && (
-                    <div className="flex items-center gap-2">
-                      <Linkedin className="size-4 text-muted-foreground shrink-0" />
-                      <span className="text-muted-foreground">LinkedIn:</span>
-                      <a
-                        href={claim.linkedinUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary hover:underline truncate"
-                      >
-                        {claim.linkedinUrl}
-                      </a>
-                    </div>
-                  )}
                 </div>
+                <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                  PENDING
+                </span>
+              </div>
 
-                {claim.message && (
-                  <div className="mt-3 flex items-start gap-2 text-sm">
-                    <MessageSquare className="size-4 text-muted-foreground shrink-0 mt-0.5" />
-                    <div>
-                      <span className="text-muted-foreground">Message: </span>
-                      <span className="text-foreground">{claim.message}</span>
-                    </div>
-                  </div>
-                )}
+              <div className="h-px bg-white/[0.04] my-3" />
 
-                <div className="mt-3 text-xs text-muted-foreground">
-                  Account: {claim.userName} ({claim.userEmail})
-                </div>
-
-                <Separator className="my-3" />
-
-                {/* Review note input (shown for reject or optionally for approve) */}
-                {showRejectInput === claim.id && (
-                  <div className="mb-3 space-y-1.5">
-                    <Label htmlFor={`note-${claim.id}`}>
-                      Rejection Reason <span className="text-red-400">*</span>
-                    </Label>
-                    <Textarea
-                      id={`note-${claim.id}`}
-                      value={reviewNotes[claim.id] || ""}
-                      onChange={(e) =>
-                        setReviewNotes((prev) => ({
-                          ...prev,
-                          [claim.id]: e.target.value,
-                        }))
-                      }
-                      placeholder="Explain why this claim is being rejected..."
-                      className="min-h-20"
-                    />
-                  </div>
-                )}
-
-                {/* Actions */}
+              {/* Requester info */}
+              <div className="grid gap-3 sm:grid-cols-2 text-sm">
                 <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    className="bg-emerald-600 text-white hover:bg-emerald-700"
-                    onClick={() => handleApprove(claim)}
-                    disabled={processingId === claim.id}
-                  >
-                    <CheckCircle2 className="size-4 mr-1" />
-                    Approve
-                  </Button>
+                  <User className="size-4 text-white/30 shrink-0" />
+                  <span className="text-white/30">Name:</span>
+                  <span className="font-medium text-foreground">
+                    {claim.fullName}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Mail className="size-4 text-white/30 shrink-0" />
+                  <span className="text-white/30">Work Email:</span>
+                  <span className="font-medium text-foreground">
+                    {claim.workEmail}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Briefcase className="size-4 text-white/30 shrink-0" />
+                  <span className="text-white/30">Job Title:</span>
+                  <span className="font-medium text-foreground">
+                    {claim.jobTitle}
+                  </span>
+                </div>
+                {claim.linkedinUrl && (
+                  <div className="flex items-center gap-2">
+                    <Linkedin className="size-4 text-white/30 shrink-0" />
+                    <span className="text-white/30">LinkedIn:</span>
+                    <a
+                      href={claim.linkedinUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline truncate"
+                    >
+                      {claim.linkedinUrl}
+                    </a>
+                  </div>
+                )}
+              </div>
 
-                  {showRejectInput === claim.id ? (
-                    <>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => handleReject(claim)}
-                        disabled={processingId === claim.id}
-                      >
-                        <XCircle className="size-4 mr-1" />
-                        Confirm Reject
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => setShowRejectInput(null)}
-                      >
-                        Cancel
-                      </Button>
-                    </>
-                  ) : (
+              {claim.message && (
+                <div className="mt-3 flex items-start gap-2 text-sm">
+                  <MessageSquare className="size-4 text-white/30 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="text-white/30">Message: </span>
+                    <span className="text-foreground">{claim.message}</span>
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-3 text-xs text-white/30">
+                Account: {claim.userName} ({claim.userEmail})
+              </div>
+
+              <div className="h-px bg-white/[0.04] my-3" />
+
+              {/* Review note input (shown for reject or optionally for approve) */}
+              {showRejectInput === claim.id && (
+                <div className="mb-3 space-y-1.5">
+                  <Label htmlFor={`note-${claim.id}`} className="text-white/[0.35] text-xs">
+                    Rejection Reason <span className="text-red-400">*</span>
+                  </Label>
+                  <Textarea
+                    id={`note-${claim.id}`}
+                    value={reviewNotes[claim.id] || ""}
+                    onChange={(e) =>
+                      setReviewNotes((prev) => ({
+                        ...prev,
+                        [claim.id]: e.target.value,
+                      }))
+                    }
+                    placeholder="Explain why this claim is being rejected..."
+                    className="min-h-20 rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
+                  />
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  className="bg-primary text-primary-foreground rounded-lg"
+                  onClick={() => handleApprove(claim)}
+                  disabled={processingId === claim.id}
+                >
+                  <CheckCircle2 className="size-4 mr-1" />
+                  Approve
+                </Button>
+
+                {showRejectInput === claim.id ? (
+                  <>
                     <Button
                       size="sm"
-                      variant="destructive"
-                      onClick={() => setShowRejectInput(claim.id)}
+                      className="border border-red-400/30 text-red-400 hover:bg-red-400/10 rounded-lg bg-transparent"
+                      onClick={() => handleReject(claim)}
                       disabled={processingId === claim.id}
                     >
                       <XCircle className="size-4 mr-1" />
-                      Reject
+                      Confirm Reject
                     </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-white/30 hover:text-white/60 rounded-lg"
+                      onClick={() => setShowRejectInput(null)}
+                    >
+                      Cancel
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    size="sm"
+                    className="border border-red-400/30 text-red-400 hover:bg-red-400/10 rounded-lg bg-transparent"
+                    onClick={() => setShowRejectInput(claim.id)}
+                    disabled={processingId === claim.id}
+                  >
+                    <XCircle className="size-4 mr-1" />
+                    Reject
+                  </Button>
+                )}
+              </div>
+            </div>
           ))}
         </div>
       )}
