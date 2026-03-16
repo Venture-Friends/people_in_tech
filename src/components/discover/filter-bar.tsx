@@ -14,9 +14,10 @@ export interface Filters {
 interface FilterBarProps {
   filters: Filters;
   onFilterChange: (filters: Filters) => void;
+  industries?: string[];
 }
 
-const INDUSTRIES = [
+const FALLBACK_INDUSTRIES = [
   "FinTech",
   "SaaS",
   "HealthTech",
@@ -37,8 +38,9 @@ const SIZES = [
   { label: "Large", value: "LARGE" },
 ];
 
-export function FilterBar({ filters, onFilterChange }: FilterBarProps) {
+export function FilterBar({ filters, onFilterChange, industries }: FilterBarProps) {
   const t = useTranslations("discover");
+  const industryList = industries && industries.length > 0 ? industries : FALLBACK_INDUSTRIES;
 
   function chipClass(active: boolean) {
     return active
@@ -58,7 +60,7 @@ export function FilterBar({ filters, onFilterChange }: FilterBarProps) {
         >
           {t("all")}
         </Button>
-        {INDUSTRIES.map((ind) => (
+        {industryList.map((ind) => (
           <Button
             key={ind}
             variant="outline"

@@ -47,11 +47,16 @@ export default async function DiscoverPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const { companies, total } = await getInitialCompanies();
+  const [{ companies, total }, distinctIndustries] = await Promise.all([
+    getInitialCompanies(),
+    prisma.company
+      .findMany({ select: { industry: true }, distinct: ["industry"], orderBy: { industry: "asc" } })
+      .then((rows) => rows.map((r) => r.industry)),
+  ]);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <DiscoverClient initialCompanies={companies} initialTotal={total} />
+      <DiscoverClient initialCompanies={companies} initialTotal={total} industries={distinctIndustries} />
     </div>
   );
 }

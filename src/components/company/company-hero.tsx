@@ -12,6 +12,7 @@ import {
   Users,
   ArrowRight,
   Clock,
+  Calendar,
 } from "lucide-react";
 
 interface CompanyHeroProps {
@@ -26,6 +27,7 @@ interface CompanyHeroProps {
   website: string | null;
   linkedinUrl: string | null;
   locations: string[];
+  founded: number | null;
   initialFollowed: boolean;
   followerCount: number;
   userHasPendingClaim?: boolean;
@@ -50,6 +52,7 @@ export function CompanyHero({
   website,
   linkedinUrl,
   locations,
+  founded,
   initialFollowed,
   followerCount,
   userHasPendingClaim = false,
@@ -143,6 +146,12 @@ export function CompanyHero({
             <span className="inline-flex items-center gap-1 rounded-full bg-white/[0.04] border border-white/[0.06] px-3 py-1 text-xs text-white/40">
               <Users className="size-3" />
               {SIZE_LABELS[size]}
+            </span>
+          )}
+          {founded && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-white/[0.04] border border-white/[0.06] px-3 py-1 text-xs text-white/40">
+              <Calendar className="size-3" />
+              Founded {founded}
             </span>
           )}
         </div>

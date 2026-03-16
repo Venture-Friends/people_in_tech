@@ -2,7 +2,17 @@
 
 import { useTranslations } from "next-intl";
 import { Separator } from "@/components/ui/separator";
-import { Calendar, Users, MapPin, Factory, Globe } from "lucide-react";
+import { Calendar, Users, MapPin, Factory, Globe, Briefcase, ArrowRight } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+
+interface JobData {
+  id: string;
+  title: string;
+  location: string | null;
+  type: string;
+  externalUrl: string;
+  postedAt: string;
+}
 
 interface AboutTabProps {
   description: string | null;
@@ -12,6 +22,7 @@ interface AboutTabProps {
   locations: string[];
   industry: string;
   website: string | null;
+  jobs?: JobData[];
 }
 
 const SIZE_MAP: Record<string, string> = {
@@ -21,6 +32,15 @@ const SIZE_MAP: Record<string, string> = {
   LARGE: "200+ employees",
 };
 
+function formatJobType(type: string): string {
+  switch (type) {
+    case "REMOTE": return "Remote";
+    case "HYBRID": return "Hybrid";
+    case "ONSITE": return "On-site";
+    default: return type;
+  }
+}
+
 export function AboutTab({
   description,
   technologies,
@@ -29,6 +49,7 @@ export function AboutTab({
   locations,
   industry,
   website,
+  jobs = [],
 }: AboutTabProps) {
   const t = useTranslations("company");
 
@@ -66,6 +87,34 @@ export function AboutTab({
                 >
                   {tech}
                 </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Open Roles */}
+        {jobs.length > 0 && (
+          <div>
+            <Separator className="mb-6" />
+            <h3 className="mb-4 text-lg font-semibold text-foreground">
+              {t("openRoles")}
+            </h3>
+            <div className="space-y-2">
+              {jobs.slice(0, 5).map((job) => (
+                <Link
+                  key={job.id}
+                  href={`/jobs/${job.id}`}
+                  className="flex items-center gap-3 rounded-[12px] border border-white/[0.05] bg-white/[0.02] p-3 transition-all duration-200 hover:border-white/[0.1] hover:bg-white/[0.04]"
+                >
+                  <Briefcase className="size-4 shrink-0 text-white/30" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[13px] font-medium text-foreground">{job.title}</p>
+                    <p className="text-[11px] text-white/30">
+                      {job.location || "No location"} · {formatJobType(job.type)}
+                    </p>
+                  </div>
+                  <ArrowRight className="size-3.5 shrink-0 text-white/20" />
+                </Link>
               ))}
             </div>
           </div>

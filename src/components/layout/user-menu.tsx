@@ -23,7 +23,7 @@ export function UserMenu() {
   if (!session?.user) return null;
 
   const userName = session.user.name || "User";
-  const userRole = (session.user as any).role || "CANDIDATE";
+  const userRole = session.user.role || "CANDIDATE";
   const initials = userName
     .split(" ")
     .map((n: string) => n[0])
@@ -34,13 +34,18 @@ export function UserMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        className="flex items-center gap-1.5 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         <Avatar size="default">
           <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
             {initials}
           </AvatarFallback>
         </Avatar>
+        {userRole === "ADMIN" && (
+          <span className="bg-primary/[0.1] text-primary text-[10px] rounded-full px-1.5 font-semibold">
+            ADMIN
+          </span>
+        )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" sideOffset={8} className="w-56 border-white/[0.06] bg-card/95 backdrop-blur-xl">
         <DropdownMenuGroup>

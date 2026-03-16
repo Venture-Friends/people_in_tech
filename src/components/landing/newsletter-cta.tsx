@@ -9,12 +9,29 @@ import { toast } from "sonner";
 export function NewsletterCta() {
   const t = useTranslations("landing");
   const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!email.trim()) return;
-    toast.success("Thanks for subscribing!");
-    setEmail("");
+    if (!email.trim() || submitting) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/newsletter/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to subscribe");
+      }
+      toast.success("Thanks for subscribing!");
+      setEmail("");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to subscribe");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -37,8 +54,8 @@ export function NewsletterCta() {
               className="h-11 flex-1 rounded-[10px] border-white/[0.07] bg-white/[0.03] text-sm focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
               required
             />
-            <Button type="submit" className="h-11 rounded-[10px] px-6 text-[13px] font-semibold">
-              {t("subscribe")}
+            <Button type="submit" disabled={submitting} className="h-11 rounded-[10px] px-6 text-[13px] font-semibold">
+              {submitting ? "..." : t("subscribe")}
             </Button>
           </form>
         </div>

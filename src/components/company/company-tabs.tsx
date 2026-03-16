@@ -104,6 +104,7 @@ export function CompanyTabs({
           locations={locations}
           industry={industry}
           website={website}
+          jobs={jobs}
         />
       </TabsContent>
 

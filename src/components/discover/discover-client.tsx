@@ -18,11 +18,13 @@ interface CompanyApiResponse {
 interface DiscoverClientProps {
   initialCompanies: CompanyCardData[];
   initialTotal: number;
+  industries?: string[];
 }
 
 export function DiscoverClient({
   initialCompanies,
   initialTotal,
+  industries,
 }: DiscoverClientProps) {
   const t = useTranslations("discover");
   const searchParams = useSearchParams();
@@ -146,7 +148,7 @@ export function DiscoverClient({
         <SortDropdown value={sort} onChange={setSort} />
       </div>
 
-      <FilterBar filters={filters} onFilterChange={setFilters} />
+      <FilterBar filters={filters} onFilterChange={setFilters} industries={industries} />
 
       <CompanyGrid companies={companies} total={total} loading={loading} />
     </div>

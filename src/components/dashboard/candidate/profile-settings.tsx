@@ -2,10 +2,20 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { signOut } from "next-auth/react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { MultiSelectChips } from "@/components/shared/multi-select-chips";
 import { TagInput } from "@/components/shared/tag-input";
 import { toast } from "sonner";
@@ -70,6 +80,24 @@ interface ProfileSettingsProps {
 
 export function ProfileSettings({ profile }: ProfileSettingsProps) {
   const [saving, setSaving] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleDeleteAccount() {
+    setDeleting(true);
+    try {
+      const res = await fetch("/api/candidate/profile", { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to delete account");
+      }
+      toast.success("Account deleted");
+      signOut({ callbackUrl: "/" });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to delete account");
+      setDeleting(false);
+    }
+  }
 
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<ProfileData>({
     defaultValues: profile,
@@ -261,9 +289,34 @@ export function ProfileSettings({ profile }: ProfileSettingsProps) {
               type="button"
               variant="outline"
               className="text-red-400 border-red-400/20 hover:bg-red-400/10 hover:text-red-400"
+              onClick={() => setDeleteOpen(true)}
             >
               Delete Account
             </Button>
+
+            <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Delete your account?</DialogTitle>
+                  <DialogDescription>
+                    This will permanently delete your account, profile, and all saved data. This action cannot be undone.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <DialogClose render={<Button variant="outline" />}>
+                    Cancel
+                  </DialogClose>
+                  <Button
+                    variant="destructive"
+                    disabled={deleting}
+                    onClick={handleDeleteAccount}
+                  >
+                    {deleting && <Loader2 className="mr-2 size-4 animate-spin" />}
+                    Delete Account
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </div>

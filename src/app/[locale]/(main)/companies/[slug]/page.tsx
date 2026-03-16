@@ -152,6 +152,7 @@ export default async function CompanyProfilePage({ params }: PageProps) {
         website={company.website}
         linkedinUrl={company.linkedinUrl}
         locations={locations}
+        founded={company.founded}
         initialFollowed={isFollowing}
         followerCount={company._count.followers}
         userHasPendingClaim={userHasPendingClaim}
