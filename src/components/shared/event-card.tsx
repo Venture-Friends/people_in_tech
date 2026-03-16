@@ -1,5 +1,3 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Globe, Building2 } from "lucide-react";
 import { format } from "date-fns";
 
 export interface EventCardData {
@@ -15,28 +13,23 @@ export interface EventCardData {
   } | null;
 }
 
-function getTypeAccentBorder(type: string): string {
+function getTypeBadgeStyle(type: string): string {
   switch (type) {
-    case "WORKSHOP": return "border-l-blue-400";
-    case "MEETUP": return "border-l-purple-400";
-    case "WEBINAR": return "border-l-amber-400";
-    case "TALENT_SESSION": return "border-l-primary";
-    default: return "border-l-muted-foreground";
+    case "WORKSHOP": return "border-blue-400/20 bg-blue-400/[0.06] text-blue-400";
+    case "MEETUP": return "border-purple-400/20 bg-purple-400/[0.06] text-purple-400";
+    case "WEBINAR": return "border-amber-400/20 bg-amber-400/[0.06] text-amber-400";
+    case "TALENT_SESSION": return "border-primary/20 bg-primary/[0.06] text-primary";
+    default: return "border-white/[0.04] bg-white/[0.03] text-white/40";
   }
 }
 
 function formatEventType(type: string): string {
   switch (type) {
-    case "WORKSHOP":
-      return "Workshop";
-    case "MEETUP":
-      return "Meetup";
-    case "WEBINAR":
-      return "Webinar";
-    case "TALENT_SESSION":
-      return "Talent Session";
-    default:
-      return type;
+    case "WORKSHOP": return "Workshop";
+    case "MEETUP": return "Meetup";
+    case "WEBINAR": return "Webinar";
+    case "TALENT_SESSION": return "Talent Session";
+    default: return type;
   }
 }
 
@@ -46,53 +39,36 @@ export function EventCard({ event }: { event: EventCardData }) {
   const monthShort = format(dateObj, "MMM").toUpperCase();
 
   return (
-    <Card className="rounded-xl border-white/[0.06] bg-card transition-all duration-200 hover:-translate-y-0.5 hover:border-white/[0.12] hover:bg-[oklch(0.16_0.01_260)]">
-      <CardContent className="flex gap-4">
+    <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-[22px] transition-all duration-300 hover:border-white/[0.1] hover:bg-white/[0.04] hover:-translate-y-[3px] hover:shadow-[0_16px_48px_rgba(0,0,0,0.3)]">
+      <div className="flex gap-4">
         {/* Date block */}
-        <div className="flex flex-col items-center justify-center rounded-lg bg-surface-2 px-3 py-2">
-          <span className="text-xl font-bold text-foreground">
-            {dayNumber}
-          </span>
-          <span className="text-[10px] font-semibold tracking-wider text-muted-foreground">
+        <div className="flex flex-col items-center rounded-[10px] bg-primary/[0.06] border border-primary/[0.1] px-[14px] py-2">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-primary">
             {monthShort}
           </span>
+          <span className="font-display text-[22px] font-bold leading-none text-foreground">
+            {dayNumber}
+          </span>
         </div>
 
-        {/* Event details */}
-        <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-          <h3 className="truncate font-semibold text-foreground">
+        {/* Content */}
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate text-[15px] font-semibold text-foreground">
             {event.title}
           </h3>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <span className={`inline-flex items-center rounded-md border-l-2 bg-white/[0.06] px-2 py-0.5 text-xs text-muted-foreground ${getTypeAccentBorder(event.type)}`}>
+          <p className="mt-1 text-xs font-medium text-primary/50">
+            {event.company?.name || "POS4work"}
+          </p>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <span className={`rounded-md border px-2 py-0.5 text-[11px] ${getTypeBadgeStyle(event.type)}`}>
               {formatEventType(event.type)}
             </span>
-
-            <span className="text-xs text-muted-foreground">
-              {event.startTime}
+            <span className="text-[11px] text-white/30">
+              {event.isOnline ? "Online" : event.location || "TBA"} · {event.startTime}
             </span>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <Building2 className="size-3.5" />
-              {event.company?.name || "POS4work"}
-            </span>
-            {event.isOnline ? (
-              <span className="flex items-center gap-1 text-secondary">
-                <Globe className="size-3.5" />
-                Online
-              </span>
-            ) : event.location ? (
-              <span className="flex items-center gap-1">
-                <MapPin className="size-3.5" />
-                {event.location}
-              </span>
-            ) : null}
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
