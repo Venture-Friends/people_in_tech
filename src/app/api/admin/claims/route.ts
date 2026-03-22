@@ -14,13 +14,18 @@ async function requireAdmin() {
   return { session };
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   const auth = await requireAdmin();
   if ("error" in auth && auth.error) return auth.error;
 
   try {
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get("status") || "PENDING";
+
+    const where = status === "ALL" ? {} : { status };
+
     const claims = await prisma.companyClaim.findMany({
-      where: { status: "PENDING" },
+      where,
       orderBy: { createdAt: "desc" },
       include: {
         company: {
@@ -28,6 +33,9 @@ export async function GET() {
         },
         user: {
           select: { id: true, name: true, email: true },
+        },
+        reviewer: {
+          select: { name: true },
         },
       },
     });
@@ -48,6 +56,9 @@ export async function GET() {
       message: c.message,
       status: c.status,
       createdAt: c.createdAt.toISOString(),
+      reviewerName: c.reviewer?.name || null,
+      reviewNote: c.reviewNote || null,
+      reviewedAt: c.reviewedAt?.toISOString() || null,
     }));
 
     return NextResponse.json({ claims: mapped });
