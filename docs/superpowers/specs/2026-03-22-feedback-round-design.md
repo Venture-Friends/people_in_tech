@@ -295,7 +295,9 @@ Update in both `en.json` and `el.json` (Greek translation to match).
 
 **Update everywhere** the brand name appears: navbar, mobile nav, footer, page titles, meta tags.
 
-**Files:** `src/components/layout/navbar.tsx`, `src/components/layout/mobile-nav.tsx`, `src/app/layout.tsx` (meta), footer component
+**Cookie name for context switcher (A4):** `pit-active-context`
+
+**Files:** `src/components/layout/navbar.tsx`, `src/app/layout.tsx` (meta), and any other components referencing the brand name
 
 ---
 
