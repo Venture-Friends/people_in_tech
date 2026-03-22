@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { authOptions } from "@/lib/auth";
+import { getActiveContext } from "@/lib/context";
 
 export default async function DashboardPage({
   params,
@@ -24,6 +25,10 @@ export default async function DashboardPage({
   }
 
   if (role === "COMPANY_REP") {
+    const context = await getActiveContext();
+    if (context === "personal") {
+      redirect(`/${locale}/dashboard/candidate`);
+    }
     redirect(`/${locale}/dashboard/company`);
   }
 
