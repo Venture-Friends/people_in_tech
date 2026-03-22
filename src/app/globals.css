@@ -386,7 +386,8 @@
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .orb, .particle, .perspective-grid::before, .perspective-grid::after {
+  .orb, .particle, .perspective-grid::before, .perspective-grid::after,
+  .animate-logo-scroll-left, .animate-logo-scroll-right {
     animation: none !important;
   }
   .perspective-grid { opacity: 0.3; }
@@ -413,4 +414,20 @@
 }
 .animate-ticker-scroll-reverse {
   animation: ticker-scroll-reverse 35s linear infinite;
+}
+
+/* Company logo ticker */
+@keyframes logo-scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes logo-scroll-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+.animate-logo-scroll-left {
+  animation: logo-scroll-left 30s linear infinite;
+}
+.animate-logo-scroll-right {
+  animation: logo-scroll-right 30s linear infinite;
 }
