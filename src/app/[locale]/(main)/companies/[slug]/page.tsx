@@ -81,6 +81,21 @@ export default async function CompanyProfilePage({ params }: PageProps) {
     notFound();
   }
 
+  // Fetch approved team members (company reps)
+  const teamMembers = await prisma.companyClaim.findMany({
+    where: { companyId: company.id, status: "APPROVED" },
+    include: {
+      user: { select: { id: true, name: true, avatarUrl: true } },
+    },
+  });
+
+  const teamData = teamMembers.map((claim) => ({
+    userId: claim.user.id,
+    fullName: claim.fullName,
+    jobTitle: claim.jobTitle,
+    avatarUrl: claim.user.avatarUrl,
+  }));
+
   // Check if current user follows this company and has a pending claim
   let isFollowing = false;
   let userHasPendingClaim = false;
@@ -171,6 +186,7 @@ export default async function CompanyProfilePage({ params }: PageProps) {
           jobs={jobsData}
           events={eventsData}
           galleryImages={galleryData}
+          teamMembers={teamData}
         />
       </div>
     </div>

@@ -24,6 +24,13 @@ interface GalleryImageData {
   order: number;
 }
 
+interface TeamMemberData {
+  userId: string;
+  fullName: string;
+  jobTitle: string;
+  avatarUrl: string | null;
+}
+
 interface CompanyTabsProps {
   description: string | null;
   technologies: string[];
@@ -36,6 +43,7 @@ interface CompanyTabsProps {
   jobs: JobListingData[];
   events: EventCardData[];
   galleryImages: GalleryImageData[];
+  teamMembers: TeamMemberData[];
 }
 
 export function CompanyTabs({
@@ -50,6 +58,7 @@ export function CompanyTabs({
   jobs,
   events,
   galleryImages,
+  teamMembers,
 }: CompanyTabsProps) {
   const t = useTranslations("company");
   const isVerified = status === "VERIFIED";
@@ -105,6 +114,7 @@ export function CompanyTabs({
           industry={industry}
           website={website}
           jobs={jobs}
+          teamMembers={teamMembers}
         />
       </TabsContent>
 

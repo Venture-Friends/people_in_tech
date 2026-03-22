@@ -14,6 +14,13 @@ interface JobData {
   postedAt: string;
 }
 
+interface TeamMemberData {
+  userId: string;
+  fullName: string;
+  jobTitle: string;
+  avatarUrl: string | null;
+}
+
 interface AboutTabProps {
   description: string | null;
   technologies: string[];
@@ -23,6 +30,7 @@ interface AboutTabProps {
   industry: string;
   website: string | null;
   jobs?: JobData[];
+  teamMembers?: TeamMemberData[];
 }
 
 const SIZE_MAP: Record<string, string> = {
@@ -50,6 +58,7 @@ export function AboutTab({
   industry,
   website,
   jobs = [],
+  teamMembers = [],
 }: AboutTabProps) {
   const t = useTranslations("company");
 
@@ -88,6 +97,55 @@ export function AboutTab({
                   {tech}
                 </span>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Team */}
+        {teamMembers.length > 0 && (
+          <div>
+            <Separator className="mb-6" />
+            <h3 className="text-xs font-medium uppercase tracking-wider text-white/30 mb-3">
+              {t("team")}
+            </h3>
+            <div className="flex flex-wrap gap-3">
+              {teamMembers.map((member) => {
+                const initials = member.fullName
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .slice(0, 2)
+                  .toUpperCase();
+                return (
+                  <Link
+                    key={member.userId}
+                    href={`/people/${member.userId}`}
+                    className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 transition-colors hover:border-white/[0.1] hover:bg-white/[0.04]"
+                  >
+                    {member.avatarUrl ? (
+                      <img
+                        src={member.avatarUrl}
+                        alt={member.fullName}
+                        className="size-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex size-8 items-center justify-center rounded-full bg-white/[0.06]">
+                        <span className="text-xs font-bold text-white/40">
+                          {initials}
+                        </span>
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-foreground">
+                        {member.fullName}
+                      </p>
+                      <p className="text-xs text-white/40">
+                        {member.jobTitle}
+                      </p>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         )}
