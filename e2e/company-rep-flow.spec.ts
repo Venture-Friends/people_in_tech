@@ -20,8 +20,8 @@ test.describe("Company Rep Flow", () => {
     await page.goto("/en/dashboard/company");
     await expect(page).toHaveURL(/dashboard\/company/);
     // Dashboard heading should be visible
-    await expect(page.locator("h1")).toBeVisible({ timeout: 10000 });
-    await expect(page.locator("h1")).toContainText("Dashboard");
+    await expect(page.locator("h1").first()).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("h1").first()).toContainText("Dashboard");
   });
 
   test("can see company dashboard overview stats", async ({ page }) => {
@@ -47,8 +47,8 @@ test.describe("Company Rep Flow", () => {
   test("can view company page with team section", async ({ page }) => {
     await page.goto("/en/companies/workable");
     // Company name should be displayed in the hero
-    await expect(page.locator("h1")).toBeVisible({ timeout: 15000 });
-    await expect(page.locator("h1")).toContainText("Workable");
+    await expect(page.locator("h1").first()).toBeVisible({ timeout: 15000 });
+    await expect(page.locator("h1").first()).toContainText("Workable");
     // Team section in the About tab should show the rep
     await expect(page.getByText("Nikos Georgiou")).toBeVisible({ timeout: 10000 });
   });
