@@ -26,9 +26,11 @@ interface Candidate {
   id: string;
   name: string;
   email: string;
+  role: string;
   experienceLevel: string;
   skills: string[];
   joinedAt: string;
+  onboardingComplete: boolean;
 }
 
 const experienceLevelLabels: Record<string, string> = {
@@ -155,6 +157,7 @@ export function CandidatesTable() {
                 <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Name</TableHead>
                 <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Email</TableHead>
                 <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Experience</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Onboarding</TableHead>
                 <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Skills</TableHead>
                 <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Joined</TableHead>
               </TableRow>
@@ -163,7 +166,7 @@ export function CandidatesTable() {
               {candidates.length === 0 ? (
                 <TableRow className="border-b border-white/[0.04] hover:bg-white/[0.02]">
                   <TableCell
-                    colSpan={5}
+                    colSpan={6}
                     className="text-center text-white/30 py-8"
                   >
                     No candidates found
@@ -186,6 +189,17 @@ export function CandidatesTable() {
                       >
                         {experienceLevelLabels[candidate.experienceLevel] ||
                           candidate.experienceLevel}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span
+                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
+                          candidate.onboardingComplete
+                            ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                            : "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                        }`}
+                      >
+                        {candidate.onboardingComplete ? "Complete" : "Pending"}
                       </span>
                     </TableCell>
                     <TableCell>

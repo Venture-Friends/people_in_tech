@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     const format = searchParams.get("format") || "json";
 
     const where: Record<string, unknown> = {
-      role: "CANDIDATE",
+      role: { in: ["CANDIDATE", "COMPANY_REP"] },
     };
     const conditions: Record<string, unknown>[] = [];
 
@@ -60,19 +60,22 @@ export async function GET(request: NextRequest) {
       id: c.id,
       name: c.name,
       email: c.email,
+      role: c.role,
       experienceLevel: c.candidateProfile?.experienceLevel || "N/A",
       skills: c.candidateProfile ? JSON.parse(c.candidateProfile.skills) : [],
       joinedAt: c.createdAt.toISOString(),
+      onboardingComplete: c.candidateProfile?.onboardingComplete ?? false,
     }));
 
     if (format === "csv") {
-      const headers = ["Name", "Email", "Experience Level", "Skills", "Joined"];
+      const headers = ["Name", "Email", "Experience Level", "Skills", "Onboarding", "Joined"];
       const rows = mapped.map((c) =>
         [
           c.name,
           c.email,
           c.experienceLevel,
           (c.skills as string[]).join("; "),
+          c.onboardingComplete ? "Complete" : "Pending",
           new Date(c.joinedAt).toLocaleDateString(),
         ].join(",")
       );
