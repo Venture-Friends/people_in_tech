@@ -2,6 +2,7 @@ import { setRequestLocale } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 import { HeroSection } from "@/components/landing/hero-section";
 import { Ticker } from "@/components/landing/ticker";
+import { TrustedByTicker } from "@/components/landing/trusted-by-ticker";
 import { FeaturedCompanies } from "@/components/landing/featured-companies";
 import { HowItWorks } from "@/components/landing/how-it-works";
 import { UpcomingEvents } from "@/components/landing/upcoming-events";
@@ -108,6 +109,18 @@ async function getUpcomingEvents(): Promise<EventCardData[]> {
   }));
 }
 
+async function getCompanyLogos(): Promise<{ name: string; logo: string; slug: string }[]> {
+  const companies = await prisma.company.findMany({
+    where: { logo: { not: null } },
+    select: { name: true, logo: true, slug: true },
+  });
+  const results: { name: string; logo: string; slug: string }[] = [];
+  for (const c of companies) {
+    if (c.logo) results.push({ name: c.name, logo: c.logo, slug: c.slug });
+  }
+  return results;
+}
+
 async function getStats() {
   const [companyCount, eventCount, jobCount, allCompanies] = await Promise.all([
     prisma.company.count(),
@@ -164,17 +177,19 @@ export default async function LandingPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [companies, events, stats, latestJobs] = await Promise.all([
+  const [companies, events, stats, latestJobs, companyLogos] = await Promise.all([
     getFeaturedCompanies(),
     getUpcomingEvents(),
     getStats(),
     getLatestJobs(),
+    getCompanyLogos(),
   ]);
 
   return (
     <div className="flex flex-col">
       <HeroSection stats={stats} />
       <Ticker industries={stats.industries} techAndLocations={stats.techAndLocations} />
+      <TrustedByTicker logos={companyLogos} />
       <HowItWorks />
       <FeaturedCompanies companies={companies} />
       <Divider />
