@@ -32,6 +32,21 @@ async function main() {
   });
   console.log(`✓ Admin user: ${admin.email}`);
 
+  const repPassword = await hash("rep123", 10);
+
+  const companyRep = await prisma.user.upsert({
+    where: { email: "rep@company.gr" },
+    update: {},
+    create: {
+      email: "rep@company.gr",
+      name: "Nikos Georgiou",
+      passwordHash: repPassword,
+      role: "COMPANY_REP",
+      emailVerified: true,
+    },
+  });
+  console.log(`✓ Company rep user: ${companyRep.email}`);
+
   const candidate = await prisma.user.upsert({
     where: { email: "demo@candidate.gr" },
     update: {},
@@ -547,6 +562,34 @@ async function main() {
     companyRecords[company.slug] = record;
   }
   console.log(`✓ ${companies.length} companies seeded`);
+
+  // ── 2b. Company Rep Claim ──────────────────────────────────────────────
+  const workable = companyRecords["workable"];
+  if (workable) {
+    await prisma.companyClaim.upsert({
+      where: { id: "seed-claim-workable" },
+      update: {},
+      create: {
+        id: "seed-claim-workable",
+        companyId: workable.id,
+        userId: companyRep.id,
+        fullName: "Nikos Georgiou",
+        jobTitle: "Head of Talent Acquisition",
+        workEmail: "nikos@workable.com",
+        linkedinUrl: "https://linkedin.com/in/nikos-georgiou",
+        status: "APPROVED",
+        reviewedBy: admin.id,
+        reviewNote: "Verified via seed data",
+        reviewedAt: new Date(),
+      },
+    });
+
+    await prisma.company.update({
+      where: { id: workable.id },
+      data: { status: "VERIFIED" },
+    });
+    console.log(`✓ Approved claim: ${companyRep.name} → Workable`);
+  }
 
   // ── 3. Job Listings ───────────────────────────────────────────────────
 
