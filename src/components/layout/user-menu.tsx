@@ -14,7 +14,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Building2, LayoutDashboard, LogOut } from "lucide-react";
+import { Building2, LayoutDashboard, LogOut, User } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import type { ActiveContext } from "@/lib/context";
 
@@ -198,6 +198,12 @@ export function UserMenu() {
           </>
         )}
 
+        <Link href="/dashboard/profile">
+          <DropdownMenuItem>
+            <User className="size-4" />
+            {t("profile")}
+          </DropdownMenuItem>
+        </Link>
         <Link href="/dashboard">
           <DropdownMenuItem>
             <LayoutDashboard className="size-4" />
