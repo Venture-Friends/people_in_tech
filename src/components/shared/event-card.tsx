@@ -40,10 +40,10 @@ export function EventCard({ event }: { event: EventCardData }) {
   const monthShort = format(dateObj, "MMM").toUpperCase();
 
   return (
-    <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-[22px] transition-all duration-300 hover:border-white/[0.1] hover:bg-white/[0.04] hover:-translate-y-[3px] hover:shadow-[0_16px_48px_rgba(0,0,0,0.3)]">
-      <div className="flex gap-4">
+    <div className="h-full rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-[22px] transition-all duration-300 hover:border-white/[0.1] hover:bg-white/[0.04] hover:-translate-y-[3px] hover:shadow-[0_16px_48px_rgba(0,0,0,0.3)]">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
         {/* Date block */}
-        <div className="flex flex-col items-center rounded-[10px] bg-primary/[0.06] border border-primary/[0.1] px-[14px] py-2">
+        <div className="flex flex-col items-center justify-center rounded-[10px] bg-primary/[0.06] border border-primary/[0.1] w-[56px] h-[56px] shrink-0 self-center sm:self-auto">
           <span className="text-[10px] font-semibold uppercase tracking-wider text-primary">
             {monthShort}
           </span>
