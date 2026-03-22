@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Search, Play, Pause, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Search, Play, Pause, Trash2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,6 +53,7 @@ const typeColors: Record<string, string> = {
 };
 
 export function JobsTable() {
+  const router = useRouter();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -180,7 +182,11 @@ export function JobsTable() {
                 </TableRow>
               ) : (
                 jobs.map((job) => (
-                  <TableRow key={job.id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
+                  <TableRow
+                    key={job.id}
+                    className="border-b border-white/[0.04] hover:bg-white/[0.02] cursor-pointer"
+                    onClick={() => router.push(`/jobs/${job.id}`)}
+                  >
                     <TableCell className="font-medium text-[13px]">{job.title}</TableCell>
                     <TableCell className="text-[13px]">{job.companyName}</TableCell>
                     <TableCell className="text-[13px] text-white/[0.35]">
@@ -208,7 +214,16 @@ export function JobsTable() {
                       {new Date(job.postedAt).toLocaleDateString()}
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-1">
+                      <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          className="text-white/30 hover:text-white/60"
+                          onClick={() => router.push(`/jobs/${job.id}`)}
+                          title="View job"
+                        >
+                          <ExternalLink className="size-3.5" />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="icon-sm"

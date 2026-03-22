@@ -2,10 +2,10 @@
 
 import { UseFormRegister, UseFormWatch, UseFormSetValue, FieldErrors } from "react-hook-form";
 import { useTranslations } from "next-intl";
-import { Briefcase, GraduationCap, Rocket } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { EXPERIENCE_LEVELS } from "@/lib/constants/onboarding";
 import type { OnboardingInput } from "@/lib/validations/onboarding";
 
 interface StepAboutProps {
@@ -14,12 +14,6 @@ interface StepAboutProps {
   setValue: UseFormSetValue<OnboardingInput>;
   errors: FieldErrors<OnboardingInput>;
 }
-
-const EXPERIENCE_OPTIONS = [
-  { value: "STUDENT" as const, icon: GraduationCap, labelKey: "student" as const, description: "Currently studying" },
-  { value: "GRADUATE" as const, icon: Briefcase, labelKey: "graduate" as const, description: "Recently graduated" },
-  { value: "JUNIOR" as const, icon: Rocket, labelKey: "junior" as const, description: "1-3 years experience" },
-];
 
 export function StepAbout({ register, watch, setValue, errors }: StepAboutProps) {
   const t = useTranslations("onboarding");
@@ -72,34 +66,75 @@ export function StepAbout({ register, watch, setValue, errors }: StepAboutProps)
 
       <div>
         <Label className="text-[13px] font-medium text-white/50">{t("experienceLevel")}</Label>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2">
-          {EXPERIENCE_OPTIONS.map((option) => {
-            const Icon = option.icon;
+
+        {/* IC Track */}
+        <p className="mt-3 mb-2 text-[11px] uppercase tracking-wider text-white/30">Individual Contributor</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2" role="radiogroup" aria-label="Individual Contributor levels">
+          {EXPERIENCE_LEVELS.ic.map((option) => {
             const isSelected = currentLevel === option.value;
             return (
               <button
                 key={option.value}
                 type="button"
-                onClick={() => setValue("experienceLevel", option.value)}
+                role="radio"
+                aria-checked={isSelected}
+                onClick={() => setValue("experienceLevel", option.value as OnboardingInput["experienceLevel"])}
                 className={cn(
-                  "flex flex-col items-center gap-2 rounded-2xl border p-5 cursor-pointer transition-all",
+                  "flex flex-col items-start rounded-xl border px-3 py-2.5 cursor-pointer transition-all text-left",
                   isSelected
                     ? "border-primary/[0.25] bg-primary/[0.05] text-primary ring-1 ring-primary/20"
                     : "border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] text-white/40 hover:border-white/[0.1]"
                 )}
               >
-                <Icon className="size-6" />
-                <span className="text-sm font-medium">{t(option.labelKey)}</span>
+                <span className="text-[13px] font-medium">{t(option.labelKey)}</span>
                 <span className={cn(
-                  "text-xs",
+                  "text-[11px] mt-0.5",
                   isSelected ? "text-primary/60" : "text-white/25"
                 )}>
-                  {option.description}
+                  {t(option.descKey)} · {option.years} yrs
                 </span>
               </button>
             );
           })}
         </div>
+
+        {/* Management Track */}
+        <div className="my-3 flex items-center gap-3">
+          <div className="h-px flex-1 bg-white/[0.06]" />
+          <span className="text-[10px] uppercase tracking-wider text-white/20">or</span>
+          <div className="h-px flex-1 bg-white/[0.06]" />
+        </div>
+
+        <p className="mb-2 text-[11px] uppercase tracking-wider text-white/30">Management</p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2" role="radiogroup" aria-label="Management levels">
+          {EXPERIENCE_LEVELS.management.map((option) => {
+            const isSelected = currentLevel === option.value;
+            return (
+              <button
+                key={option.value}
+                type="button"
+                role="radio"
+                aria-checked={isSelected}
+                onClick={() => setValue("experienceLevel", option.value as OnboardingInput["experienceLevel"])}
+                className={cn(
+                  "flex flex-col items-start rounded-xl border px-3 py-2.5 cursor-pointer transition-all text-left",
+                  isSelected
+                    ? "border-primary/[0.25] bg-primary/[0.05] text-primary ring-1 ring-primary/20"
+                    : "border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] text-white/40 hover:border-white/[0.1]"
+                )}
+              >
+                <span className="text-[13px] font-medium">{t(option.labelKey)}</span>
+                <span className={cn(
+                  "text-[11px] mt-0.5",
+                  isSelected ? "text-primary/60" : "text-white/25"
+                )}>
+                  {option.years} yrs
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
         {errors.experienceLevel && (
           <p className="text-sm text-destructive mt-1">
             {errors.experienceLevel.message}

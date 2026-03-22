@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { Plus, Pencil, Trash2, Upload, Loader2, Globe, ImageIcon } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,8 +45,6 @@ const defaultForm = {
   order: "0",
 };
 
-type LogoFetchStatus = "idle" | "fetching" | "found" | "not-found" | "error";
-
 export function PartnersManager() {
   const [partners, setPartners] = useState<PartnerData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,10 +52,6 @@ export function PartnersManager() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingPartner, setEditingPartner] = useState<PartnerData | null>(null);
   const [formData, setFormData] = useState(defaultForm);
-  const [logoFetchStatus, setLogoFetchStatus] = useState<LogoFetchStatus>("idle");
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchPartners = useCallback(async () => {
     try {
@@ -74,80 +68,6 @@ export function PartnersManager() {
   useEffect(() => {
     fetchPartners();
   }, [fetchPartners]);
-
-  const resetLogoState = () => {
-    setLogoFetchStatus("idle");
-    setLogoPreview(null);
-  };
-
-  const handleWebsiteBlur = async (websiteUrl: string) => {
-    if (!websiteUrl.trim()) {
-      resetLogoState();
-      return;
-    }
-
-    // Don't re-fetch if logo already set (e.g. editing existing partner)
-    if (formData.logo && logoFetchStatus !== "idle") return;
-
-    setLogoFetchStatus("fetching");
-    setLogoPreview(null);
-
-    try {
-      const res = await fetch("/api/admin/partners/fetch-logo", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: websiteUrl }),
-      });
-      const data = await res.json();
-
-      if (res.ok && data.logoUrl) {
-        setLogoFetchStatus("found");
-        setLogoPreview(data.logoUrl);
-        setFormData((prev) => ({ ...prev, logo: data.logoUrl }));
-        toast.success("Logo found automatically");
-      } else {
-        setLogoFetchStatus("not-found");
-        toast.info("Could not find logo. You can upload one manually.");
-      }
-    } catch {
-      setLogoFetchStatus("error");
-      toast.error("Failed to fetch logo");
-    }
-  };
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
-    try {
-      const formPayload = new FormData();
-      formPayload.append("logo", file);
-
-      const res = await fetch("/api/admin/partners/upload-logo", {
-        method: "POST",
-        body: formPayload,
-      });
-      const data = await res.json();
-
-      if (res.ok && data.logoUrl) {
-        setFormData((prev) => ({ ...prev, logo: data.logoUrl }));
-        setLogoPreview(data.logoUrl);
-        setLogoFetchStatus("found");
-        toast.success("Logo uploaded successfully");
-      } else {
-        toast.error(data.error || "Failed to upload logo");
-      }
-    } catch {
-      toast.error("Failed to upload logo");
-    } finally {
-      setUploading(false);
-      // Reset file input so re-selecting the same file triggers onChange
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-    }
-  };
 
   const handleAdd = async () => {
     if (!formData.name || !formData.logo) {
@@ -173,7 +93,6 @@ export function PartnersManager() {
       toast.success("Partner created");
       setAddDialogOpen(false);
       setFormData(defaultForm);
-      resetLogoState();
       fetchPartners();
     } catch {
       toast.error("Failed to create partner");
@@ -204,7 +123,6 @@ export function PartnersManager() {
       toast.success("Partner updated");
       setEditDialogOpen(false);
       setEditingPartner(null);
-      resetLogoState();
       fetchPartners();
     } catch {
       toast.error("Failed to update partner");
@@ -254,16 +172,7 @@ export function PartnersManager() {
       website: partner.website || "",
       order: partner.order.toString(),
     });
-    setLogoPreview(partner.logo);
-    setLogoFetchStatus(partner.logo ? "found" : "idle");
     setEditDialogOpen(true);
-  };
-
-  const handleDialogClose = (open: boolean) => {
-    if (!open) {
-      setFormData(defaultForm);
-      resetLogoState();
-    }
   };
 
   const PartnerForm = ({
@@ -284,105 +193,25 @@ export function PartnersManager() {
         />
       </div>
       <div className="space-y-1.5">
-        <Label className="text-white/[0.35] text-xs">Website URL</Label>
-        <div className="relative">
-          <Globe className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-white/20" />
-          <Input
-            value={formData.website}
-            onChange={(e) =>
-              setFormData({ ...formData, website: e.target.value })
-            }
-            onBlur={(e) => handleWebsiteBlur(e.target.value)}
-            placeholder="https://example.com"
-            className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20 pl-9"
-          />
-        </div>
-        {logoFetchStatus === "fetching" && (
-          <p className="text-xs text-white/30 flex items-center gap-1.5 mt-1">
-            <Loader2 className="size-3 animate-spin" />
-            Searching for logo...
-          </p>
-        )}
+        <Label className="text-white/[0.35] text-xs">Logo URL *</Label>
+        <Input
+          value={formData.logo}
+          onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
+          placeholder="https://example.com/logo.png"
+          className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
+        />
       </div>
-
-      {/* Logo section */}
       <div className="space-y-1.5">
-        <Label className="text-white/[0.35] text-xs">Logo *</Label>
-        <div className="flex items-start gap-3">
-          {/* Logo preview */}
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl border border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] overflow-hidden">
-            {logoPreview || formData.logo ? (
-              <Image
-                src={logoPreview || formData.logo}
-                alt="Logo preview"
-                width={56}
-                height={56}
-                className="h-14 w-14 object-contain"
-                unoptimized
-              />
-            ) : (
-              <ImageIcon className="size-6 text-white/15" />
-            )}
-          </div>
-
-          <div className="flex-1 space-y-2">
-            {/* Logo URL input */}
-            <Input
-              value={formData.logo}
-              onChange={(e) => {
-                setFormData({ ...formData, logo: e.target.value });
-                setLogoPreview(e.target.value || null);
-              }}
-              placeholder="Logo URL (auto-filled or paste manually)"
-              className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20 text-xs"
-            />
-
-            {/* Status messages and upload button */}
-            {logoFetchStatus === "not-found" && (
-              <p className="text-xs text-amber-400/70">
-                No logo found automatically. Upload or paste a URL.
-              </p>
-            )}
-            {logoFetchStatus === "error" && (
-              <p className="text-xs text-red-400/70">
-                Error fetching logo. Upload or paste a URL.
-              </p>
-            )}
-
-            {/* Upload button */}
-            <div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleFileUpload}
-                className="hidden"
-              />
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="rounded-lg text-xs h-8 border-white/[0.07] bg-white/[0.03] hover:bg-white/[0.06]"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading}
-              >
-                {uploading ? (
-                  <>
-                    <Loader2 className="size-3 mr-1.5 animate-spin" />
-                    Uploading...
-                  </>
-                ) : (
-                  <>
-                    <Upload className="size-3 mr-1.5" />
-                    Upload logo
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
-        </div>
+        <Label className="text-white/[0.35] text-xs">Website URL</Label>
+        <Input
+          value={formData.website}
+          onChange={(e) =>
+            setFormData({ ...formData, website: e.target.value })
+          }
+          placeholder="https://example.com"
+          className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
+        />
       </div>
-
       <div className="space-y-1.5">
         <Label className="text-white/[0.35] text-xs">Display Order</Label>
         <Input
@@ -422,13 +251,7 @@ export function PartnersManager() {
             Manage partner logos displayed on the landing page
           </p>
         </div>
-        <Dialog
-          open={addDialogOpen}
-          onOpenChange={(open) => {
-            setAddDialogOpen(open);
-            handleDialogClose(open);
-          }}
-        >
+        <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
           <DialogTrigger>
             <Button
               size="sm"
@@ -564,16 +387,7 @@ export function PartnersManager() {
       )}
 
       {/* Edit Dialog */}
-      <Dialog
-        open={editDialogOpen}
-        onOpenChange={(open) => {
-          setEditDialogOpen(open);
-          if (!open) {
-            setEditingPartner(null);
-            resetLogoState();
-          }
-        }}
-      >
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Edit Partner</DialogTitle>

@@ -28,7 +28,7 @@ export function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 bg-[oklch(0.07_0.01_260_/_0.6)] backdrop-blur-[16px] backdrop-saturate-[1.2] border-b border-white/[0.04]">
+    <header className="fixed inset-x-0 top-0 z-50 bg-[rgba(14,17,23,0.6)] backdrop-blur-[16px] backdrop-saturate-[1.2] border-b border-white/[0.04]">
       <div className="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-4 sm:px-6 lg:px-8">
         {/* Logo — left */}
         <div className="flex items-center">
@@ -82,7 +82,7 @@ export function Navbar() {
                 <Link href="/register">
                   <Button
                     size="sm"
-                    className="bg-primary text-primary-foreground text-[13px] font-semibold rounded-lg px-[18px] py-2 hover:bg-[oklch(0.92_0.27_128)] hover:shadow-[0_4px_16px_oklch(0.88_0.27_128_/_0.25)]"
+                    className="bg-primary text-primary-foreground text-[13px] font-semibold rounded-lg px-[18px] py-2 hover:bg-[#b4f724] hover:shadow-[0_4px_16px_rgba(159,239,0,0.25)]"
                   >
                     {t("getStarted")}
                   </Button>
@@ -106,7 +106,7 @@ export function Navbar() {
               </SheetTrigger>
               <SheetContent
                 side="right"
-                className="max-w-[280px] w-[85vw] p-0 bg-[oklch(0.07_0.01_260_/_0.9)] backdrop-blur-[16px]"
+                className="max-w-[280px] w-[85vw] p-0 bg-[rgba(14,17,23,0.9)] backdrop-blur-[16px]"
               >
                 <SheetHeader className="border-b border-white/[0.04] p-4">
                   <SheetTitle className="text-left font-display text-lg font-bold text-foreground tracking-tight">
@@ -156,7 +156,7 @@ export function Navbar() {
                         </Button>
                       </Link>
                       <Link href="/register">
-                        <Button className="w-full justify-center bg-primary text-primary-foreground text-[13px] font-semibold rounded-lg hover:bg-[oklch(0.92_0.27_128)] hover:shadow-[0_4px_16px_oklch(0.88_0.27_128_/_0.25)]">
+                        <Button className="w-full justify-center bg-primary text-primary-foreground text-[13px] font-semibold rounded-lg hover:bg-[#b4f724] hover:shadow-[0_4px_16px_rgba(159,239,0,0.25)]">
                           {t("getStarted")}
                         </Button>
                       </Link>

@@ -66,9 +66,6 @@ export function CompanyGrid({ companies, total, loading }: CompanyGridProps) {
 
   return (
     <div>
-      <p className="mb-4 text-right text-sm text-muted-foreground transition-opacity">
-        {total} {total === 1 ? "company" : "companies"}
-      </p>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {companies.map((company) => (
           <CompanyCard key={company.slug} company={company} />

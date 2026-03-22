@@ -9,6 +9,8 @@ import { Footer } from "@/components/layout/footer";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { Toaster } from "@/components/ui/sonner";
 import { AnimatedBackground } from "@/components/shared/animated-background";
+import { FeedbackWidget } from "@/components/shared/feedback-widget";
+import { TailwindIndicator } from "@/components/shared/tailwind-indicator";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -35,12 +37,14 @@ export default async function LocaleLayout({
       <SessionProvider>
         <AnimatedBackground />
         <Navbar />
-        <main className="relative z-[2] min-h-screen pt-16 pb-16 sm:pb-0">
+        <main id="main-content" className="relative z-[2] min-h-screen pt-16 pb-16 sm:pb-0">
           {children}
         </main>
         <Footer />
         <MobileNav />
         <Toaster />
+        <FeedbackWidget />
+        <TailwindIndicator />
       </SessionProvider>
     </NextIntlClientProvider>
   );

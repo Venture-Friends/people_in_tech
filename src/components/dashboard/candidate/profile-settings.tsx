@@ -17,48 +17,17 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { MultiSelectChips } from "@/components/shared/multi-select-chips";
-import { TagInput } from "@/components/shared/tag-input";
+import { SkillPicker } from "@/components/shared/skill-picker";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const ROLE_OPTIONS = [
-  "Frontend",
-  "Backend",
-  "Full-Stack",
-  "Data",
-  "Design",
-  "Product",
-  "DevOps",
-  "Marketing",
-  "Sales",
-  "Operations",
-];
-
-const INDUSTRY_OPTIONS = [
-  "FinTech",
-  "HealthTech",
-  "EdTech",
-  "SaaS",
-  "E-commerce",
-  "AI/ML",
-  "Cybersecurity",
-  "Gaming",
-  "IoT",
-];
-
-const LOCATION_OPTIONS = [
-  "Athens",
-  "Thessaloniki",
-  "Remote",
-  "Anywhere in Greece",
-];
-
-const EXPERIENCE_LEVELS = [
-  { value: "STUDENT", label: "Student" },
-  { value: "GRADUATE", label: "Graduate" },
-  { value: "JUNIOR", label: "Junior" },
-] as const;
+import {
+  EXPERIENCE_LEVELS,
+  EXPERIENCE_LABEL_MAP,
+  ALL_ROLES,
+  INDUSTRY_OPTIONS,
+  LOCATION_OPTIONS,
+} from "@/lib/constants/onboarding";
 
 export interface ProfileData {
   name: string;
@@ -175,8 +144,8 @@ export function ProfileSettings({ profile }: ProfileSettingsProps) {
           {/* Experience Level */}
           <div className="space-y-3">
             <p className="text-[13px] font-medium text-white/50">Experience Level</p>
-            <div className="grid grid-cols-3 gap-3">
-              {EXPERIENCE_LEVELS.map((level) => (
+            <div className="flex flex-wrap gap-2">
+              {[...EXPERIENCE_LEVELS.ic, ...EXPERIENCE_LEVELS.management].map((level) => (
                 <button
                   key={level.value}
                   type="button"
@@ -188,7 +157,7 @@ export function ProfileSettings({ profile }: ProfileSettingsProps) {
                       : "border-white/[0.06] bg-white/[0.02] text-white/[0.45] hover:border-white/[0.12]"
                   )}
                 >
-                  {level.label}
+                  {EXPERIENCE_LABEL_MAP[level.value] || level.value}
                 </button>
               ))}
             </div>
@@ -197,16 +166,16 @@ export function ProfileSettings({ profile }: ProfileSettingsProps) {
           {/* Skills */}
           <div className="space-y-2">
             <Label className="text-[13px] text-white/50 mb-3">Skills</Label>
-            <TagInput
-              tags={skills || []}
-              onChange={(tags) => setValue("skills", tags)}
-              placeholder="Add a skill..."
+            <SkillPicker
+              selected={skills || []}
+              onChange={(skills) => setValue("skills", skills)}
+              placeholder="Search or add a skill..."
             />
           </div>
 
           <MultiSelectChips
             label="Role Interests"
-            options={ROLE_OPTIONS}
+            options={ALL_ROLES}
             selected={roleInterests || []}
             onChange={(selected) => setValue("roleInterests", selected)}
           />

@@ -7,19 +7,13 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { LOCATION_OPTIONS } from "@/lib/constants/onboarding";
 import type { OnboardingInput } from "@/lib/validations/onboarding";
 
 interface StepPreferencesProps {
   watch: UseFormWatch<OnboardingInput>;
   setValue: UseFormSetValue<OnboardingInput>;
 }
-
-const LOCATION_OPTIONS = [
-  "Athens",
-  "Thessaloniki",
-  "Remote",
-  "Anywhere in Greece",
-];
 
 export function StepPreferences({ watch, setValue }: StepPreferencesProps) {
   const t = useTranslations("onboarding");

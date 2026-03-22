@@ -10,6 +10,8 @@ import {
   Calendar,
   Mail,
   BarChart3,
+  Handshake,
+  FileText,
   Menu,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -28,6 +30,8 @@ import { JobsTable } from "./jobs-table";
 import { EventsManager } from "./events-manager";
 import { NewsletterComposer } from "./newsletter-composer";
 import { AnalyticsDashboard } from "./analytics-dashboard";
+import { PartnersManager } from "./partners-manager";
+import { ContentEditor } from "./content-editor";
 
 interface KPIs {
   totalCompanies: number;
@@ -55,6 +59,8 @@ const sidebarItems = [
   { id: "jobs", label: "Job Listings", icon: Briefcase },
   { id: "events", label: "Events", icon: Calendar },
   { id: "newsletters", label: "Newsletters", icon: Mail },
+  { id: "partners", label: "Partners", icon: Handshake },
+  { id: "content", label: "Content", icon: FileText },
   { id: "analytics", label: "Analytics", icon: BarChart3 },
 ];
 
@@ -110,6 +116,11 @@ export function AdminDashboardClient({
 }: AdminDashboardClientProps) {
   const [activeTab, setActiveTab] = useState("overview");
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [pendingClaims, setPendingClaims] = useState(kpis.pendingClaims);
+
+  const handleClaimProcessed = () => {
+    setPendingClaims((prev) => Math.max(0, prev - 1));
+  };
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -131,13 +142,17 @@ export function AdminDashboardClient({
       case "candidates":
         return <CandidatesTable />;
       case "claims":
-        return <ClaimsQueue />;
+        return <ClaimsQueue onClaimProcessed={handleClaimProcessed} />;
       case "jobs":
         return <JobsTable />;
       case "events":
         return <EventsManager />;
       case "newsletters":
         return <NewsletterComposer />;
+      case "partners":
+        return <PartnersManager />;
+      case "content":
+        return <ContentEditor />;
       case "analytics":
         return <AnalyticsDashboard />;
       default:
@@ -152,12 +167,12 @@ export function AdminDashboardClient({
   };
 
   return (
-    <div className="flex min-h-screen -m-4 sm:-m-6 lg:-m-8">
+    <div className="flex min-h-[calc(100vh-8rem)]">
       {/* Desktop sidebar */}
       <aside className="w-[220px] shrink-0 hidden lg:flex flex-col bg-white/[0.02] border-r border-white/[0.04]">
         <SidebarContent
           activeTab={activeTab}
-          pendingClaims={kpis.pendingClaims}
+          pendingClaims={pendingClaims}
           onTabChange={handleTabChange}
         />
       </aside>
@@ -177,7 +192,7 @@ export function AdminDashboardClient({
               </SheetHeader>
               <SidebarContent
                 activeTab={activeTab}
-                pendingClaims={kpis.pendingClaims}
+                pendingClaims={pendingClaims}
                 onTabChange={handleTabChange}
               />
             </SheetContent>
@@ -190,7 +205,7 @@ export function AdminDashboardClient({
           </div>
         </header>
 
-        <main className="flex-1 min-w-0 p-6 lg:p-8">{renderContent()}</main>
+        <main className="flex-1 min-w-0 overflow-x-auto p-6 lg:p-8">{renderContent()}</main>
       </div>
     </div>
   );

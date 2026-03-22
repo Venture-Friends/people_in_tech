@@ -39,8 +39,14 @@ export async function GET(request: NextRequest) {
       case "newest":
         orderBy = { postedAt: "desc" };
         break;
+      case "oldest":
+        orderBy = { postedAt: "asc" };
+        break;
       case "company":
         orderBy = { company: { name: "asc" } };
+        break;
+      case "location":
+        orderBy = { location: "asc" };
         break;
       default:
         orderBy = { postedAt: "desc" };

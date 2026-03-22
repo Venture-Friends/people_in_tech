@@ -3,6 +3,13 @@
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
 interface JobFiltersProps {
@@ -23,7 +30,9 @@ const typeOptions = [
 
 const sortOptions = [
   { value: "newest", label: "Newest" },
-  { value: "company", label: "Company Name" },
+  { value: "oldest", label: "Oldest" },
+  { value: "company", label: "Company (A\u2013Z)" },
+  { value: "location", label: "Location" },
 ];
 
 function chipClass(active: boolean) {
@@ -70,20 +79,21 @@ export function JobFilters({
           ))}
         </div>
 
-        {/* Sort */}
+        {/* Sort dropdown */}
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground">Sort:</span>
-          {sortOptions.map((option) => (
-            <Button
-              key={option.value}
-              variant="ghost"
-              size="sm"
-              onClick={() => onSortChange(option.value)}
-              className={cn("text-xs", sort === option.value && "text-primary")}
-            >
-              {option.label}
-            </Button>
-          ))}
+          <Select value={sort} onValueChange={(v) => v !== null && onSortChange(v)}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {sortOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </div>

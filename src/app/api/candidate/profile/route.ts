@@ -28,7 +28,10 @@ const profileUpdateSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   headline: z.string().optional(),
   linkedinUrl: z.string().url().optional().or(z.literal("")),
-  experienceLevel: z.enum(["STUDENT", "GRADUATE", "JUNIOR"]),
+  experienceLevel: z.enum([
+    "STUDENT", "FRESH_GRADUATE", "JUNIOR", "MID", "SENIOR", "LEAD", "STAFF",
+    "MANAGER", "DIRECTOR", "EXECUTIVE",
+  ]),
   skills: z.array(z.string()),
   roleInterests: z.array(z.string()),
   industries: z.array(z.string()),

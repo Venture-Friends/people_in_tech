@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { ChevronDown, ChevronUp, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export interface Filters {
@@ -40,7 +42,13 @@ const SIZES = [
 
 export function FilterBar({ filters, onFilterChange, industries }: FilterBarProps) {
   const t = useTranslations("discover");
+  const [expanded, setExpanded] = useState(false);
   const industryList = industries && industries.length > 0 ? industries : FALLBACK_INDUSTRIES;
+
+  const activeCount = [
+    filters.industry, filters.location, filters.size,
+    filters.hasRoles, filters.verified,
+  ].filter(Boolean).length;
 
   function chipClass(active: boolean) {
     return active
@@ -50,6 +58,22 @@ export function FilterBar({ filters, onFilterChange, industries }: FilterBarProp
 
   return (
     <div className="flex flex-col gap-3">
+      <button
+        type="button"
+        onClick={() => setExpanded(!expanded)}
+        className="flex items-center gap-2 text-sm font-medium text-white/40 hover:text-white/60 transition-colors w-fit cursor-pointer"
+      >
+        <SlidersHorizontal className="size-4" />
+        Filters
+        {activeCount > 0 && (
+          <span className="rounded-full bg-primary/[0.1] text-primary px-2 text-[11px] font-medium">
+            {activeCount}
+          </span>
+        )}
+        {expanded ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
+      </button>
+
+      {!expanded ? null : <div className="flex flex-col gap-3 px-1 animate-in slide-in-from-top-2 duration-200">
       {/* Industry chips */}
       <div className="flex flex-wrap gap-2">
         <Button
@@ -157,6 +181,7 @@ export function FilterBar({ filters, onFilterChange, industries }: FilterBarProp
           {t("filterVerified")}
         </Button>
       </div>
+    </div>}
     </div>
   );
 }

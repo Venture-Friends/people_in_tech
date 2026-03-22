@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { CheckCircle, Loader2 } from "lucide-react";
+import { CheckCircle, Loader2, Mail } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -31,6 +32,9 @@ export function ClaimCompanyModal({
   isOpen,
   onOpenChange,
 }: ClaimCompanyModalProps) {
+  const { data: session } = useSession();
+  const isLoggedIn = !!session?.user;
+
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -57,33 +61,42 @@ export function ClaimCompanyModal({
     setSubmitError(null);
 
     try {
-      const res = await fetch("/api/claims", {
+      // Use authenticated endpoint if logged in, otherwise public endpoint
+      const endpoint = isLoggedIn ? "/api/claims" : "/api/claims/public";
+
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
+      if (isLoggedIn) {
+        // Authenticated flow — check for specific errors
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
 
-        if (res.status === 409) {
+          if (res.status === 409) {
+            setSubmitError(
+              "You have already submitted a claim for this company."
+            );
+            return;
+          }
+          if (res.status === 401) {
+            setSubmitError("Session expired. Please sign in again.");
+            return;
+          }
           setSubmitError(
-            "You have already submitted a claim for this company."
+            body.error || "Something went wrong. Please try again."
           );
           return;
         }
-        if (res.status === 401) {
-          setSubmitError("You must be signed in to claim a company page.");
-          return;
-        }
-        setSubmitError(
-          body.error || "Something went wrong. Please try again."
-        );
-        return;
-      }
 
-      setIsSuccess(true);
-      toast.success("Claim submitted successfully!");
+        setIsSuccess(true);
+        toast.success("Claim submitted successfully!");
+      } else {
+        // Public flow — always succeeds (anti-enumeration)
+        setIsSuccess(true);
+      }
     } catch {
       setSubmitError("Something went wrong. Please try again.");
     } finally {
@@ -107,33 +120,69 @@ export function ClaimCompanyModal({
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="bg-card sm:max-w-md">
         {isSuccess ? (
-          <div className="flex flex-col items-center gap-4 py-6 text-center">
-            <div className="flex size-12 items-center justify-center rounded-full bg-green-500/20">
-              <CheckCircle className="size-6 text-green-400" />
+          isLoggedIn ? (
+            /* Authenticated success: immediate confirmation */
+            <div className="flex flex-col items-center gap-4 py-6 text-center">
+              <div className="flex size-12 items-center justify-center rounded-full bg-green-500/20">
+                <CheckCircle className="size-6 text-green-400" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">
+                  Claim Submitted
+                </h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Your claim request has been submitted! Our team will review it
+                  within 2 business days.
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => handleOpenChange(false)}
+                className="mt-2"
+              >
+                Close
+              </Button>
             </div>
-            <div>
-              <h3 className="text-lg font-semibold text-foreground">
-                Claim Submitted
-              </h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Your claim request has been submitted! Our team will review it
-                within 2 business days.
-              </p>
+          ) : (
+            /* Public success: check your email */
+            <div className="flex flex-col items-center gap-4 py-6 text-center">
+              <div className="flex size-12 items-center justify-center rounded-full bg-primary/20">
+                <Mail className="size-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">
+                  Check Your Email
+                </h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  We&apos;ve sent a verification link to your work email. Click
+                  the link to verify your claim for{" "}
+                  <strong className="text-foreground">{companyName}</strong>.
+                </p>
+                <p className="mt-3 text-xs text-muted-foreground/70">
+                  The link expires in 24 hours. If you don&apos;t see it, check
+                  your spam folder.
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => handleOpenChange(false)}
+                className="mt-2"
+              >
+                Close
+              </Button>
             </div>
-            <Button
-              variant="outline"
-              onClick={() => handleOpenChange(false)}
-              className="mt-2"
-            >
-              Close
-            </Button>
-          </div>
+          )
         ) : (
           <>
             <DialogHeader>
               <DialogTitle>Claim {companyName}</DialogTitle>
               <DialogDescription>
                 Verify that you represent this company to manage its profile.
+                {!isLoggedIn && (
+                  <span className="block mt-1">
+                    We&apos;ll send a verification link to your work email.
+                  </span>
+                )}
               </DialogDescription>
             </DialogHeader>
 
@@ -185,7 +234,9 @@ export function ClaimCompanyModal({
                   className="mt-1.5"
                 />
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Must match company domain
+                  {isLoggedIn
+                    ? "Must match company domain"
+                    : "We'll send a verification link to this address"}
                 </p>
                 {errors.workEmail && (
                   <p className="mt-1 text-sm text-destructive">

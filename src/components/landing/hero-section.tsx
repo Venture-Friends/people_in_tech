@@ -29,7 +29,7 @@ export function HeroSection({ stats }: HeroSectionProps) {
           </h1>
 
           <p className="mt-6 max-w-[440px] text-[17px] leading-relaxed text-white/[0.38]">
-            Discover top tech employers in Greece. Find companies, open roles, and events, all in one place.
+            {t("heroSubtitle")}
           </p>
 
           {/* Search bar */}
@@ -55,17 +55,17 @@ export function HeroSection({ stats }: HeroSectionProps) {
           </div>
 
           {/* Stats row */}
-          <div className="mt-16 flex items-center gap-12">
+          <div className="mt-16 flex flex-wrap justify-center items-center gap-6 sm:gap-12">
             <div className="flex flex-col items-center">
               <span className="font-display text-3xl font-bold text-primary">{stats.companies}+</span>
               <span className="mt-1 text-xs text-white/30">Companies</span>
             </div>
-            <div className="h-8 w-px bg-white/[0.06]" />
+            <div className="hidden sm:block h-8 w-px bg-white/[0.06]" />
             <div className="flex flex-col items-center">
               <span className="font-display text-3xl font-bold text-foreground">{stats.openRoles}+</span>
               <span className="mt-1 text-xs text-white/30">Open Roles</span>
             </div>
-            <div className="h-8 w-px bg-white/[0.06]" />
+            <div className="hidden sm:block h-8 w-px bg-white/[0.06]" />
             <div className="flex flex-col items-center">
               <span className="font-display text-3xl font-bold text-foreground">{stats.sectors}</span>
               <span className="mt-1 text-xs text-white/30">Sectors</span>

@@ -139,16 +139,21 @@ export function DiscoverClient({
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title="Discover Companies" subtitle="Find top tech employers in Greece" />
+      <PageHeader title="Discover Companies" subtitle="Browse and follow top tech employers in Greece" />
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex-1">
-          <SearchBar value={search} onChange={handleSearchChange} />
-        </div>
+      {/* Full-width search */}
+      <SearchBar value={search} onChange={handleSearchChange} />
+
+      {/* Collapsible filters */}
+      <FilterBar filters={filters} onFilterChange={setFilters} industries={industries} />
+
+      {/* Results header with count + sort */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          {loading ? "Loading..." : `${total} ${total === 1 ? "company" : "companies"}`}
+        </p>
         <SortDropdown value={sort} onChange={setSort} />
       </div>
-
-      <FilterBar filters={filters} onFilterChange={setFilters} industries={industries} />
 
       <CompanyGrid companies={companies} total={total} loading={loading} />
     </div>

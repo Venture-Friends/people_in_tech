@@ -9,6 +9,7 @@ import { UpcomingEvents } from "@/components/landing/upcoming-events";
 import { NewsletterCta } from "@/components/landing/newsletter-cta";
 import { ForCompaniesCta } from "@/components/landing/for-companies-cta";
 import { LatestJobs } from "@/components/landing/latest-jobs";
+import { PartnersSection } from "@/components/landing/partners-section";
 import { Divider } from "@/components/shared/divider";
 import type { CompanyCardData } from "@/components/shared/company-card";
 import type { EventCardData } from "@/components/shared/event-card";
@@ -121,6 +122,20 @@ async function getCompanyLogos(): Promise<{ name: string; logo: string; slug: st
   return results;
 }
 
+async function getActivePartners() {
+  const partners = await prisma.partner.findMany({
+    where: { active: true },
+    orderBy: { order: "asc" },
+    select: {
+      id: true,
+      name: true,
+      logo: true,
+      website: true,
+    },
+  });
+  return partners;
+}
+
 async function getStats() {
   const [companyCount, eventCount, jobCount, allCompanies] = await Promise.all([
     prisma.company.count(),
@@ -177,12 +192,13 @@ export default async function LandingPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [companies, events, stats, latestJobs, companyLogos] = await Promise.all([
+  const [companies, events, stats, latestJobs, companyLogos, partners] = await Promise.all([
     getFeaturedCompanies(),
     getUpcomingEvents(),
     getStats(),
     getLatestJobs(),
     getCompanyLogos(),
+    getActivePartners(),
   ]);
 
   return (
@@ -197,6 +213,7 @@ export default async function LandingPage({
       <Divider />
       <UpcomingEvents events={events} />
       <ForCompaniesCta />
+      <PartnersSection partners={partners} />
       <NewsletterCta />
     </div>
   );

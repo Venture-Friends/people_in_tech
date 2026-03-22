@@ -22,7 +22,7 @@ export function MobileNav() {
   }
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 bg-[oklch(0.07_0.01_260_/_0.6)] backdrop-blur-[16px] border-t border-white/[0.04] sm:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-50 bg-[rgba(14,17,23,0.6)] backdrop-blur-[16px] border-t border-white/[0.04] sm:hidden">
       <div className="flex h-16 items-center justify-around">
         {tabs.map((tab) => {
           const isActive = pathname.startsWith(tab.href);

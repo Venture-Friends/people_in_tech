@@ -3,8 +3,14 @@
 import { UseFormWatch, UseFormSetValue, FieldErrors } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { MultiSelectChips } from "@/components/shared/multi-select-chips";
-import { TagInput } from "@/components/shared/tag-input";
+import { SkillPicker } from "@/components/shared/skill-picker";
 import { Label } from "@/components/ui/label";
+import {
+  ROLE_GROUPS,
+  ALL_ROLES,
+  MAX_ROLE_SELECTIONS,
+  INDUSTRY_OPTIONS,
+} from "@/lib/constants/onboarding";
 import type { OnboardingInput } from "@/lib/validations/onboarding";
 
 interface StepInterestsProps {
@@ -12,31 +18,6 @@ interface StepInterestsProps {
   setValue: UseFormSetValue<OnboardingInput>;
   errors: FieldErrors<OnboardingInput>;
 }
-
-const ROLE_OPTIONS = [
-  "Frontend",
-  "Backend",
-  "Full-Stack",
-  "Data",
-  "Design",
-  "Product",
-  "DevOps",
-  "Marketing",
-  "Sales",
-  "Operations",
-];
-
-const INDUSTRY_OPTIONS = [
-  "FinTech",
-  "HealthTech",
-  "EdTech",
-  "SaaS",
-  "E-commerce",
-  "AI/ML",
-  "Cybersecurity",
-  "Gaming",
-  "IoT",
-];
 
 export function StepInterests({ watch, setValue, errors }: StepInterestsProps) {
   const t = useTranslations("onboarding");
@@ -49,9 +30,11 @@ export function StepInterests({ watch, setValue, errors }: StepInterestsProps) {
       <div>
         <MultiSelectChips
           label={t("roleInterests")}
-          options={ROLE_OPTIONS}
+          options={ALL_ROLES}
+          groups={ROLE_GROUPS as unknown as Record<string, string[]>}
           selected={roleInterests || []}
           onChange={(selected) => setValue("roleInterests", selected, { shouldValidate: true })}
+          max={MAX_ROLE_SELECTIONS}
         />
         {errors.roleInterests && (
           <p className="text-sm text-destructive mt-1">
@@ -62,9 +45,9 @@ export function StepInterests({ watch, setValue, errors }: StepInterestsProps) {
 
       <div>
         <Label className="mb-3 text-[13px] font-medium text-white/50">{t("skills")}</Label>
-        <TagInput
-          tags={skills || []}
-          onChange={(tags) => setValue("skills", tags)}
+        <SkillPicker
+          selected={skills || []}
+          onChange={(skills) => setValue("skills", skills)}
           placeholder={t("addSkill")}
         />
       </div>

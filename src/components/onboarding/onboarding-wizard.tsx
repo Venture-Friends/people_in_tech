@@ -38,7 +38,7 @@ export function OnboardingWizard() {
       fullName: session?.user?.name || "",
       headline: "",
       linkedinUrl: "",
-      experienceLevel: "STUDENT",
+      experienceLevel: "JUNIOR",
       roleInterests: [],
       skills: [],
       industries: [],

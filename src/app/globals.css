@@ -48,9 +48,12 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* Custom semantic colors */
+  /* Custom semantic colors (hex fallback then oklch) */
+  --color-success: #30a855;
   --color-success: oklch(0.65 0.2 145);
+  --color-warning: #c8a030;
   --color-warning: oklch(0.75 0.18 85);
+  --color-info: #3c82f6;
   --color-info: oklch(0.6 0.18 255);
 
   /* Elevation shadow tokens */
@@ -60,40 +63,74 @@
 }
 
 /* Dark theme as default (dark-mode only platform) */
+/* Each property has a hex fallback for browsers that don't support oklch */
 :root {
+  --background: #0e1117;
   --background: oklch(0.07 0.01 260);
+  --foreground: #f7f7f7;
   --foreground: oklch(0.97 0 0);
+  --card: #151921;
   --card: oklch(0.10 0.01 260);
+  --card-foreground: #f7f7f7;
   --card-foreground: oklch(0.97 0 0);
+  --surface-2: #1c212b;
   --surface-2: oklch(0.13 0.01 260);
+  --surface-3: #252b37;
   --surface-3: oklch(0.17 0.01 260);
+  --popover: #151921;
   --popover: oklch(0.10 0.01 260);
+  --popover-foreground: #f7f7f7;
   --popover-foreground: oklch(0.97 0 0);
+  --primary: #9fef00;
   --primary: oklch(0.88 0.27 128);
+  --primary-foreground: #0e1117;
   --primary-foreground: oklch(0.07 0.01 260);
+  --secondary: #3bbfa0;
   --secondary: oklch(0.68 0.14 175);
+  --secondary-foreground: #f7f7f7;
   --secondary-foreground: oklch(0.97 0 0);
+  --muted: #303848;
   --muted: oklch(0.24 0.02 250);
+  --muted-foreground: #8e96a8;
   --muted-foreground: oklch(0.66 0.04 255);
+  --accent: #292f3d;
   --accent: oklch(0.21 0.02 255);
+  --accent-foreground: #f7f7f7;
   --accent-foreground: oklch(0.97 0 0);
+  --destructive: #e04434;
   --destructive: oklch(0.63 0.22 25);
+  --border: #303848;
   --border: oklch(0.24 0.02 255);
+  --input: #303848;
   --input: oklch(0.24 0.02 250);
+  --ring: #9fef00;
   --ring: oklch(0.88 0.27 128);
+  --chart-1: #9fef00;
   --chart-1: oklch(0.88 0.27 128);
+  --chart-2: #3bbfa0;
   --chart-2: oklch(0.68 0.14 175);
+  --chart-3: #3c82f6;
   --chart-3: oklch(0.6 0.18 255);
+  --chart-4: #c8a030;
   --chart-4: oklch(0.75 0.18 85);
+  --chart-5: #e04434;
   --chart-5: oklch(0.63 0.22 25);
   --radius: 0.625rem;
+  --sidebar: #151921;
   --sidebar: oklch(0.10 0.01 260);
+  --sidebar-foreground: #f7f7f7;
   --sidebar-foreground: oklch(0.97 0 0);
+  --sidebar-primary: #9fef00;
   --sidebar-primary: oklch(0.88 0.27 128);
+  --sidebar-primary-foreground: #0e1117;
   --sidebar-primary-foreground: oklch(0.07 0.01 260);
+  --sidebar-accent: #292f3d;
   --sidebar-accent: oklch(0.21 0.02 255);
+  --sidebar-accent-foreground: #f7f7f7;
   --sidebar-accent-foreground: oklch(0.97 0 0);
+  --sidebar-border: #303848;
   --sidebar-border: oklch(0.24 0.02 255);
+  --sidebar-ring: #9fef00;
   --sidebar-ring: oklch(0.88 0.27 128);
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -105,39 +142,73 @@
 }
 
 /* .dark class with same values for component compatibility */
+/* Each property has a hex fallback for browsers that don't support oklch */
 .dark {
+  --background: #0e1117;
   --background: oklch(0.07 0.01 260);
+  --foreground: #f7f7f7;
   --foreground: oklch(0.97 0 0);
+  --card: #151921;
   --card: oklch(0.10 0.01 260);
+  --card-foreground: #f7f7f7;
   --card-foreground: oklch(0.97 0 0);
+  --surface-2: #1c212b;
   --surface-2: oklch(0.13 0.01 260);
+  --surface-3: #252b37;
   --surface-3: oklch(0.17 0.01 260);
+  --popover: #151921;
   --popover: oklch(0.10 0.01 260);
+  --popover-foreground: #f7f7f7;
   --popover-foreground: oklch(0.97 0 0);
+  --primary: #9fef00;
   --primary: oklch(0.88 0.27 128);
+  --primary-foreground: #0e1117;
   --primary-foreground: oklch(0.07 0.01 260);
+  --secondary: #3bbfa0;
   --secondary: oklch(0.68 0.14 175);
+  --secondary-foreground: #f7f7f7;
   --secondary-foreground: oklch(0.97 0 0);
+  --muted: #303848;
   --muted: oklch(0.24 0.02 250);
+  --muted-foreground: #8e96a8;
   --muted-foreground: oklch(0.66 0.04 255);
+  --accent: #292f3d;
   --accent: oklch(0.21 0.02 255);
+  --accent-foreground: #f7f7f7;
   --accent-foreground: oklch(0.97 0 0);
+  --destructive: #e04434;
   --destructive: oklch(0.63 0.22 25);
+  --border: #303848;
   --border: oklch(0.24 0.02 255);
+  --input: #303848;
   --input: oklch(0.24 0.02 250);
+  --ring: #9fef00;
   --ring: oklch(0.88 0.27 128);
+  --chart-1: #9fef00;
   --chart-1: oklch(0.88 0.27 128);
+  --chart-2: #3bbfa0;
   --chart-2: oklch(0.68 0.14 175);
+  --chart-3: #3c82f6;
   --chart-3: oklch(0.6 0.18 255);
+  --chart-4: #c8a030;
   --chart-4: oklch(0.75 0.18 85);
+  --chart-5: #e04434;
   --chart-5: oklch(0.63 0.22 25);
+  --sidebar: #151921;
   --sidebar: oklch(0.10 0.01 260);
+  --sidebar-foreground: #f7f7f7;
   --sidebar-foreground: oklch(0.97 0 0);
+  --sidebar-primary: #9fef00;
   --sidebar-primary: oklch(0.88 0.27 128);
+  --sidebar-primary-foreground: #0e1117;
   --sidebar-primary-foreground: oklch(0.07 0.01 260);
+  --sidebar-accent: #292f3d;
   --sidebar-accent: oklch(0.21 0.02 255);
+  --sidebar-accent-foreground: #f7f7f7;
   --sidebar-accent-foreground: oklch(0.97 0 0);
+  --sidebar-border: #303848;
   --sidebar-border: oklch(0.24 0.02 255);
+  --sidebar-ring: #9fef00;
   --sidebar-ring: oklch(0.88 0.27 128);
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -159,6 +230,7 @@
 
 /* Dot grid background pattern */
 .bg-dot-grid {
+  background-image: radial-gradient(circle, #303848 1px, transparent 1px);
   background-image: radial-gradient(circle, oklch(0.24 0.02 255) 1px, transparent 1px);
   background-size: 24px 24px;
 }
@@ -399,6 +471,12 @@
   .particle:nth-child(n+13) { display: none; }
   .orb { filter: blur(120px); } /* softer on mobile */
 }
+
+/* Backdrop-filter fallback: bg-white/[0.02] and bg-white/[0.03] are
+   near-invisible without blur. backdrop-filter is supported by all modern
+   browsers (Chrome 76+, Firefox 103+, Safari 9+, Edge 79+). For the
+   rare unsupported case, element borders (5-7% white) still define
+   boundaries and text remains visible against the dark background. */
 
 /* Ticker */
 @keyframes ticker-scroll {

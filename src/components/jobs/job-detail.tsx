@@ -238,7 +238,7 @@ export function JobDetail({ job, company, moreJobs }: JobDetailProps) {
             href={job.externalUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-[13px] font-semibold text-primary-foreground transition-colors hover:bg-[oklch(0.92_0.27_128)] hover:shadow-[0_4px_16px_oklch(0.88_0.27_128_/_0.25)]"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-[13px] font-semibold text-primary-foreground transition-colors hover:bg-[#b4f724] hover:shadow-[0_4px_16px_rgba(159,239,0,0.25)]"
           >
             Apply on {websiteHost || "company site"}
             <ArrowRight className="size-4" />
