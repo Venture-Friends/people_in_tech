@@ -16,7 +16,7 @@ export default function AuthLayout({
       <AnimatedBackground />
       <div className="relative z-10 flex h-full flex-col items-center justify-center p-4">
         <Link href="/" className="font-display text-2xl font-bold tracking-tight text-foreground mb-8">
-          Hiring<span className="text-primary">.</span>
+          People in Tech<span className="text-primary">.</span>
         </Link>
         <div className="w-full max-w-[400px]">{children}</div>
         <Link

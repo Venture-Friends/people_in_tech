@@ -33,7 +33,7 @@ export function Navbar() {
         {/* Logo — left */}
         <div className="flex items-center">
           <Link href="/" className="font-display text-lg font-bold text-foreground tracking-tight">
-            Hiring<span className="text-primary">.</span>
+            People in Tech<span className="text-primary">.</span>
           </Link>
         </div>
 
@@ -110,7 +110,7 @@ export function Navbar() {
               >
                 <SheetHeader className="border-b border-white/[0.04] p-4">
                   <SheetTitle className="text-left font-display text-lg font-bold text-foreground tracking-tight">
-                    Hiring<span className="text-primary">.</span>
+                    People in Tech<span className="text-primary">.</span>
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-1 p-4">

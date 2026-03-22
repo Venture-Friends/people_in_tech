@@ -4,9 +4,9 @@ import { inter, spaceGrotesk, notoSans } from "@/lib/fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Hiring Partners, Discover Greek Tech Companies",
+  title: "People in Tech — Discover the companies building Greece's tech future",
   description:
-    "Explore top tech employers in Greece. Find companies, salaries, reviews, and open positions on the leading employer discovery platform.",
+    "Discover the companies building Greece's tech future. Follow, get alerts, and find your next role.",
 };
 
 export default async function RootLayout({
