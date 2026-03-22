@@ -14,6 +14,28 @@ async function requireAdmin() {
   return { session };
 }
 
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const auth = await requireAdmin();
+  if ("error" in auth && auth.error) return auth.error;
+
+  try {
+    const { id } = await params;
+    const company = await prisma.company.findUnique({ where: { id } });
+
+    if (!company) {
+      return NextResponse.json({ error: "Company not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ company });
+  } catch (error) {
+    console.error("Admin company GET error:", error);
+    return NextResponse.json({ error: "Failed to fetch company" }, { status: 500 });
+  }
+}
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -24,13 +46,25 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { name, industry, featured, status } = body;
+
+    // All updatable Company fields
+    const allowedFields = [
+      "name", "industry", "website", "description", "linkedinUrl",
+      "careersUrl", "logo", "coverImage", "size", "founded",
+      "locations", "technologies", "featured", "status",
+    ];
 
     const data: Record<string, unknown> = {};
-    if (name !== undefined) data.name = name;
-    if (industry !== undefined) data.industry = industry;
-    if (featured !== undefined) data.featured = featured;
-    if (status !== undefined) data.status = status;
+    for (const field of allowedFields) {
+      if (body[field] !== undefined) {
+        data[field] = body[field];
+      }
+    }
+
+    // Ensure founded is stored as an integer
+    if (data.founded !== undefined && data.founded !== null) {
+      data.founded = parseInt(String(data.founded), 10) || null;
+    }
 
     const company = await prisma.company.update({
       where: { id },
