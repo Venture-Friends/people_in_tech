@@ -24,10 +24,16 @@ const SORT_OPTIONS = [
 export function SortDropdown({ value, onChange }: SortDropdownProps) {
   const t = useTranslations("discover");
 
+  const labelMap = Object.fromEntries(
+    SORT_OPTIONS.map((opt) => [opt.value, t(opt.labelKey)])
+  );
+
   return (
     <Select value={value} onValueChange={(v) => v !== null && onChange(v)}>
       <SelectTrigger className="w-[180px]">
-        <SelectValue />
+        <SelectValue>
+          {(val: string | null) => val ? labelMap[val] ?? val : null}
+        </SelectValue>
       </SelectTrigger>
       <SelectContent>
         {SORT_OPTIONS.map((option) => (
