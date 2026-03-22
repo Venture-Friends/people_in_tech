@@ -16,7 +16,7 @@ export function Footer() {
           {/* Logo & Tagline */}
           <div className="sm:col-span-2 lg:col-span-1">
             <Link href="/" className="font-display text-lg font-bold text-foreground tracking-tight">
-              Hiring<span className="text-primary">.</span>
+              People in Tech<span className="text-primary">.</span>
             </Link>
             <p className="mt-3 max-w-xs text-[13px] text-white/30 leading-relaxed">
               Discover Greece&apos;s tech ecosystem. Powered by POS4work Innovation Hub.
@@ -110,7 +110,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-10 flex flex-col items-center gap-2 border-t border-white/[0.04] pt-6 text-center sm:flex-row sm:justify-between">
           <span className="text-[12px] text-white/15">
-            &copy; {currentYear} Hiring Partners. {tFooter("allRightsReserved")}
+            &copy; {currentYear} People in Tech. {tFooter("allRightsReserved")}
           </span>
         </div>
       </div>

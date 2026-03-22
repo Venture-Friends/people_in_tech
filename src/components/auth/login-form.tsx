@@ -58,7 +58,7 @@ export function LoginForm() {
           Sign In
         </h1>
         <p className="text-[15px] text-white/[0.35] mt-1.5">
-          Welcome back to Hiring Partners
+          Welcome back to People in Tech
         </p>
       </div>
 
