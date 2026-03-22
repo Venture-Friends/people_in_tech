@@ -139,9 +139,12 @@ export function AnalyticsDashboard() {
         {/* Signups Over Time */}
         <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-5">
           <div className="mb-4">
-            <h3 className="font-display text-base font-semibold tracking-tight text-foreground">
-              Candidate Signups
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="font-display text-base font-semibold tracking-tight text-foreground">
+                Candidate Signups
+              </h3>
+              <div className="flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-3 py-1 text-xs text-white/30"><span>Coming Soon</span></div>
+            </div>
             <p className="text-xs text-white/30 mt-0.5">New signups over the last 30 days</p>
           </div>
           <div className="h-64">
@@ -201,9 +204,12 @@ export function AnalyticsDashboard() {
         {/* Follows Over Time */}
         <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-5">
           <div className="mb-4">
-            <h3 className="font-display text-base font-semibold tracking-tight text-foreground">
-              Company Follows
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="font-display text-base font-semibold tracking-tight text-foreground">
+                Company Follows
+              </h3>
+              <div className="flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-3 py-1 text-xs text-white/30"><span>Coming Soon</span></div>
+            </div>
             <p className="text-xs text-white/30 mt-0.5">
               New follows over the last 30 days
             </p>

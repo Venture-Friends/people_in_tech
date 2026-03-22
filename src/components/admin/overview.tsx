@@ -139,9 +139,12 @@ export function Overview({ kpis, topCompanies, onNavigate }: OverviewProps) {
         {/* Signup trends chart */}
         <div className="lg:col-span-2 rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-5">
           <div className="mb-4">
-            <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
-              Signup Trends
-            </h2>
+            <div className="flex items-center gap-2">
+              <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
+                Signup Trends
+              </h2>
+              <div className="flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-3 py-1 text-xs text-white/30"><span>Coming Soon</span></div>
+            </div>
             <p className="text-xs text-white/30 mt-0.5">
               New candidate signups over the last 30 days
             </p>
