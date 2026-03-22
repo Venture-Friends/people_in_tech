@@ -18,14 +18,24 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  candidateProfile   CandidateProfile?
-  follows            Follow[]
-  savedJobs          SavedJob[]
-  savedEvents        SavedEvent[]
-  eventRegistrations EventRegistration[]
-  companyClaims      CompanyClaim[]
-  reviewedClaims     CompanyClaim[]      @relation("ReviewedBy")
-  newsletters        Newsletter[]
+  // Profile fields
+  avatarUrl       String?
+  bio             String?
+  publicTitle     String?
+  linkedinUrl     String?
+  website         String?
+  isProfilePublic Boolean   @default(false)
+
+  candidateProfile        CandidateProfile?
+  follows                 Follow[]
+  savedJobs               SavedJob[]
+  savedEvents             SavedEvent[]
+  eventRegistrations      EventRegistration[]
+  companyClaims           CompanyClaim[]
+  reviewedClaims          CompanyClaim[]            @relation("ReviewedBy")
+  newsletters             Newsletter[]
+  emailVerificationTokens EmailVerificationToken[]
+  passwordResetTokens     PasswordResetToken[]
 
   @@map("users")
 }
@@ -65,16 +75,19 @@ model Company {
   founded      Int?
   locations    String   @default("[]")
   technologies String   @default("[]")
+  careersUrl   String?
   status       String   @default("AUTO_GENERATED")
   featured     Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  jobs      JobListing[]
-  events    Event[]
-  followers Follow[]
-  claims    CompanyClaim[]
-  gallery   GalleryImage[]
+  jobs           JobListing[]
+  events         Event[]
+  followers      Follow[]
+  claims         CompanyClaim[]
+  pendingClaims  PendingClaim[]
+  gallery        GalleryImage[]
+  jobScrapeLogs  JobScrapeLog[]
 
   @@map("companies")
 }
@@ -228,4 +241,100 @@ model NewsletterSubscriber {
   createdAt DateTime @default(now())
 
   @@map("newsletter_subscribers")
+}
+
+model JobScrapeLog {
+  id         String   @id @default(cuid())
+  companyId  String
+  careersUrl String
+  jobsFound  Int
+  jobsAdded  Int
+  errors     String?
+  scrapedAt  DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@map("job_scrape_logs")
+}
+
+model PendingClaim {
+  id            String   @id @default(cuid())
+  companyId     String
+  fullName      String
+  jobTitle      String
+  workEmail     String
+  linkedinUrl   String?
+  message       String?
+  verifyToken   String   @unique
+  tokenExpiry   DateTime
+  verified      Boolean  @default(false)
+  convertedToId String?
+  createdAt     DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@map("pending_claims")
+}
+
+model Partner {
+  id        String   @id @default(cuid())
+  name      String
+  logo      String
+  website   String?
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("partners")
+}
+
+model ContentBlock {
+  id        String   @id @default(cuid())
+  key       String
+  value     String
+  locale    String   @default("en")
+  updatedBy String?
+  updatedAt DateTime @updatedAt
+
+  @@unique([key, locale])
+  @@map("content_blocks")
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("email_verification_tokens")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+}
+
+model EmailLog {
+  id         String   @id @default(cuid())
+  to         String
+  subject    String
+  template   String
+  status     String   @default("SENT")
+  providerId String?
+  error      String?
+  sentAt     DateTime @default(now())
+
+  @@map("email_logs")
 }

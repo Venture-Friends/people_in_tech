@@ -43,6 +43,12 @@ async function main() {
       passwordHash: repPassword,
       role: "COMPANY_REP",
       emailVerified: true,
+      avatarUrl: null,
+      bio: "Talent acquisition professional with 8 years of experience in Greek tech.",
+      publicTitle: "Head of Talent Acquisition",
+      linkedinUrl: "https://linkedin.com/in/nikos-georgiou",
+      website: null,
+      isProfilePublic: true,
     },
   });
   console.log(`✓ Company rep user: ${companyRep.email}`);
