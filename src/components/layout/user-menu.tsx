@@ -22,12 +22,12 @@ interface CompanyInfo {
   name: string;
   logo: string | null;
   slug: string;
+  hasExplicitPersonalProfile?: boolean;
 }
 
 export function UserMenu() {
   const { data: session } = useSession();
   const t = useTranslations("nav");
-  const router = useRouter();
 
   const [activeContext, setActiveContext] = useState<ActiveContext>("personal");
   const [companyInfo, setCompanyInfo] = useState<CompanyInfo | null>(null);
@@ -60,6 +60,7 @@ export function UserMenu() {
             name: data.name,
             logo: data.logo,
             slug: data.slug,
+            hasExplicitPersonalProfile: data.hasExplicitPersonalProfile,
           });
         }
       })
@@ -69,22 +70,14 @@ export function UserMenu() {
   }, [isCompanyRep]);
 
   const switchContext = useCallback(
-    async (context: ActiveContext) => {
+    (context: ActiveContext) => {
       if (context === activeContext) return;
-
-      try {
-        await fetch("/api/context", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ context }),
-        });
-        setActiveContext(context);
-        router.push("/dashboard");
-      } catch (error) {
-        console.error("Failed to switch context:", error);
-      }
+      document.cookie = `pit-active-context=${context}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
+      setActiveContext(context);
+      const locale = window.location.pathname.split("/")[1] || "en";
+      window.location.href = `/${locale}/dashboard`;
     },
-    [activeContext, router]
+    [activeContext]
   );
 
   if (!session?.user) return null;
