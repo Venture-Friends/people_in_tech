@@ -88,27 +88,22 @@ export function VerifyClaimStatus() {
 
         <div className="flex flex-col gap-3">
           {!hasAccount ? (
-            <Link href="/forgot-password">
-              <Button className="w-full" size="lg">
-                Set Your Password
-              </Button>
-            </Link>
-          ) : (
-            <Link href="/login">
-              <Button className="w-full" size="lg">
-                Sign In
-              </Button>
-            </Link>
-          )}
-          <Link href="/discover">
-            <Button
-              variant="outline"
-              className="w-full border-white/[0.08] text-white/60"
-              size="lg"
-            >
-              Continue Exploring
+            <Button render={<Link href="/forgot-password" />} className="w-full" size="lg">
+              Set Your Password
             </Button>
-          </Link>
+          ) : (
+            <Button render={<Link href="/login" />} className="w-full" size="lg">
+              Sign In
+            </Button>
+          )}
+          <Button
+            render={<Link href="/discover" />}
+            variant="outline"
+            className="w-full border-white/[0.08] text-white/60"
+            size="lg"
+          >
+            Continue Exploring
+          </Button>
         </div>
       </div>
     );
@@ -127,11 +122,9 @@ export function VerifyClaimStatus() {
       <p className="text-[15px] text-white/[0.35] mt-2 mb-8">
         {errorMessage}
       </p>
-      <Link href="/discover">
-        <Button variant="outline" className="border-white/[0.08] text-white/60">
-          Back to Discover
-        </Button>
-      </Link>
+      <Button render={<Link href="/discover" />} variant="outline" className="border-white/[0.08] text-white/60">
+        Back to Discover
+      </Button>
     </div>
   );
 }

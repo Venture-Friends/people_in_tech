@@ -32,11 +32,9 @@ export function ResetPasswordForm() {
         <p className="text-[15px] text-white/[0.35] mt-2 mb-8">
           This password reset link is invalid or has expired.
         </p>
-        <Link href="/forgot-password">
-          <Button className="w-full" size="lg">
-            Request New Link
-          </Button>
-        </Link>
+        <Button render={<Link href="/forgot-password" />} className="w-full" size="lg">
+          Request New Link
+        </Button>
       </div>
     );
   }
@@ -55,11 +53,9 @@ export function ResetPasswordForm() {
         <p className="text-[15px] text-white/[0.35] mt-2 mb-8">
           Your password has been updated. You can now sign in with your new password.
         </p>
-        <Link href="/login">
-          <Button className="w-full" size="lg">
-            Sign In
-          </Button>
-        </Link>
+        <Button render={<Link href="/login" />} className="w-full" size="lg">
+          Sign In
+        </Button>
       </div>
     );
   }

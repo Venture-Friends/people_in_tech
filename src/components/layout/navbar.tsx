@@ -70,23 +70,21 @@ export function Navbar() {
               <UserMenu />
             ) : (
               <>
-                <Link href="/login">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-[13px] font-medium text-white/50 hover:text-white"
-                  >
-                    {t("signIn")}
-                  </Button>
-                </Link>
-                <Link href="/register">
-                  <Button
-                    size="sm"
-                    className="bg-primary text-primary-foreground text-[13px] font-semibold rounded-lg px-[18px] py-2 hover:bg-[#b4f724] hover:shadow-[0_4px_16px_rgba(159,239,0,0.25)]"
-                  >
-                    {t("getStarted")}
-                  </Button>
-                </Link>
+                <Button
+                  render={<Link href="/login" />}
+                  variant="ghost"
+                  size="sm"
+                  className="text-[13px] font-medium text-white/50 hover:text-white"
+                >
+                  {t("signIn")}
+                </Button>
+                <Button
+                  render={<Link href="/register" />}
+                  size="sm"
+                  className="bg-primary text-primary-foreground text-[13px] font-semibold rounded-lg px-[18px] py-2 hover:bg-[#b4f724] hover:shadow-[0_4px_16px_rgba(159,239,0,0.25)]"
+                >
+                  {t("getStarted")}
+                </Button>
               </>
             )}
           </div>
@@ -147,19 +145,19 @@ export function Navbar() {
                     </div>
                   ) : (
                     <div className="flex flex-col gap-2">
-                      <Link href="/login">
-                        <Button
-                          variant="ghost"
-                          className="w-full justify-center text-[13px] font-medium text-white/50 hover:text-white"
-                        >
-                          {t("signIn")}
-                        </Button>
-                      </Link>
-                      <Link href="/register">
-                        <Button className="w-full justify-center bg-primary text-primary-foreground text-[13px] font-semibold rounded-lg hover:bg-[#b4f724] hover:shadow-[0_4px_16px_rgba(159,239,0,0.25)]">
-                          {t("getStarted")}
-                        </Button>
-                      </Link>
+                      <Button
+                        render={<Link href="/login" />}
+                        variant="ghost"
+                        className="w-full justify-center text-[13px] font-medium text-white/50 hover:text-white"
+                      >
+                        {t("signIn")}
+                      </Button>
+                      <Button
+                        render={<Link href="/register" />}
+                        className="w-full justify-center bg-primary text-primary-foreground text-[13px] font-semibold rounded-lg hover:bg-[#b4f724] hover:shadow-[0_4px_16px_rgba(159,239,0,0.25)]"
+                      >
+                        {t("getStarted")}
+                      </Button>
                     </div>
                   )}
                 </div>
