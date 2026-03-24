@@ -3,6 +3,7 @@ import type { ScrapedJob } from "../types";
 import { parseGreenhouse } from "./greenhouse";
 import { parseLever } from "./lever";
 import { parseWorkable } from "./workable";
+import { parseSmartRecruiters } from "./smartrecruiters";
 import { parseGeneric } from "./generic";
 
 const USER_AGENT = "HiringPartners-Bot/1.0 (+https://hiringpartners.gr)";
@@ -27,6 +28,16 @@ const ATS_DETECTORS: {
     pattern: /apply\.workable\.com/i,
     name: "workable",
     parse: parseWorkable,
+  },
+  {
+    pattern: /(?:jobs|careers)\.smartrecruiters\.com/i,
+    name: "smartrecruiters",
+    parse: parseSmartRecruiters,
+  },
+  {
+    pattern: /careers\.[^.]+\.com\/(?:jobs|search|postings)/i,
+    name: "smartrecruiters",
+    parse: parseSmartRecruiters,
   },
 ];
 

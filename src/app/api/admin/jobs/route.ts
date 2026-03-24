@@ -70,3 +70,60 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Failed to fetch jobs" }, { status: 500 });
   }
 }
+
+export async function POST(request: NextRequest) {
+  const auth = await requireAdmin();
+  if ("error" in auth && auth.error) return auth.error;
+
+  try {
+    const body = await request.json();
+    const { title, companyId, description, location, type, externalUrl } = body;
+
+    // Validate required fields
+    if (!title || typeof title !== "string" || !title.trim()) {
+      return NextResponse.json({ error: "Title is required" }, { status: 400 });
+    }
+    if (!companyId || typeof companyId !== "string") {
+      return NextResponse.json({ error: "Company is required" }, { status: 400 });
+    }
+
+    // Verify company exists
+    const company = await prisma.company.findUnique({ where: { id: companyId } });
+    if (!company) {
+      return NextResponse.json({ error: "Company not found" }, { status: 404 });
+    }
+
+    const job = await prisma.jobListing.create({
+      data: {
+        title: title.trim(),
+        companyId,
+        description: description?.trim() || null,
+        location: location?.trim() || null,
+        type: type || "ONSITE",
+        externalUrl: externalUrl?.trim() || "",
+        status: "ACTIVE",
+      },
+      include: {
+        company: {
+          select: { id: true, name: true, slug: true },
+        },
+      },
+    });
+
+    return NextResponse.json({
+      job: {
+        id: job.id,
+        title: job.title,
+        companyName: job.company.name,
+        companySlug: job.company.slug,
+        location: job.location,
+        type: job.type,
+        status: job.status,
+        postedAt: job.postedAt.toISOString(),
+      },
+    }, { status: 201 });
+  } catch (error) {
+    console.error("Admin jobs POST error:", error);
+    return NextResponse.json({ error: "Failed to create job" }, { status: 500 });
+  }
+}

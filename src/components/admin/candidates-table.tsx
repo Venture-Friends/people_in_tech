@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Search, Download } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Search, Download, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,6 +32,7 @@ interface Candidate {
   skills: string[];
   joinedAt: string;
   onboardingComplete: boolean;
+  isProfilePublic: boolean;
 }
 
 const experienceLevelLabels: Record<string, string> = {
@@ -51,6 +53,7 @@ const experienceLevelColors: Record<string, string> = {
 };
 
 export function CandidatesTable() {
+  const router = useRouter();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -160,13 +163,14 @@ export function CandidatesTable() {
                 <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Onboarding</TableHead>
                 <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Skills</TableHead>
                 <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Joined</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02] text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {candidates.length === 0 ? (
                 <TableRow className="border-b border-white/[0.04] hover:bg-white/[0.02]">
                   <TableCell
-                    colSpan={6}
+                    colSpan={7}
                     className="text-center text-white/30 py-8"
                   >
                     No candidates found
@@ -214,6 +218,30 @@ export function CandidatesTable() {
                     </TableCell>
                     <TableCell className="text-[13px] text-white/[0.35]">
                       {new Date(candidate.joinedAt).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        className={
+                          candidate.isProfilePublic
+                            ? "text-white/30 hover:text-white/60"
+                            : "text-white/10 cursor-not-allowed"
+                        }
+                        onClick={() => {
+                          if (candidate.isProfilePublic) {
+                            router.push(`/profile/${candidate.id}`);
+                          }
+                        }}
+                        title={
+                          candidate.isProfilePublic
+                            ? "View profile"
+                            : "Profile not public"
+                        }
+                        disabled={!candidate.isProfilePublic}
+                      >
+                        <Eye className="size-3.5" />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))
