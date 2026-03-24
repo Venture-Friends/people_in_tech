@@ -145,7 +145,7 @@ export function ProfileSettings({ profile }: ProfileSettingsProps) {
           <div className="space-y-3">
             <p className="text-[13px] font-medium text-white/50">Experience Level</p>
             <div className="flex flex-wrap gap-2">
-              {[...EXPERIENCE_LEVELS.ic, ...EXPERIENCE_LEVELS.management].map((level) => (
+              {EXPERIENCE_LEVELS.map((level) => (
                 <button
                   key={level.value}
                   type="button"

@@ -5,8 +5,8 @@ export const onboardingSchema = z.object({
   headline: z.string().optional(),
   linkedinUrl: z.string().url().optional().or(z.literal("")),
   experienceLevel: z.enum([
-    "STUDENT", "FRESH_GRADUATE", "JUNIOR", "MID", "SENIOR", "LEAD", "STAFF",
-    "MANAGER", "DIRECTOR", "EXECUTIVE",
+    "STUDENT", "JUNIOR", "MID", "SENIOR", "LEAD",
+    "MANAGER", "DIRECTOR",
   ]),
   roleInterests: z.array(z.string()).min(1, "Select at least one").max(5, "Select up to 5"),
   skills: z.array(z.string()),
