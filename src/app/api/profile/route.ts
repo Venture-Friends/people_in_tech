@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 
 const profileUpdateSchema = z.object({
   name: z.string().min(1).max(100).optional(),
-  avatarUrl: z.string().url().or(z.literal("")).optional(),
+  avatarUrl: z.string().url().or(z.string().startsWith("/uploads/")).or(z.literal("")).optional(),
   bio: z.string().max(500).optional(),
   publicTitle: z.string().max(120).optional(),
   linkedinUrl: z.string().url().or(z.literal("")).optional(),
