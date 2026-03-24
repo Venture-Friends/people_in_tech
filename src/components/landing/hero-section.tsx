@@ -41,17 +41,13 @@ export function HeroSection({ stats }: HeroSectionProps) {
 
           {/* CTA row */}
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link href="/discover">
-              <Button size="lg" className="h-11 gap-2 rounded-lg px-7 text-[13px] font-semibold">
-                Explore Companies
-                <ArrowRight className="size-4" />
-              </Button>
-            </Link>
-            <Link href="/list-company">
-              <Button variant="outline" size="lg" className="h-11 rounded-lg border-white/[0.08] bg-transparent px-7 text-[13px] font-medium text-white/60 hover:border-white/[0.15] hover:text-white">
-                I&apos;m a Company
-              </Button>
-            </Link>
+            <Button render={<Link href="/discover" />} size="lg" className="h-11 gap-2 rounded-lg px-7 text-[13px] font-semibold">
+              Explore Companies
+              <ArrowRight className="size-4" />
+            </Button>
+            <Button render={<Link href="/list-company" />} variant="outline" size="lg" className="h-11 rounded-lg border-white/[0.08] bg-transparent px-7 text-[13px] font-medium text-white/60 hover:border-white/[0.15] hover:text-white">
+              I&apos;m a Company
+            </Button>
           </div>
 
           {/* Stats row */}

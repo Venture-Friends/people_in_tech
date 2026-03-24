@@ -2,7 +2,7 @@
 
 import { useSession, signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { Link, useRouter } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -198,21 +198,22 @@ export function UserMenu() {
           </>
         )}
 
-        <Link href="/dashboard/profile">
-          <DropdownMenuItem>
-            <User className="size-4" />
-            {t("profile")}
-          </DropdownMenuItem>
-        </Link>
-        <Link href="/dashboard">
-          <DropdownMenuItem>
-            <LayoutDashboard className="size-4" />
-            {t("dashboard")}
-          </DropdownMenuItem>
-        </Link>
+        <DropdownMenuItem onClick={() => router.push("/dashboard/profile")}>
+          <User className="size-4" />
+          {t("profile")}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => router.push("/dashboard")}>
+          <LayoutDashboard className="size-4" />
+          {t("dashboard")}
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onClick={() => signOut({ callbackUrl: "/" })}
+          onClick={async () => {
+            document.cookie = "pit-active-context=; path=/; max-age=0";
+            document.cookie = "next-auth.session-token=; path=/; max-age=0";
+            document.cookie = "__Secure-next-auth.session-token=; path=/; max-age=0";
+            await signOut({ callbackUrl: "/en/login" });
+          }}
           variant="destructive"
         >
           <LogOut className="size-4" />
