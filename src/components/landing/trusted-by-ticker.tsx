@@ -3,14 +3,14 @@ interface TrustedByTickerProps {
 }
 
 export function TrustedByTicker({ logos }: TrustedByTickerProps) {
-  if (logos.length < 8) return null;
+  if (logos.length < 4) return null;
 
   const mid = Math.ceil(logos.length / 2);
   const row1 = logos.slice(0, mid);
   const row2 = logos.slice(mid);
 
   return (
-    <section className="py-16 overflow-hidden">
+    <section className="pt-8 pb-16 overflow-hidden">
       <p className="text-center text-xs font-medium uppercase tracking-[0.2em] text-white/20 mb-8">
         Trusted by
       </p>
@@ -23,13 +23,13 @@ export function TrustedByTicker({ logos }: TrustedByTickerProps) {
             "linear-gradient(90deg, transparent, black 6%, black 94%, transparent)",
         }}
       >
-        <div className="flex animate-logo-scroll-left gap-12 whitespace-nowrap">
+        <div className="flex animate-logo-scroll-left gap-16 whitespace-nowrap">
           {[...row1, ...row1].map((company, i) => (
             <img
               key={`r1-${i}`}
               src={company.logo}
               alt={company.name}
-              className="h-8 w-auto shrink-0 object-contain opacity-30 grayscale hover:opacity-60 hover:grayscale-0 transition-all duration-300"
+              className="h-16 w-auto shrink-0 object-contain opacity-30 grayscale hover:opacity-60 hover:grayscale-0 transition-all duration-300"
             />
           ))}
         </div>
@@ -43,13 +43,13 @@ export function TrustedByTicker({ logos }: TrustedByTickerProps) {
             "linear-gradient(90deg, transparent, black 6%, black 94%, transparent)",
         }}
       >
-        <div className="flex animate-logo-scroll-right gap-12 whitespace-nowrap">
+        <div className="flex animate-logo-scroll-right gap-16 whitespace-nowrap">
           {[...row2, ...row2].map((company, i) => (
             <img
               key={`r2-${i}`}
               src={company.logo}
               alt={company.name}
-              className="h-8 w-auto shrink-0 object-contain opacity-30 grayscale hover:opacity-60 hover:grayscale-0 transition-all duration-300"
+              className="h-16 w-auto shrink-0 object-contain opacity-30 grayscale hover:opacity-60 hover:grayscale-0 transition-all duration-300"
             />
           ))}
         </div>
