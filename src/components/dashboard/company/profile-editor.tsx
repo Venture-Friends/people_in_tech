@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +15,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { TagInput } from "@/components/shared/tag-input";
 import { toast } from "sonner";
-import { Save, Loader2 } from "lucide-react";
+import { Save, Loader2, Upload, X } from "lucide-react";
 
 interface ProfileData {
   id: string;
@@ -72,6 +72,130 @@ const LOCATION_SUGGESTIONS = [
   "New York",
   "San Francisco",
 ];
+
+function ImageUploadArea({
+  field,
+  label,
+  value,
+  onChange,
+  guidelines,
+  maxSize,
+  previewClassName,
+}: {
+  field: "logo" | "cover";
+  label: string;
+  value: string;
+  onChange: (url: string) => void;
+  guidelines: string;
+  maxSize: string;
+  previewClassName: string;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("field", field);
+
+      const res = await fetch("/api/dashboard/company/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Upload failed");
+      }
+
+      const data = await res.json();
+      onChange(data.url);
+      toast.success(`${label} uploaded successfully`);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to upload file"
+      );
+    } finally {
+      setUploading(false);
+      if (inputRef.current) inputRef.current.value = "";
+    }
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <Label className="text-[13px] font-medium text-white/50">{label}</Label>
+        <span className="text-[11px] text-white/25">{guidelines}</span>
+      </div>
+
+      {value ? (
+        <div className="relative group">
+          <img
+            src={value}
+            alt={`${label} preview`}
+            className={`${previewClassName} rounded-xl border border-white/[0.05] overflow-hidden object-cover`}
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = "none";
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="absolute -right-2 -top-2 flex size-6 items-center justify-center rounded-full border border-white/[0.1] bg-black/80 text-white/50 opacity-0 transition-opacity group-hover:opacity-100 hover:text-white"
+          >
+            <X className="size-3" />
+          </button>
+        </div>
+      ) : null}
+
+      <div
+        onClick={() => !uploading && inputRef.current?.click()}
+        className="flex cursor-pointer items-center gap-3 rounded-[14px] border border-dashed border-white/[0.08] bg-white/[0.02] p-4 transition-colors hover:border-emerald-500/20 hover:bg-white/[0.03]"
+      >
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp"
+          onChange={handleFileSelect}
+          className="hidden"
+        />
+        <div className="flex size-10 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.03]">
+          {uploading ? (
+            <Loader2 className="size-4 animate-spin text-emerald-400" />
+          ) : (
+            <Upload className="size-4 text-white/30" />
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-[13px] text-white/60">
+            {uploading ? "Uploading..." : "Click to upload"}
+          </p>
+          <p className="text-[11px] text-white/25">
+            PNG, JPG, SVG, or WebP. Max {maxSize}.
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <div className="h-px flex-1 bg-white/[0.05]" />
+        <span className="text-[10px] uppercase tracking-wider text-white/20">or paste URL</span>
+        <div className="h-px flex-1 bg-white/[0.05]" />
+      </div>
+      <Input
+        type="url"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={`https://example.com/${field === "logo" ? "logo.png" : "cover.jpg"}`}
+        className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
+      />
+    </div>
+  );
+}
 
 export function ProfileEditor({ initialData }: ProfileEditorProps) {
   const [saving, setSaving] = useState(false);
@@ -265,59 +389,28 @@ export function ProfileEditor({ initialData }: ProfileEditorProps) {
       {/* Branding */}
       <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-6">
         <h3 className="font-display text-lg font-semibold text-white mb-5">Branding</h3>
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="logo" className="text-[13px] font-medium text-white/50">Logo URL</Label>
-            <Input
-              id="logo"
-              type="url"
-              value={logo}
-              onChange={(e) => setLogo(e.target.value)}
-              placeholder="https://example.com/logo.png"
-              className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
-            />
-            {logo && (
-              <div className="mt-2 flex items-center gap-3">
-                <img
-                  src={logo}
-                  alt="Logo preview"
-                  className="size-12 rounded-xl border border-white/[0.05] overflow-hidden object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
-                />
-                <span className="text-[11px] text-white/30">
-                  Logo preview
-                </span>
-              </div>
-            )}
-          </div>
+        <div className="space-y-6">
+          <ImageUploadArea
+            field="logo"
+            label="Company Logo"
+            value={logo}
+            onChange={setLogo}
+            guidelines="200x200px, PNG/SVG/JPG"
+            maxSize="2MB"
+            previewClassName="size-20"
+          />
 
           <Separator className="bg-white/[0.06]" />
 
-          <div className="space-y-2">
-            <Label htmlFor="cover" className="text-[13px] font-medium text-white/50">Cover Image URL</Label>
-            <Input
-              id="cover"
-              type="url"
-              value={coverImage}
-              onChange={(e) => setCoverImage(e.target.value)}
-              placeholder="https://example.com/cover.jpg"
-              className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
-            />
-            {coverImage && (
-              <div className="mt-2">
-                <img
-                  src={coverImage}
-                  alt="Cover preview"
-                  className="h-32 w-full rounded-xl border border-white/[0.05] overflow-hidden object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
-                />
-              </div>
-            )}
-          </div>
+          <ImageUploadArea
+            field="cover"
+            label="Cover Image"
+            value={coverImage}
+            onChange={setCoverImage}
+            guidelines="1200x400px, JPG/PNG"
+            maxSize="5MB"
+            previewClassName="h-32 w-full"
+          />
         </div>
       </div>
 
