@@ -5,7 +5,7 @@ export interface ScrapedJob {
   type: "REMOTE" | "HYBRID" | "ONSITE" | null;
   department: string | null;
   description: string | null;
-  source: "greenhouse" | "lever" | "workable" | "linkedin" | "generic";
+  source: "greenhouse" | "lever" | "workable" | "linkedin" | "smartrecruiters" | "generic";
   confidence: "high" | "medium" | "low";
 }
 

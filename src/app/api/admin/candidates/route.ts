@@ -65,6 +65,7 @@ export async function GET(request: NextRequest) {
       skills: c.candidateProfile ? JSON.parse(c.candidateProfile.skills) : [],
       joinedAt: c.createdAt.toISOString(),
       onboardingComplete: c.candidateProfile?.onboardingComplete ?? false,
+      isProfilePublic: c.isProfilePublic,
     }));
 
     if (format === "csv") {
