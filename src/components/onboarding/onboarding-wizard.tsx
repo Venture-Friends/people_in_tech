@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
@@ -17,13 +17,37 @@ import { StepAbout } from "./step-about";
 import { StepInterests } from "./step-interests";
 import { StepPreferences } from "./step-preferences";
 
+const STORAGE_KEY_STEP = "onboarding-step";
+const STORAGE_KEY_DRAFT = "onboarding-draft";
+
+const DEFAULT_VALUES: OnboardingInput = {
+  fullName: "",
+  headline: "",
+  linkedinUrl: "",
+  experienceLevel: "JUNIOR",
+  roleInterests: [],
+  skills: [],
+  industries: [],
+  preferredLocations: [],
+  emailDigest: true,
+  emailEvents: true,
+  emailNewsletter: false,
+  language: "en",
+};
+
 export function OnboardingWizard() {
   const t = useTranslations("onboarding");
-  const { data: session } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [direction, setDirection] = useState<"forward" | "back">("forward");
+  const hasRestoredRef = useRef(false);
+
+  const form = useForm<OnboardingInput>({
+    resolver: zodResolver(onboardingSchema),
+    defaultValues: DEFAULT_VALUES,
+  });
 
   const {
     register,
@@ -32,23 +56,92 @@ export function OnboardingWizard() {
     setValue,
     trigger,
     formState: { errors },
-  } = useForm<OnboardingInput>({
-    resolver: zodResolver(onboardingSchema),
-    defaultValues: {
-      fullName: session?.user?.name || "",
-      headline: "",
-      linkedinUrl: "",
-      experienceLevel: "JUNIOR",
-      roleInterests: [],
-      skills: [],
-      industries: [],
-      preferredLocations: [],
-      emailDigest: true,
-      emailEvents: true,
-      emailNewsletter: false,
-      language: "en",
-    },
-  });
+    reset,
+  } = form;
+
+  // Client-side auth guard: redirect to /login if unauthenticated
+  useEffect(() => {
+    if (sessionStatus === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [sessionStatus, router]);
+
+  // Client-side profile guard: redirect to /discover if onboarding complete
+  useEffect(() => {
+    if (sessionStatus !== "authenticated") return;
+
+    let cancelled = false;
+    fetch("/api/onboarding/status")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled && data.onboardingComplete) {
+          router.push("/discover");
+        }
+      })
+      .catch(() => {
+        // Silently ignore — user can still use the wizard
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [sessionStatus, router]);
+
+  // Restore step + draft from sessionStorage after hydration
+  useEffect(() => {
+    if (hasRestoredRef.current) return;
+    hasRestoredRef.current = true;
+
+    try {
+      const savedStep = sessionStorage.getItem(STORAGE_KEY_STEP);
+      const savedDraft = sessionStorage.getItem(STORAGE_KEY_DRAFT);
+
+      const restoredStep = savedStep ? parseInt(savedStep, 10) : 1;
+      setCurrentStep(isNaN(restoredStep) ? 1 : restoredStep);
+
+      if (savedDraft) {
+        const draft = JSON.parse(savedDraft) as Partial<OnboardingInput>;
+        reset({
+          ...DEFAULT_VALUES,
+          ...draft,
+          fullName: draft.fullName || session?.user?.name || "",
+        });
+      } else {
+        reset({
+          ...DEFAULT_VALUES,
+          fullName: session?.user?.name || "",
+        });
+      }
+    } catch {
+      setCurrentStep(1);
+      reset({
+        ...DEFAULT_VALUES,
+        fullName: session?.user?.name || "",
+      });
+    }
+  }, [reset, session?.user?.name]);
+
+  // Auto-save to sessionStorage via watch subscription (no re-render loop)
+  useEffect(() => {
+    const subscription = watch((formValues) => {
+      try {
+        sessionStorage.setItem(STORAGE_KEY_DRAFT, JSON.stringify(formValues));
+      } catch {
+        // Storage full or unavailable — ignore
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
+
+  // Persist current step
+  const updateStep = useCallback((step: number) => {
+    setCurrentStep(step);
+    try {
+      sessionStorage.setItem(STORAGE_KEY_STEP, String(step));
+    } catch {
+      // Ignore
+    }
+  }, []);
 
   const stepTitles: Record<number, string> = {
     1: t("step1Title"),
@@ -64,19 +157,24 @@ export function OnboardingWizard() {
 
   async function handleNext() {
     if (currentStep === 1) {
-      const valid = await trigger(["fullName", "headline", "linkedinUrl", "experienceLevel"]);
+      const valid = await trigger([
+        "fullName",
+        "headline",
+        "linkedinUrl",
+        "experienceLevel",
+      ]);
       if (!valid) return;
     } else if (currentStep === 2) {
       const valid = await trigger(["roleInterests", "skills", "industries"]);
       if (!valid) return;
     }
     setDirection("forward");
-    setCurrentStep((prev) => Math.min(prev + 1, 3));
+    updateStep(Math.min((currentStep ?? 1) + 1, 3));
   }
 
   function handleBack() {
     setDirection("back");
-    setCurrentStep((prev) => Math.max(prev - 1, 1));
+    updateStep(Math.max((currentStep ?? 1) - 1, 1));
   }
 
   async function onSubmit(data: OnboardingInput) {
@@ -93,6 +191,14 @@ export function OnboardingWizard() {
         throw new Error(errorData?.error || "Failed to save");
       }
 
+      // Clear sessionStorage on successful submit
+      try {
+        sessionStorage.removeItem(STORAGE_KEY_STEP);
+        sessionStorage.removeItem(STORAGE_KEY_DRAFT);
+      } catch {
+        // Ignore
+      }
+
       toast.success("Welcome!");
       router.push("/discover");
     } catch {
@@ -102,7 +208,17 @@ export function OnboardingWizard() {
     }
   }
 
-  const progressPercent = currentStep === 1 ? 33 : currentStep === 2 ? 66 : 100;
+  // Loading state — null step means still hydrating
+  if (currentStep === null || sessionStatus === "loading") {
+    return (
+      <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center p-4">
+        <Loader2 className="size-6 animate-spin text-white/30" />
+      </div>
+    );
+  }
+
+  const progressPercent =
+    currentStep === 1 ? 33 : currentStep === 2 ? 66 : 100;
 
   return (
     <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center p-4">
@@ -130,27 +246,56 @@ export function OnboardingWizard() {
         {/* Glassmorphic card */}
         <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-6 sm:p-8">
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div key={currentStep} className={direction === "forward" ? "animate-slide-in-right" : "animate-slide-in-left"}>
-              {currentStep === 1 && (
+            {/* Render all 3 steps simultaneously — hide inactive ones with display:none */}
+            <div style={{ display: currentStep === 1 ? "block" : "none" }}>
+              <div
+                className={
+                  currentStep === 1
+                    ? direction === "forward"
+                      ? "animate-slide-in-right"
+                      : "animate-slide-in-left"
+                    : ""
+                }
+              >
                 <StepAbout
                   register={register}
                   watch={watch}
                   setValue={setValue}
                   errors={errors}
                 />
-              )}
+              </div>
+            </div>
 
-              {currentStep === 2 && (
+            <div style={{ display: currentStep === 2 ? "block" : "none" }}>
+              <div
+                className={
+                  currentStep === 2
+                    ? direction === "forward"
+                      ? "animate-slide-in-right"
+                      : "animate-slide-in-left"
+                    : ""
+                }
+              >
                 <StepInterests
                   watch={watch}
                   setValue={setValue}
                   errors={errors}
                 />
-              )}
+              </div>
+            </div>
 
-              {currentStep === 3 && (
+            <div style={{ display: currentStep === 3 ? "block" : "none" }}>
+              <div
+                className={
+                  currentStep === 3
+                    ? direction === "forward"
+                      ? "animate-slide-in-right"
+                      : "animate-slide-in-left"
+                    : ""
+                }
+              >
                 <StepPreferences watch={watch} setValue={setValue} />
-              )}
+              </div>
             </div>
 
             <div className="flex justify-between mt-8">
@@ -184,7 +329,9 @@ export function OnboardingWizard() {
                   {isSubmitting && (
                     <Loader2 className="size-4 mr-1 animate-spin" />
                   )}
-                  {isSubmitting ? t("completeSetup") : "Start Exploring \u2192"}
+                  {isSubmitting
+                    ? t("completeSetup")
+                    : "Start Exploring \u2192"}
                 </Button>
               )}
             </div>
