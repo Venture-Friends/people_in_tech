@@ -52,7 +52,7 @@ export function ForgotPasswordForm() {
         <p className="text-[13px] text-white/25 mb-6">
           The link expires in 1 hour. Check your spam folder if you don&apos;t see it.
         </p>
-        <Button render={<Link href="/login" />} variant="outline" className="border-white/[0.08] text-white/60">
+        <Button nativeButton={false} render={<Link href="/login" />} variant="outline" className="border-white/[0.08] text-white/60">
           Back to Sign In
         </Button>
       </div>

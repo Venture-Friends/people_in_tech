@@ -32,7 +32,7 @@ export function ResetPasswordForm() {
         <p className="text-[15px] text-white/[0.35] mt-2 mb-8">
           This password reset link is invalid or has expired.
         </p>
-        <Button render={<Link href="/forgot-password" />} className="w-full" size="lg">
+        <Button nativeButton={false} render={<Link href="/forgot-password" />} className="w-full" size="lg">
           Request New Link
         </Button>
       </div>
@@ -53,7 +53,7 @@ export function ResetPasswordForm() {
         <p className="text-[15px] text-white/[0.35] mt-2 mb-8">
           Your password has been updated. You can now sign in with your new password.
         </p>
-        <Button render={<Link href="/login" />} className="w-full" size="lg">
+        <Button nativeButton={false} render={<Link href="/login" />} className="w-full" size="lg">
           Sign In
         </Button>
       </div>

@@ -66,7 +66,7 @@ export function VerifyEmailStatus() {
         <p className="text-[15px] text-white/[0.35] mt-2 mb-8">
           Your email has been verified successfully. You&apos;re all set!
         </p>
-        <Button render={<Link href="/discover" />} className="w-full" size="lg">
+        <Button nativeButton={false} render={<Link href="/discover" />} className="w-full" size="lg">
           Start Exploring
         </Button>
       </div>
@@ -86,7 +86,7 @@ export function VerifyEmailStatus() {
       <p className="text-[15px] text-white/[0.35] mt-2 mb-8">
         {errorMessage}
       </p>
-      <Button render={<Link href="/login" />} variant="outline" className="border-white/[0.08] text-white/60">
+      <Button nativeButton={false} render={<Link href="/login" />} variant="outline" className="border-white/[0.08] text-white/60">
         Back to Sign In
       </Button>
     </div>

@@ -20,7 +20,7 @@ export function ForCompaniesCta() {
               {t("forCompaniesSubtitle")}
             </p>
           </div>
-          <Button render={<Link href="/list-company" />} size="lg" className="h-11 gap-2 rounded-lg px-7 text-[13px] font-semibold whitespace-nowrap">
+          <Button nativeButton={false} render={<Link href="/list-company" />} size="lg" className="h-11 gap-2 rounded-lg px-7 text-[13px] font-semibold whitespace-nowrap">
             {t("claimPage")}
             <ArrowRight className="size-4" />
           </Button>

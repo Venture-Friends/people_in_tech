@@ -71,7 +71,7 @@ export function Navbar() {
             ) : (
               <>
                 <Button
-                  render={<Link href="/login" />}
+                  nativeButton={false} render={<Link href="/login" />}
                   variant="ghost"
                   size="sm"
                   className="text-[13px] font-medium text-white/50 hover:text-white"
@@ -79,7 +79,7 @@ export function Navbar() {
                   {t("signIn")}
                 </Button>
                 <Button
-                  render={<Link href="/register" />}
+                  nativeButton={false} render={<Link href="/register" />}
                   size="sm"
                   className="bg-primary text-primary-foreground text-[13px] font-semibold rounded-lg px-[18px] py-2 hover:bg-[#b4f724] hover:shadow-[0_4px_16px_rgba(159,239,0,0.25)]"
                 >
@@ -146,14 +146,14 @@ export function Navbar() {
                   ) : (
                     <div className="flex flex-col gap-2">
                       <Button
-                        render={<Link href="/login" />}
+                        nativeButton={false} render={<Link href="/login" />}
                         variant="ghost"
                         className="w-full justify-center text-[13px] font-medium text-white/50 hover:text-white"
                       >
                         {t("signIn")}
                       </Button>
                       <Button
-                        render={<Link href="/register" />}
+                        nativeButton={false} render={<Link href="/register" />}
                         className="w-full justify-center bg-primary text-primary-foreground text-[13px] font-semibold rounded-lg hover:bg-[#b4f724] hover:shadow-[0_4px_16px_rgba(159,239,0,0.25)]"
                       >
                         {t("getStarted")}
