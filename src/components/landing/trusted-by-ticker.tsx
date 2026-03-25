@@ -28,7 +28,7 @@ export function TrustedByTicker({ logos }: TrustedByTickerProps) {
       </p>
       <div className="relative flex overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
         <div className="flex shrink-0 animate-marquee items-center gap-16 sm:gap-20">
-          {[...items, ...items].map((company, i) => {
+          {items.map((company, i) => {
             const logoEl = (
               <img
                 src={company.logo}
