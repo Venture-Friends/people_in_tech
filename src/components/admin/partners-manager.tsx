@@ -53,6 +53,25 @@ interface PartnerFormProps {
 }
 
 function PartnerForm({ formData, setFormData, onSubmit, submitLabel }: PartnerFormProps) {
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const fd = new FormData();
+    fd.append("logo", file);
+    try {
+      const res = await fetch("/api/admin/partners/upload-logo", { method: "POST", body: fd });
+      const data = await res.json();
+      if (data.logoUrl) {
+        setFormData((prev) => ({ ...prev, logo: data.logoUrl }));
+        toast.success("Logo uploaded");
+      } else {
+        toast.error(data.error || "Upload failed");
+      }
+    } catch {
+      toast.error("Upload failed");
+    }
+  }
+
   return (
     <div className="space-y-4 py-2">
       <div className="space-y-1.5">
@@ -65,13 +84,24 @@ function PartnerForm({ formData, setFormData, onSubmit, submitLabel }: PartnerFo
         />
       </div>
       <div className="space-y-1.5">
-        <Label className="text-white/[0.35] text-xs">Logo URL *</Label>
-        <Input
-          value={formData.logo}
-          onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
-          placeholder="https://example.com/logo.png"
-          className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
-        />
+        <Label className="text-white/[0.35] text-xs">Logo *</Label>
+        <div className="flex gap-2">
+          <Input
+            value={formData.logo}
+            onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
+            placeholder="https://example.com/logo.png"
+            className="flex-1 rounded-[14px] border-white/[0.07] bg-white/[0.03]"
+          />
+          <label className="shrink-0 cursor-pointer rounded-lg border border-white/[0.07] bg-white/[0.03] px-3 py-2 text-xs text-white/40 hover:text-white/60 transition-colors">
+            Upload
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleFileUpload}
+            />
+          </label>
+        </div>
       </div>
       <div className="space-y-1.5">
         <Label className="text-white/[0.35] text-xs">Website URL</Label>
