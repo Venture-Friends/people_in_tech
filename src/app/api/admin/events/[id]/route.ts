@@ -24,7 +24,7 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { title, description, type, date, startTime, endTime, location, isOnline, capacity } = body;
+    const { title, description, type, date, startTime, endTime, location, isOnline, capacity, registrationUrl } = body;
 
     const data: Record<string, unknown> = {};
     if (title !== undefined) data.title = title;
@@ -36,6 +36,7 @@ export async function PUT(
     if (location !== undefined) data.location = location;
     if (isOnline !== undefined) data.isOnline = isOnline;
     if (capacity !== undefined) data.capacity = capacity ? parseInt(capacity, 10) : null;
+    if (registrationUrl !== undefined) data.registrationUrl = registrationUrl || null;
 
     const event = await prisma.event.update({
       where: { id },
