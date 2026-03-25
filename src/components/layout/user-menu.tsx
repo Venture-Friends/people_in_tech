@@ -2,7 +2,7 @@
 
 import { useSession, signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { Link, useRouter } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -22,6 +22,7 @@ interface CompanyInfo {
   name: string;
   logo: string | null;
   slug: string;
+  hasExplicitPersonalProfile?: boolean;
 }
 
 export function UserMenu() {
@@ -60,6 +61,7 @@ export function UserMenu() {
             name: data.name,
             logo: data.logo,
             slug: data.slug,
+            hasExplicitPersonalProfile: data.hasExplicitPersonalProfile,
           });
         }
       })
@@ -69,22 +71,14 @@ export function UserMenu() {
   }, [isCompanyRep]);
 
   const switchContext = useCallback(
-    async (context: ActiveContext) => {
+    (context: ActiveContext) => {
       if (context === activeContext) return;
-
-      try {
-        await fetch("/api/context", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ context }),
-        });
-        setActiveContext(context);
-        router.push("/dashboard");
-      } catch (error) {
-        console.error("Failed to switch context:", error);
-      }
+      document.cookie = `pit-active-context=${context}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
+      setActiveContext(context);
+      const locale = window.location.pathname.split("/")[1] || "en";
+      window.location.href = `/${locale}/dashboard`;
     },
-    [activeContext, router]
+    [activeContext]
   );
 
   if (!session?.user) return null;
@@ -198,21 +192,22 @@ export function UserMenu() {
           </>
         )}
 
-        <Link href="/dashboard/profile">
-          <DropdownMenuItem>
-            <User className="size-4" />
-            {t("profile")}
-          </DropdownMenuItem>
-        </Link>
-        <Link href="/dashboard">
-          <DropdownMenuItem>
-            <LayoutDashboard className="size-4" />
-            {t("dashboard")}
-          </DropdownMenuItem>
-        </Link>
+        <DropdownMenuItem onClick={() => router.push("/dashboard/profile")}>
+          <User className="size-4" />
+          {t("profile")}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => router.push("/dashboard")}>
+          <LayoutDashboard className="size-4" />
+          {t("dashboard")}
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onClick={() => signOut({ callbackUrl: "/" })}
+          onClick={async () => {
+            document.cookie = "pit-active-context=; path=/; max-age=0";
+            document.cookie = "next-auth.session-token=; path=/; max-age=0";
+            document.cookie = "__Secure-next-auth.session-token=; path=/; max-age=0";
+            await signOut({ callbackUrl: "/en/login" });
+          }}
           variant="destructive"
         >
           <LogOut className="size-4" />

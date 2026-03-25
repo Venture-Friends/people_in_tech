@@ -61,7 +61,10 @@ export function ProfileSettings({ profile }: ProfileSettingsProps) {
         throw new Error(data.error || "Failed to delete account");
       }
       toast.success("Account deleted");
-      signOut({ callbackUrl: "/" });
+      document.cookie = "pit-active-context=; path=/; max-age=0";
+      document.cookie = "next-auth.session-token=; path=/; max-age=0";
+      document.cookie = "__Secure-next-auth.session-token=; path=/; max-age=0";
+      await signOut({ callbackUrl: "/en/login" });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed to delete account");
       setDeleting(false);
@@ -145,7 +148,7 @@ export function ProfileSettings({ profile }: ProfileSettingsProps) {
           <div className="space-y-3">
             <p className="text-[13px] font-medium text-white/50">Experience Level</p>
             <div className="flex flex-wrap gap-2">
-              {[...EXPERIENCE_LEVELS.ic, ...EXPERIENCE_LEVELS.management].map((level) => (
+              {EXPERIENCE_LEVELS.map((level) => (
                 <button
                   key={level.value}
                   type="button"

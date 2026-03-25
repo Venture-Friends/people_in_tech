@@ -1,58 +1,36 @@
+import { Link } from "@/i18n/navigation";
+
+// Featured companies to showcase — curated list of verified partners
+const FEATURED_COMPANIES = [
+  { name: "Workable", logo: "/logos/workable.svg", slug: "workable" },
+  { name: "Hack The Box", logo: "/logos/hack-the-box.svg", slug: "hack-the-box" },
+  { name: "Skroutz", logo: "/logos/skroutz.svg", slug: "skroutz" },
+];
+
 interface TrustedByTickerProps {
-  logos: { name: string; logo: string; slug: string }[];
+  logos?: { name: string; logo: string; slug: string }[];
 }
 
-export function TrustedByTicker({ logos }: TrustedByTickerProps) {
-  if (logos.length < 8) return null;
-
-  const mid = Math.ceil(logos.length / 2);
-  const row1 = logos.slice(0, mid);
-  const row2 = logos.slice(mid);
-
+export function TrustedByTicker(_props: TrustedByTickerProps) {
   return (
-    <section className="py-16 overflow-hidden">
+    <section className="pt-8 pb-12">
       <p className="text-center text-xs font-medium uppercase tracking-[0.2em] text-white/20 mb-8">
         Trusted by
       </p>
-
-      {/* Row 1 - scrolls left */}
-      <div
-        className="relative mb-4"
-        style={{
-          maskImage:
-            "linear-gradient(90deg, transparent, black 6%, black 94%, transparent)",
-        }}
-      >
-        <div className="flex animate-logo-scroll-left gap-12 whitespace-nowrap">
-          {[...row1, ...row1].map((company, i) => (
+      <div className="flex items-center justify-center gap-16 sm:gap-20">
+        {FEATURED_COMPANIES.map((company) => (
+          <Link
+            key={company.slug}
+            href={`/companies/${company.slug}`}
+            className="transition-all duration-300 opacity-40 grayscale hover:opacity-80 hover:grayscale-0"
+          >
             <img
-              key={`r1-${i}`}
               src={company.logo}
               alt={company.name}
-              className="h-8 w-auto shrink-0 object-contain opacity-30 grayscale hover:opacity-60 hover:grayscale-0 transition-all duration-300"
+              className="h-12 sm:h-14 w-auto object-contain"
             />
-          ))}
-        </div>
-      </div>
-
-      {/* Row 2 - scrolls right */}
-      <div
-        className="relative"
-        style={{
-          maskImage:
-            "linear-gradient(90deg, transparent, black 6%, black 94%, transparent)",
-        }}
-      >
-        <div className="flex animate-logo-scroll-right gap-12 whitespace-nowrap">
-          {[...row2, ...row2].map((company, i) => (
-            <img
-              key={`r2-${i}`}
-              src={company.logo}
-              alt={company.name}
-              className="h-8 w-auto shrink-0 object-contain opacity-30 grayscale hover:opacity-60 hover:grayscale-0 transition-all duration-300"
-            />
-          ))}
-        </div>
+          </Link>
+        ))}
       </div>
     </section>
   );

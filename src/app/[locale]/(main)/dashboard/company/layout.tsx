@@ -19,7 +19,6 @@ import {
   Building2,
   Briefcase,
   Calendar,
-  Image,
   TrendingUp,
   Menu,
   BadgeCheck,
@@ -30,7 +29,6 @@ const sidebarItems = [
   { id: "profile", label: "Company Profile", icon: Building2 },
   { id: "jobs", label: "Job Listings", icon: Briefcase },
   { id: "events", label: "Events", icon: Calendar },
-  { id: "gallery", label: "Gallery", icon: Image },
   { id: "analytics", label: "Analytics", icon: TrendingUp },
 ];
 
@@ -157,7 +155,7 @@ function LayoutFallback() {
           <div className="bg-white/[0.02] border-r border-white/[0.04] p-4 rounded-2xl">
             <Skeleton className="h-8 w-full rounded-lg mb-4" />
             <div className="space-y-2">
-              {Array.from({ length: 6 }).map((_, i) => (
+              {Array.from({ length: 5 }).map((_, i) => (
                 <Skeleton key={i} className="h-9 w-full rounded-lg" />
               ))}
             </div>

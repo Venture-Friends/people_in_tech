@@ -15,13 +15,26 @@ export async function GET() {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const company = await getCompanyForUser(session.user.id);
+    const [company, candidateProfile] = await Promise.all([
+      getCompanyForUser(session.user.id),
+      prisma.candidateProfile.findUnique({
+        where: { userId: session.user.id },
+        select: { headline: true, skills: true },
+      }),
+    ]);
+
     if (!company) {
       return NextResponse.json(
         { error: "No approved company claim found" },
         { status: 404 }
       );
     }
+
+    // Determine if the user has explicitly filled out a personal profile
+    const skills = candidateProfile?.skills ? JSON.parse(candidateProfile.skills) : [];
+    const hasExplicitPersonalProfile = Boolean(
+      candidateProfile?.headline || (Array.isArray(skills) && skills.length > 0)
+    );
 
     return NextResponse.json({
       id: company.id,
@@ -38,6 +51,7 @@ export async function GET() {
       locations: company.locations,
       technologies: company.technologies,
       status: company.status,
+      hasExplicitPersonalProfile,
     });
   } catch (error) {
     console.error("Error fetching company profile:", error);

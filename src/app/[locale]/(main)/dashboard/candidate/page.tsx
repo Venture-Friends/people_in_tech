@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getActiveContext } from "@/lib/context";
 import { DashboardClient } from "@/components/dashboard/candidate/dashboard-client";
 import type { CompanyCardData } from "@/components/shared/company-card";
 import type { SavedJobData } from "@/components/dashboard/candidate/saved-jobs";
@@ -24,8 +25,17 @@ export default async function CandidateDashboardPage({
     redirect(`/${locale}/login`);
   }
 
-  if (session.user.role !== "CANDIDATE") {
+  const role = session.user.role;
+  if (role !== "CANDIDATE" && role !== "COMPANY_REP") {
     redirect(`/${locale}`);
+  }
+
+  // COMPANY_REP users must be in "personal" context to view this dashboard
+  if (role === "COMPANY_REP") {
+    const activeContext = await getActiveContext();
+    if (activeContext !== "personal") {
+      redirect(`/${locale}/dashboard/company`);
+    }
   }
 
   const userId = session.user.id;

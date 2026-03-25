@@ -1,40 +1,27 @@
 // Shared onboarding/profile constants — single source of truth
 
-export const EXPERIENCE_LEVELS = {
-  ic: [
-    { value: "STUDENT", labelKey: "expStudent", descKey: "expStudentDesc", years: "0" },
-    { value: "FRESH_GRADUATE", labelKey: "expFreshGraduate", descKey: "expFreshGraduateDesc", years: "0–1" },
-    { value: "JUNIOR", labelKey: "expJunior", descKey: "expJuniorDesc", years: "1–2" },
-    { value: "MID", labelKey: "expMid", descKey: "expMidDesc", years: "3–4" },
-    { value: "SENIOR", labelKey: "expSenior", descKey: "expSeniorDesc", years: "5–8" },
-    { value: "LEAD", labelKey: "expLead", descKey: "expLeadDesc", years: "6–10" },
-    { value: "STAFF", labelKey: "expStaff", descKey: "expStaffDesc", years: "8+" },
-  ],
-  management: [
-    { value: "MANAGER", labelKey: "expManager", descKey: "expManagerDesc", years: "5+" },
-    { value: "DIRECTOR", labelKey: "expDirector", descKey: "expDirectorDesc", years: "10+" },
-    { value: "EXECUTIVE", labelKey: "expExecutive", descKey: "expExecutiveDesc", years: "12+" },
-  ],
-} as const;
+export const EXPERIENCE_LEVELS = [
+  { value: "STUDENT", labelKey: "levelStudent", years: "0" },
+  { value: "JUNIOR", labelKey: "levelJunior", years: "0–2" },
+  { value: "MID", labelKey: "levelMid", years: "3–5" },
+  { value: "SENIOR", labelKey: "levelSenior", years: "5–8" },
+  { value: "LEAD", labelKey: "levelLead", years: "8+" },
+  { value: "MANAGER", labelKey: "levelManager", years: "5+" },
+  { value: "DIRECTOR", labelKey: "levelDirector", years: "10+" },
+] as const;
 
 // Direct label lookup for non-translated contexts (e.g., profile settings)
 export const EXPERIENCE_LABEL_MAP: Record<string, string> = {
   STUDENT: "Student",
-  FRESH_GRADUATE: "Fresh Graduate",
   JUNIOR: "Junior",
   MID: "Mid-Level",
   SENIOR: "Senior",
   LEAD: "Lead",
-  STAFF: "Staff / Principal",
   MANAGER: "Manager",
   DIRECTOR: "Director",
-  EXECUTIVE: "Executive / C-Level",
 };
 
-export const ALL_EXPERIENCE_VALUES = [
-  ...EXPERIENCE_LEVELS.ic.map((l) => l.value),
-  ...EXPERIENCE_LEVELS.management.map((l) => l.value),
-] as const;
+export const ALL_EXPERIENCE_VALUES = EXPERIENCE_LEVELS.map((l) => l.value);
 
 export const ROLE_GROUPS = {
   Technical: [
@@ -80,31 +67,12 @@ export const SKILL_CATEGORIES = {
 } as const;
 
 export const INDUSTRY_OPTIONS = [
-  "AI/ML",
-  "Consulting",
-  "Cybersecurity",
-  "E-commerce",
-  "EdTech",
-  "FinTech",
-  "Gaming",
-  "GreenTech",
-  "HealthTech",
-  "IoT",
-  "Logistics",
-  "Media",
-  "PropTech",
-  "SaaS",
-  "Telecom",
-  "TravelTech",
+  "AI/ML", "Consulting", "Cybersecurity", "E-commerce", "EdTech", "FinTech",
+  "Gaming", "GreenTech", "HealthTech", "IoT", "Logistics", "Media",
+  "PropTech", "SaaS", "Telecom", "TravelTech",
 ];
 
 export const LOCATION_OPTIONS = [
-  "Athens",
-  "Thessaloniki",
-  "Patras",
-  "Heraklion",
-  "Larissa",
-  "Remote",
-  "Hybrid",
-  "Anywhere in Greece",
+  "Athens", "Thessaloniki", "Patras", "Heraklion", "Larissa",
+  "Remote", "Hybrid", "Anywhere in Greece",
 ];

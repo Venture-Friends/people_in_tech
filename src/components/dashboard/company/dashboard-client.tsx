@@ -5,8 +5,7 @@ import { OverviewClient } from "./overview";
 import { ProfileEditor } from "./profile-editor";
 import { JobManager } from "./job-manager";
 import { EventManager } from "./event-manager";
-import { GalleryManager } from "./gallery-manager";
-import { Analytics } from "./analytics";
+import { TrendingUp, Clock } from "lucide-react";
 
 interface ProfileData {
   id: string;
@@ -28,6 +27,36 @@ interface CompanyDashboardClientProps {
   activeJobCount: number;
   upcomingEventCount: number;
   profileData: ProfileData;
+}
+
+function ComingSoonCard({
+  icon: Icon,
+  title,
+  description,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-12 text-center">
+      <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.06]">
+        <Icon className="size-7 text-emerald-400" />
+      </div>
+      <div className="mb-2 flex items-center justify-center gap-2">
+        <Clock className="size-3.5 text-white/30" />
+        <span className="text-[11px] font-medium uppercase tracking-wider text-white/30">
+          Coming Soon
+        </span>
+      </div>
+      <h3 className="font-display text-xl font-semibold text-white mb-2">
+        {title}
+      </h3>
+      <p className="mx-auto max-w-md text-[13px] leading-relaxed text-white/[0.35]">
+        {description}
+      </p>
+    </div>
+  );
 }
 
 export function CompanyDashboardClient({
@@ -53,8 +82,13 @@ export function CompanyDashboardClient({
       )}
       {activeTab === "jobs" && <JobManager />}
       {activeTab === "events" && <EventManager />}
-      {activeTab === "gallery" && <GalleryManager />}
-      {activeTab === "analytics" && <Analytics />}
+      {activeTab === "analytics" && (
+        <ComingSoonCard
+          icon={TrendingUp}
+          title="Analytics"
+          description="Track profile views, follower growth, job listing performance, and audience demographics. Analytics will be available once your company profile has enough activity."
+        />
+      )}
     </div>
   );
 }

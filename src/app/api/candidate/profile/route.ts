@@ -29,8 +29,8 @@ const profileUpdateSchema = z.object({
   headline: z.string().optional(),
   linkedinUrl: z.string().url().optional().or(z.literal("")),
   experienceLevel: z.enum([
-    "STUDENT", "FRESH_GRADUATE", "JUNIOR", "MID", "SENIOR", "LEAD", "STAFF",
-    "MANAGER", "DIRECTOR", "EXECUTIVE",
+    "STUDENT", "JUNIOR", "MID", "SENIOR", "LEAD",
+    "MANAGER", "DIRECTOR",
   ]),
   skills: z.array(z.string()),
   roleInterests: z.array(z.string()),

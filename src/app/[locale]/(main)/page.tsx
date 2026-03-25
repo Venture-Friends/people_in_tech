@@ -3,62 +3,14 @@ import { prisma } from "@/lib/prisma";
 import { HeroSection } from "@/components/landing/hero-section";
 import { Ticker } from "@/components/landing/ticker";
 import { TrustedByTicker } from "@/components/landing/trusted-by-ticker";
-import { FeaturedCompanies } from "@/components/landing/featured-companies";
 import { HowItWorks } from "@/components/landing/how-it-works";
 import { UpcomingEvents } from "@/components/landing/upcoming-events";
 import { NewsletterCta } from "@/components/landing/newsletter-cta";
 import { ForCompaniesCta } from "@/components/landing/for-companies-cta";
 import { LatestJobs } from "@/components/landing/latest-jobs";
-import { PartnersSection } from "@/components/landing/partners-section";
 import { Divider } from "@/components/shared/divider";
-import type { CompanyCardData } from "@/components/shared/company-card";
 import type { EventCardData } from "@/components/shared/event-card";
 import type { JobCardData } from "@/components/jobs/job-card";
-
-async function getFeaturedCompanies(): Promise<CompanyCardData[]> {
-  // First try to get featured companies
-  let companies = await prisma.company.findMany({
-    where: { featured: true },
-    take: 6,
-    include: {
-      _count: {
-        select: {
-          followers: true,
-          jobs: true,
-        },
-      },
-    },
-  });
-
-  // Fallback to first 6 companies if none are featured
-  if (companies.length === 0) {
-    companies = await prisma.company.findMany({
-      take: 6,
-      include: {
-        _count: {
-          select: {
-            followers: true,
-            jobs: true,
-          },
-        },
-      },
-    });
-  }
-
-  return companies.map((c) => ({
-    name: c.name,
-    slug: c.slug,
-    industry: c.industry,
-    logo: c.logo,
-    locations: c.locations,
-    status: c.status,
-    followerCount: c._count.followers,
-    jobCount: c._count.jobs,
-    founded: c.founded ?? undefined,
-    technologies: c.technologies ?? undefined,
-    size: c.size ?? undefined,
-  }));
-}
 
 async function getLatestJobs(): Promise<JobCardData[]> {
   const jobs = await prisma.jobListing.findMany({
@@ -108,32 +60,6 @@ async function getUpcomingEvents(): Promise<EventCardData[]> {
     registrationUrl: e.registrationUrl,
     company: e.company,
   }));
-}
-
-async function getCompanyLogos(): Promise<{ name: string; logo: string; slug: string }[]> {
-  const companies = await prisma.company.findMany({
-    where: { logo: { not: null } },
-    select: { name: true, logo: true, slug: true },
-  });
-  const results: { name: string; logo: string; slug: string }[] = [];
-  for (const c of companies) {
-    if (c.logo) results.push({ name: c.name, logo: c.logo, slug: c.slug });
-  }
-  return results;
-}
-
-async function getActivePartners() {
-  const partners = await prisma.partner.findMany({
-    where: { active: true },
-    orderBy: { order: "asc" },
-    select: {
-      id: true,
-      name: true,
-      logo: true,
-      website: true,
-    },
-  });
-  return partners;
 }
 
 async function getStats() {
@@ -192,28 +118,23 @@ export default async function LandingPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [companies, events, stats, latestJobs, companyLogos, partners] = await Promise.all([
-    getFeaturedCompanies(),
+  const [events, stats, latestJobs] = await Promise.all([
     getUpcomingEvents(),
     getStats(),
     getLatestJobs(),
-    getCompanyLogos(),
-    getActivePartners(),
   ]);
 
   return (
     <div className="flex flex-col">
       <HeroSection stats={stats} />
       <Ticker industries={stats.industries} techAndLocations={stats.techAndLocations} />
-      <TrustedByTicker logos={companyLogos} />
+      <TrustedByTicker />
       <HowItWorks />
-      <FeaturedCompanies companies={companies} />
       <Divider />
       <LatestJobs jobs={latestJobs} />
       <Divider />
       <UpcomingEvents events={events} />
       <ForCompaniesCta />
-      <PartnersSection partners={partners} />
       <NewsletterCta />
     </div>
   );

@@ -418,11 +418,9 @@ export function JobScraperPanel({
         </div>
 
         <DialogFooter>
-          <DialogClose>
-            <Button variant="outline" className="rounded-lg">
-              <X className="size-3.5 mr-1" />
-              Close
-            </Button>
+          <DialogClose render={<Button variant="outline" className="rounded-lg" />}>
+            <X className="size-3.5 mr-1" />
+            Close
           </DialogClose>
           {scanned && selected.size > 0 && (
             <Button
