@@ -60,6 +60,8 @@ export async function GET(request: NextRequest) {
       companySlug: j.company.slug,
       location: j.location,
       type: j.type,
+      description: j.description,
+      externalUrl: j.externalUrl,
       status: j.status,
       postedAt: j.postedAt.toISOString(),
     }));
