@@ -118,17 +118,22 @@ export default async function LandingPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [events, stats, latestJobs] = await Promise.all([
+  const [events, stats, latestJobs, partners] = await Promise.all([
     getUpcomingEvents(),
     getStats(),
     getLatestJobs(),
+    prisma.partner.findMany({
+      where: { active: true },
+      orderBy: { order: "asc" },
+      select: { name: true, logo: true, website: true },
+    }),
   ]);
 
   return (
     <div className="flex flex-col">
       <HeroSection stats={stats} />
       <Ticker industries={stats.industries} techAndLocations={stats.techAndLocations} />
-      <TrustedByTicker />
+      <TrustedByTicker logos={partners.map(p => ({ name: p.name, logo: p.logo, url: p.website || undefined }))} />
       <HowItWorks />
       <Divider />
       <LatestJobs jobs={latestJobs} />

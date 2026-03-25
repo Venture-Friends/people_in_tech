@@ -84,7 +84,7 @@ function PartnerForm({ formData, setFormData, onSubmit, submitLabel }: PartnerFo
         />
       </div>
       <div className="space-y-1.5">
-        <Label className="text-white/[0.35] text-xs">Logo *</Label>
+        <Label className="text-white/[0.35] text-xs">Logo * <span className="text-white/20 font-normal">— recommended: SVG or PNG, 200×80px, transparent background</span></Label>
         <div className="flex gap-2">
           <Input
             value={formData.logo}
