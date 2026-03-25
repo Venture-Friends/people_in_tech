@@ -20,7 +20,7 @@ export function AnimatedBackground() {
       <div className="noise-overlay" aria-hidden="true" />
 
       {/* Floating Particles */}
-      <div className="fixed inset-0 z-[1] pointer-events-none overflow-hidden" aria-hidden="true">
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
         {Array.from({ length: 24 }).map((_, i) => (
           <div key={i} className={`particle particle-${i + 1}`} />
         ))}
