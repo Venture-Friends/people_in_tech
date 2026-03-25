@@ -204,7 +204,9 @@ export function UserMenu() {
         <DropdownMenuItem
           onClick={async () => {
             document.cookie = "pit-active-context=; path=/; max-age=0";
-            await signOut({ callbackUrl: "/login" });
+            document.cookie = "next-auth.session-token=; path=/; max-age=0";
+            document.cookie = "__Secure-next-auth.session-token=; path=/; max-age=0";
+            await signOut({ callbackUrl: "/en/login" });
           }}
           variant="destructive"
         >
