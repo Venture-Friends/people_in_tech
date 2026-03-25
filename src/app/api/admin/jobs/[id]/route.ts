@@ -23,19 +23,27 @@ export async function PUT(
 
   try {
     const { id } = await params;
-    const body = await request.json();
-    const { status } = body;
+    const { status, title, description, location, type, externalUrl } = await request.json();
 
-    if (!status || !["ACTIVE", "PAUSED"].includes(status)) {
+    // Only validate status if it's provided
+    if (status !== undefined && !["ACTIVE", "PAUSED"].includes(status)) {
       return NextResponse.json(
         { error: "Status must be 'ACTIVE' or 'PAUSED'" },
         { status: 400 }
       );
     }
 
+    const data: Record<string, unknown> = {};
+    if (status !== undefined) data.status = status;
+    if (title !== undefined) data.title = title;
+    if (description !== undefined) data.description = description;
+    if (location !== undefined) data.location = location;
+    if (type !== undefined) data.type = type;
+    if (externalUrl !== undefined) data.externalUrl = externalUrl;
+
     const job = await prisma.jobListing.update({
       where: { id },
-      data: { status },
+      data,
     });
 
     return NextResponse.json({ job });

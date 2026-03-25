@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Play, Pause, Trash2, ExternalLink, Plus } from "lucide-react";
+import { Search, Play, Pause, Trash2, ExternalLink, Plus, Pencil, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,6 +31,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetFooter,
+} from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface Job {
@@ -40,8 +47,18 @@ interface Job {
   companySlug: string;
   location: string | null;
   type: string;
+  description: string | null;
+  externalUrl: string;
   status: string;
   postedAt: string;
+}
+
+interface EditJobFormData {
+  title: string;
+  description: string;
+  location: string;
+  type: string;
+  externalUrl: string;
 }
 
 interface CompanyOption {
@@ -86,6 +103,18 @@ export function JobsTable() {
   const [companies, setCompanies] = useState<CompanyOption[]>([]);
   const [jobForm, setJobForm] = useState(initialJobForm);
   const [submitting, setSubmitting] = useState(false);
+
+  // Edit sheet state
+  const [editSheetOpen, setEditSheetOpen] = useState(false);
+  const [editingJob, setEditingJob] = useState<Job | null>(null);
+  const [editFormData, setEditFormData] = useState<EditJobFormData>({
+    title: "",
+    description: "",
+    location: "",
+    type: "ONSITE",
+    externalUrl: "",
+  });
+  const [saving, setSaving] = useState(false);
 
   const fetchJobs = useCallback(async () => {
     try {
@@ -198,6 +227,61 @@ export function JobsTable() {
     }
   };
 
+  const openEdit = (job: Job) => {
+    setEditingJob(job);
+    setEditFormData({
+      title: job.title,
+      description: job.description || "",
+      location: job.location || "",
+      type: job.type,
+      externalUrl: job.externalUrl || "",
+    });
+    setEditSheetOpen(true);
+  };
+
+  const updateEditField = (field: keyof EditJobFormData, value: string) => {
+    setEditFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleEditJob = async () => {
+    if (!editingJob) return;
+    if (!editFormData.title.trim()) {
+      toast.error("Title is required");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const body: Record<string, unknown> = {
+        title: editFormData.title.trim(),
+        description: editFormData.description.trim() || null,
+        location: editFormData.location.trim() || null,
+        type: editFormData.type,
+        externalUrl: editFormData.externalUrl.trim() || "",
+      };
+
+      const res = await fetch(`/api/admin/jobs/${editingJob.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        toast.error("Failed to update job");
+        return;
+      }
+
+      toast.success("Job updated");
+      setEditSheetOpen(false);
+      setEditingJob(null);
+      fetchJobs();
+    } catch {
+      toast.error("Failed to update job");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -278,7 +362,7 @@ export function JobsTable() {
                   <TableRow
                     key={job.id}
                     className="border-b border-white/[0.04] hover:bg-white/[0.02] cursor-pointer"
-                    onClick={() => router.push(`/jobs/${job.id}`)}
+                    onClick={() => openEdit(job)}
                   >
                     <TableCell className="font-medium text-[13px]">{job.title}</TableCell>
                     <TableCell className="text-[13px]">{job.companyName}</TableCell>
@@ -331,6 +415,15 @@ export function JobsTable() {
                           ) : (
                             <Play className="size-3.5" />
                           )}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          className="text-white/30 hover:text-white/60"
+                          onClick={() => openEdit(job)}
+                          title="Edit job"
+                        >
+                          <Pencil className="size-3.5" />
                         </Button>
                         <Button
                           variant="ghost"
@@ -461,6 +554,122 @@ export function JobsTable() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Edit Job Sheet (slide-over panel) */}
+      <Sheet open={editSheetOpen} onOpenChange={setEditSheetOpen}>
+        <SheetContent
+          side="right"
+          className="w-[500px] sm:w-[600px] sm:max-w-[600px] overflow-y-auto border-white/[0.06] bg-[#0a0a0b]/95 backdrop-blur-xl"
+        >
+          <SheetHeader className="border-b border-white/[0.06] pb-4">
+            <SheetTitle className="text-lg">
+              Edit Job
+            </SheetTitle>
+            {editingJob && (
+              <div className="flex items-center gap-2 mt-1">
+                <span
+                  className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                    statusColors[editingJob.status] || "bg-white/[0.05] text-white/30"
+                  }`}
+                >
+                  {editingJob.status}
+                </span>
+                <span className="text-[11px] text-white/25">
+                  {editingJob.companyName}
+                </span>
+              </div>
+            )}
+          </SheetHeader>
+
+          <div className="space-y-5 py-5 px-4">
+            {/* Title */}
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-job-title" className="text-white/[0.35] text-xs">Title *</Label>
+              <Input
+                id="edit-job-title"
+                value={editFormData.title}
+                onChange={(e) => updateEditField("title", e.target.value)}
+                className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
+              />
+            </div>
+
+            {/* Description */}
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-job-description" className="text-white/[0.35] text-xs">Description</Label>
+              <Textarea
+                id="edit-job-description"
+                value={editFormData.description}
+                onChange={(e) => updateEditField("description", e.target.value)}
+                rows={4}
+                placeholder="Job description..."
+                className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20 min-h-[100px]"
+              />
+            </div>
+
+            {/* Location & Type */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="edit-job-location" className="text-white/[0.35] text-xs">Location</Label>
+                <Input
+                  id="edit-job-location"
+                  value={editFormData.location}
+                  onChange={(e) => updateEditField("location", e.target.value)}
+                  placeholder="e.g. Athens, Greece"
+                  className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="edit-job-type" className="text-white/[0.35] text-xs">Type</Label>
+                <Select
+                  value={editFormData.type}
+                  onValueChange={(v) => v !== null && updateEditField("type", v)}
+                >
+                  <SelectTrigger className="rounded-[14px] border-white/[0.07] bg-white/[0.03]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ONSITE">On-site</SelectItem>
+                    <SelectItem value="REMOTE">Remote</SelectItem>
+                    <SelectItem value="HYBRID">Hybrid</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* External URL */}
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-job-url" className="text-white/[0.35] text-xs">External URL</Label>
+              <Input
+                id="edit-job-url"
+                value={editFormData.externalUrl}
+                onChange={(e) => updateEditField("externalUrl", e.target.value)}
+                placeholder="https://..."
+                className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
+              />
+            </div>
+          </div>
+
+          <SheetFooter className="border-t border-white/[0.06] pt-4 flex-row gap-2">
+            <Button
+              variant="outline"
+              className="rounded-lg flex-1"
+              onClick={() => setEditSheetOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleEditJob}
+              disabled={saving}
+              className="bg-primary text-primary-foreground rounded-lg flex-1"
+            >
+              {saving ? (
+                <Loader2 className="size-4 mr-1.5 animate-spin" />
+              ) : null}
+              Save Changes
+            </Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
