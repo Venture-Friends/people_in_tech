@@ -282,7 +282,7 @@ export function PartnersManager() {
             Manage partner logos displayed on the landing page
           </p>
         </div>
-        <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
+        <Dialog open={addDialogOpen} onOpenChange={(open) => { if (open) setFormData(defaultForm); setAddDialogOpen(open); }}>
           <DialogTrigger
             render={<Button size="sm" className="bg-primary text-primary-foreground rounded-lg" />}
           >
