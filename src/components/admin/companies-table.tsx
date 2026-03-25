@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Search, Plus, Pencil, Trash2, Star, StarOff, Sparkles, Loader2, ScanSearch, ExternalLink } from "lucide-react";
+import { Search, Plus, Pencil, Trash2, Sparkles, Loader2, ScanSearch, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -563,23 +563,6 @@ export function CompaniesTable() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon-sm"
-                          className="text-white/30 hover:text-white/60"
-                          onClick={() =>
-                            handleToggleFeatured(company)
-                          }
-                          title={
-                            company.featured ? "Unfeature" : "Feature"
-                          }
-                        >
-                          {company.featured ? (
-                            <StarOff className="size-3.5" />
-                          ) : (
-                            <Star className="size-3.5" />
-                          )}
-                        </Button>
                         <Button
                           variant="ghost"
                           size="icon-sm"
