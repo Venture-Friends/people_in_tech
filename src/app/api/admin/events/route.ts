@@ -42,6 +42,7 @@ export async function GET() {
       location: e.location,
       isOnline: e.isOnline,
       capacity: e.capacity,
+      registrationUrl: e.registrationUrl,
       companyId: e.companyId,
       companyName: e.company?.name || "Platform Event",
       registrations: e._count.registrations,
@@ -61,7 +62,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { title, description, type, date, startTime, endTime, location, isOnline, capacity } = body;
+    const { title, description, type, date, startTime, endTime, location, isOnline, capacity, registrationUrl } = body;
 
     if (!title || !date || !startTime) {
       return NextResponse.json(
@@ -81,6 +82,7 @@ export async function POST(request: NextRequest) {
         location: location || null,
         isOnline: isOnline || false,
         capacity: capacity ? parseInt(capacity, 10) : null,
+        registrationUrl: registrationUrl || null,
         companyId: null, // Platform event
       },
     });

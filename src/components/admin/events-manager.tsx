@@ -45,6 +45,7 @@ interface EventData {
   location: string | null;
   isOnline: boolean;
   capacity: number | null;
+  registrationUrl: string | null;
   companyId: string | null;
   companyName: string;
   registrations: number;
@@ -79,6 +80,7 @@ const defaultForm = {
   location: "",
   isOnline: false,
   capacity: "",
+  registrationUrl: "",
 };
 
 interface EventFormProps {
@@ -199,6 +201,15 @@ function EventForm({ formData, setFormData, onSubmit, submitLabel }: EventFormPr
           />
         </div>
       </div>
+      <div className="space-y-1.5">
+        <Label className="text-white/[0.35] text-xs">Event URL</Label>
+        <Input
+          value={formData.registrationUrl}
+          onChange={(e) => setFormData({ ...formData, registrationUrl: e.target.value })}
+          placeholder="https://example.com/event"
+          className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
+        />
+      </div>
       <DialogFooter>
         <DialogClose render={<Button variant="outline" className="rounded-lg" />}>
           Cancel
@@ -308,6 +319,7 @@ export function EventsManager() {
       location: event.location || "",
       isOnline: event.isOnline,
       capacity: event.capacity?.toString() || "",
+      registrationUrl: event.registrationUrl || "",
     });
     setEditDialogOpen(true);
   };
