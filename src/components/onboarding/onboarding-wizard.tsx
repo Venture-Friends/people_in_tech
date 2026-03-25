@@ -35,6 +35,13 @@ const DEFAULT_VALUES: OnboardingInput = {
   language: "en",
 };
 
+// Which fields belong to which step
+const STEP_FIELDS: Record<number, (keyof OnboardingInput)[]> = {
+  1: ["fullName", "headline", "linkedinUrl", "experienceLevel"],
+  2: ["roleInterests", "skills", "industries"],
+  3: ["preferredLocations", "emailDigest", "emailEvents", "emailNewsletter", "language"],
+};
+
 export function OnboardingWizard() {
   const t = useTranslations("onboarding");
   const { data: session, status: sessionStatus } = useSession();
@@ -47,6 +54,7 @@ export function OnboardingWizard() {
   const form = useForm<OnboardingInput>({
     resolver: zodResolver(onboardingSchema),
     defaultValues: DEFAULT_VALUES,
+    mode: "onSubmit",
   });
 
   const {
@@ -66,28 +74,7 @@ export function OnboardingWizard() {
     }
   }, [sessionStatus, router]);
 
-  // Client-side profile guard: redirect to /discover if onboarding complete
-  useEffect(() => {
-    if (sessionStatus !== "authenticated") return;
-
-    let cancelled = false;
-    fetch("/api/onboarding/status")
-      .then((res) => res.json())
-      .then((data) => {
-        if (!cancelled && data.onboardingComplete) {
-          router.push("/discover");
-        }
-      })
-      .catch(() => {
-        // Silently ignore — user can still use the wizard
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [sessionStatus, router]);
-
-  // Restore step + draft from sessionStorage after hydration
+  // Restore step + draft from sessionStorage after hydration (runs once)
   useEffect(() => {
     if (hasRestoredRef.current) return;
     hasRestoredRef.current = true;
@@ -97,7 +84,7 @@ export function OnboardingWizard() {
       const savedDraft = sessionStorage.getItem(STORAGE_KEY_DRAFT);
 
       const restoredStep = savedStep ? parseInt(savedStep, 10) : 1;
-      setCurrentStep(isNaN(restoredStep) ? 1 : restoredStep);
+      setCurrentStep(isNaN(restoredStep) || restoredStep < 1 || restoredStep > 3 ? 1 : restoredStep);
 
       if (savedDraft) {
         const draft = JSON.parse(savedDraft) as Partial<OnboardingInput>;
@@ -155,19 +142,8 @@ export function OnboardingWizard() {
     3: "Almost done, set your preferences",
   };
 
-  async function handleNext() {
-    if (currentStep === 1) {
-      const valid = await trigger([
-        "fullName",
-        "headline",
-        "linkedinUrl",
-        "experienceLevel",
-      ]);
-      if (!valid) return;
-    } else if (currentStep === 2) {
-      const valid = await trigger(["roleInterests", "skills", "industries"]);
-      if (!valid) return;
-    }
+  // Navigate freely between steps — no validation on Next (only on submit)
+  function handleNext() {
     setDirection("forward");
     updateStep(Math.min((currentStep ?? 1) + 1, 3));
   }
@@ -175,6 +151,16 @@ export function OnboardingWizard() {
   function handleBack() {
     setDirection("back");
     updateStep(Math.max((currentStep ?? 1) - 1, 1));
+  }
+
+  // Find first step with validation errors
+  function getFirstStepWithError(errorFields: string[]): number {
+    for (const step of [1, 2, 3]) {
+      if (STEP_FIELDS[step].some((f) => errorFields.includes(f))) {
+        return step;
+      }
+    }
+    return 1;
   }
 
   async function onSubmit(data: OnboardingInput) {
@@ -206,6 +192,34 @@ export function OnboardingWizard() {
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  // Handle form submit with error navigation
+  async function handleFormSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    // Validate all fields first
+    const valid = await trigger();
+    if (!valid) {
+      // Find which step has the error and navigate there
+      const errorFields = Object.keys(errors);
+      // Re-trigger to get fresh errors
+      await trigger();
+      const freshErrors = Object.keys(form.formState.errors);
+      const errorStep = getFirstStepWithError(freshErrors);
+
+      if (errorStep !== currentStep) {
+        setDirection("back");
+        updateStep(errorStep);
+        toast.error(`Please fix the highlighted fields on step ${errorStep}`);
+      } else {
+        toast.error("Please fix the highlighted fields");
+      }
+      return;
+    }
+
+    // All valid — submit
+    handleSubmit(onSubmit)(e);
   }
 
   // Loading state — null step means still hydrating
@@ -245,57 +259,27 @@ export function OnboardingWizard() {
 
         {/* Glassmorphic card */}
         <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-6 sm:p-8">
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleFormSubmit}>
             {/* Render all 3 steps simultaneously — hide inactive ones with display:none */}
             <div style={{ display: currentStep === 1 ? "block" : "none" }}>
-              <div
-                className={
-                  currentStep === 1
-                    ? direction === "forward"
-                      ? "animate-slide-in-right"
-                      : "animate-slide-in-left"
-                    : ""
-                }
-              >
-                <StepAbout
-                  register={register}
-                  watch={watch}
-                  setValue={setValue}
-                  errors={errors}
-                />
-              </div>
+              <StepAbout
+                register={register}
+                watch={watch}
+                setValue={setValue}
+                errors={errors}
+              />
             </div>
 
             <div style={{ display: currentStep === 2 ? "block" : "none" }}>
-              <div
-                className={
-                  currentStep === 2
-                    ? direction === "forward"
-                      ? "animate-slide-in-right"
-                      : "animate-slide-in-left"
-                    : ""
-                }
-              >
-                <StepInterests
-                  watch={watch}
-                  setValue={setValue}
-                  errors={errors}
-                />
-              </div>
+              <StepInterests
+                watch={watch}
+                setValue={setValue}
+                errors={errors}
+              />
             </div>
 
             <div style={{ display: currentStep === 3 ? "block" : "none" }}>
-              <div
-                className={
-                  currentStep === 3
-                    ? direction === "forward"
-                      ? "animate-slide-in-right"
-                      : "animate-slide-in-left"
-                    : ""
-                }
-              >
-                <StepPreferences watch={watch} setValue={setValue} />
-              </div>
+              <StepPreferences watch={watch} setValue={setValue} />
             </div>
 
             <div className="flex justify-between mt-8">

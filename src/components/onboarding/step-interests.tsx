@@ -2,7 +2,7 @@
 
 import { UseFormWatch, UseFormSetValue, FieldErrors } from "react-hook-form";
 import { useTranslations } from "next-intl";
-import { MultiSelectChips } from "@/components/shared/multi-select-chips";
+import { ComboboxMultiSelect } from "@/components/shared/combobox-multi-select";
 import { SkillPicker } from "@/components/shared/skill-picker";
 import { Label } from "@/components/ui/label";
 import {
@@ -26,15 +26,16 @@ export function StepInterests({ watch, setValue, errors }: StepInterestsProps) {
   const industries = watch("industries");
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div>
-        <MultiSelectChips
+        <ComboboxMultiSelect
           label={t("roleInterests")}
           options={ALL_ROLES}
           groups={ROLE_GROUPS as unknown as Record<string, string[]>}
           selected={roleInterests || []}
           onChange={(selected) => setValue("roleInterests", selected, { shouldValidate: true })}
           max={MAX_ROLE_SELECTIONS}
+          placeholder="Search roles..."
         />
         {errors.roleInterests && (
           <p className="text-sm text-destructive mt-1">
@@ -44,7 +45,7 @@ export function StepInterests({ watch, setValue, errors }: StepInterestsProps) {
       </div>
 
       <div>
-        <Label className="mb-3 text-[13px] font-medium text-white/50">{t("skills")}</Label>
+        <Label className="mb-2 text-[13px] font-medium text-white/50">{t("skills")}</Label>
         <SkillPicker
           selected={skills || []}
           onChange={(skills) => setValue("skills", skills)}
@@ -53,11 +54,12 @@ export function StepInterests({ watch, setValue, errors }: StepInterestsProps) {
       </div>
 
       <div>
-        <MultiSelectChips
+        <ComboboxMultiSelect
           label={t("industries")}
           options={INDUSTRY_OPTIONS}
           selected={industries || []}
           onChange={(selected) => setValue("industries", selected)}
+          placeholder="Search industries..."
         />
       </div>
     </div>

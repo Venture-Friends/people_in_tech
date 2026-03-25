@@ -28,6 +28,7 @@ interface CompanyInfo {
 export function UserMenu() {
   const { data: session } = useSession();
   const t = useTranslations("nav");
+  const router = useRouter();
 
   const [activeContext, setActiveContext] = useState<ActiveContext>("personal");
   const [companyInfo, setCompanyInfo] = useState<CompanyInfo | null>(null);
