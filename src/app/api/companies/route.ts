@@ -56,23 +56,24 @@ export async function GET(request: NextRequest) {
     }
 
     // Build orderBy
-    let orderBy: Record<string, unknown> = {};
+    let sortOrderBy: Record<string, unknown> = {};
     switch (sort) {
       case "mostFollowed":
-        orderBy = { followers: { _count: "desc" } };
+        sortOrderBy = { followers: { _count: "desc" } };
         break;
       case "mostRoles":
-        orderBy = { jobs: { _count: "desc" } };
+        sortOrderBy = { jobs: { _count: "desc" } };
         break;
       case "recent":
-        orderBy = { createdAt: "desc" };
+        sortOrderBy = { createdAt: "desc" };
         break;
       case "alphabetical":
-        orderBy = { name: "asc" };
+        sortOrderBy = { name: "asc" };
         break;
       default:
-        orderBy = { followers: { _count: "desc" } };
+        sortOrderBy = { followers: { _count: "desc" } };
     }
+    const orderBy = [{ featured: "desc" }, sortOrderBy];
 
     const [companies, total] = await Promise.all([
       prisma.company.findMany({
@@ -106,6 +107,7 @@ export async function GET(request: NextRequest) {
       description: c.description,
       followerCount: c._count.followers,
       jobCount: c._count.jobs,
+      featured: c.featured,
     }));
 
     return NextResponse.json({ companies: mapped, total });

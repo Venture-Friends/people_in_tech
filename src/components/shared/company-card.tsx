@@ -14,6 +14,7 @@ export interface CompanyCardData {
   founded?: number;
   technologies?: string;
   size?: string;
+  featured?: boolean;
 }
 
 function parseLocations(locationsJson: string): string[] {
@@ -76,6 +77,11 @@ export function CompanyCard({ company }: { company: CompanyCardData }) {
                 </svg>
               )}
             </div>
+            {company.featured && (
+              <span className="mt-1 inline-block rounded-md border border-primary/20 bg-primary/[0.06] px-2 py-0.5 text-[10px] font-medium text-primary">
+                Featured
+              </span>
+            )}
             <p className="mt-0.5 text-xs text-white/30">
               {company.industry} · {locations[0] || "Greece"}
             </p>
