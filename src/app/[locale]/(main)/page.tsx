@@ -8,6 +8,7 @@ import { UpcomingEvents } from "@/components/landing/upcoming-events";
 import { NewsletterCta } from "@/components/landing/newsletter-cta";
 import { ForCompaniesCta } from "@/components/landing/for-companies-cta";
 import { LatestJobs } from "@/components/landing/latest-jobs";
+import { PartnersSection } from "@/components/landing/partners-section";
 import { Divider } from "@/components/shared/divider";
 import type { EventCardData } from "@/components/shared/event-card";
 import type { JobCardData } from "@/components/jobs/job-card";
@@ -118,10 +119,15 @@ export default async function LandingPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [events, stats, latestJobs] = await Promise.all([
+  const [events, stats, latestJobs, partners] = await Promise.all([
     getUpcomingEvents(),
     getStats(),
     getLatestJobs(),
+    prisma.partner.findMany({
+      where: { active: true },
+      orderBy: { order: "asc" },
+      select: { id: true, name: true, logo: true, website: true },
+    }),
   ]);
 
   return (
@@ -134,6 +140,7 @@ export default async function LandingPage({
       <LatestJobs jobs={latestJobs} />
       <Divider />
       <UpcomingEvents events={events} />
+      <PartnersSection partners={partners} />
       <ForCompaniesCta />
       <NewsletterCta />
     </div>
