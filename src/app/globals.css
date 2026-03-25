@@ -494,14 +494,14 @@
   animation: ticker-scroll-reverse 35s linear infinite;
 }
 
-/* Trusted By marquee — gentle back-and-forth */
-@keyframes marquee-drift {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(calc(-100% + 100vw - 4rem)); }
+/* Trusted By marquee — seamless right-to-left scroll */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 .animate-marquee {
-  animation: marquee-drift 25s ease-in-out infinite;
+  animation: marquee 20s linear infinite;
 }
 
 /* Company logo ticker */
