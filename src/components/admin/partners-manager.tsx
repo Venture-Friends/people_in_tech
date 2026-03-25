@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Dispatch, SetStateAction } from "react";
 import Image from "next/image";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -44,6 +44,72 @@ const defaultForm = {
   website: "",
   order: "0",
 };
+
+interface PartnerFormProps {
+  formData: typeof defaultForm;
+  setFormData: Dispatch<SetStateAction<typeof defaultForm>>;
+  onSubmit: () => void;
+  submitLabel: string;
+}
+
+function PartnerForm({ formData, setFormData, onSubmit, submitLabel }: PartnerFormProps) {
+  return (
+    <div className="space-y-4 py-2">
+      <div className="space-y-1.5">
+        <Label className="text-white/[0.35] text-xs">Name *</Label>
+        <Input
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          placeholder="Partner name"
+          className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
+        />
+      </div>
+      <div className="space-y-1.5">
+        <Label className="text-white/[0.35] text-xs">Logo URL *</Label>
+        <Input
+          value={formData.logo}
+          onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
+          placeholder="https://example.com/logo.png"
+          className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
+        />
+      </div>
+      <div className="space-y-1.5">
+        <Label className="text-white/[0.35] text-xs">Website URL</Label>
+        <Input
+          value={formData.website}
+          onChange={(e) =>
+            setFormData({ ...formData, website: e.target.value })
+          }
+          placeholder="https://example.com"
+          className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
+        />
+      </div>
+      <div className="space-y-1.5">
+        <Label className="text-white/[0.35] text-xs">Display Order</Label>
+        <Input
+          type="number"
+          value={formData.order}
+          onChange={(e) =>
+            setFormData({ ...formData, order: e.target.value })
+          }
+          placeholder="0"
+          className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
+        />
+      </div>
+      <DialogFooter>
+        <DialogClose render={<Button variant="outline" className="rounded-lg" />}>
+          Cancel
+        </DialogClose>
+        <Button
+          onClick={onSubmit}
+          className="bg-primary text-primary-foreground rounded-lg"
+        >
+          {submitLabel}
+        </Button>
+      </DialogFooter>
+    </div>
+  );
+}
 
 export function PartnersManager() {
   const [partners, setPartners] = useState<PartnerData[]>([]);
@@ -175,69 +241,6 @@ export function PartnersManager() {
     setEditDialogOpen(true);
   };
 
-  const PartnerForm = ({
-    onSubmit,
-    submitLabel,
-  }: {
-    onSubmit: () => void;
-    submitLabel: string;
-  }) => (
-    <div className="space-y-4 py-2">
-      <div className="space-y-1.5">
-        <Label className="text-white/[0.35] text-xs">Name *</Label>
-        <Input
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          placeholder="Partner name"
-          className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
-        />
-      </div>
-      <div className="space-y-1.5">
-        <Label className="text-white/[0.35] text-xs">Logo URL *</Label>
-        <Input
-          value={formData.logo}
-          onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
-          placeholder="https://example.com/logo.png"
-          className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
-        />
-      </div>
-      <div className="space-y-1.5">
-        <Label className="text-white/[0.35] text-xs">Website URL</Label>
-        <Input
-          value={formData.website}
-          onChange={(e) =>
-            setFormData({ ...formData, website: e.target.value })
-          }
-          placeholder="https://example.com"
-          className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
-        />
-      </div>
-      <div className="space-y-1.5">
-        <Label className="text-white/[0.35] text-xs">Display Order</Label>
-        <Input
-          type="number"
-          value={formData.order}
-          onChange={(e) =>
-            setFormData({ ...formData, order: e.target.value })
-          }
-          placeholder="0"
-          className="rounded-[14px] border-white/[0.07] bg-white/[0.03] backdrop-blur-[12px] focus:border-primary/30 focus:ring-1 focus:ring-primary/20"
-        />
-      </div>
-      <DialogFooter>
-        <DialogClose render={<Button variant="outline" className="rounded-lg" />}>
-          Cancel
-        </DialogClose>
-        <Button
-          onClick={onSubmit}
-          className="bg-primary text-primary-foreground rounded-lg"
-        >
-          {submitLabel}
-        </Button>
-      </DialogFooter>
-    </div>
-  );
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -260,7 +263,7 @@ export function PartnersManager() {
             <DialogHeader>
               <DialogTitle>Add Partner</DialogTitle>
             </DialogHeader>
-            <PartnerForm onSubmit={handleAdd} submitLabel="Create Partner" />
+            <PartnerForm formData={formData} setFormData={setFormData} onSubmit={handleAdd} submitLabel="Create Partner" />
           </DialogContent>
         </Dialog>
       </div>
@@ -387,7 +390,7 @@ export function PartnersManager() {
           <DialogHeader>
             <DialogTitle>Edit Partner</DialogTitle>
           </DialogHeader>
-          <PartnerForm onSubmit={handleEdit} submitLabel="Save Changes" />
+          <PartnerForm formData={formData} setFormData={setFormData} onSubmit={handleEdit} submitLabel="Save Changes" />
         </DialogContent>
       </Dialog>
     </div>
