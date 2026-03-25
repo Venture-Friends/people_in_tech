@@ -179,7 +179,10 @@ export function CandidatesTable() {
               ) : (
                 candidates.map((candidate) => (
                   <TableRow key={candidate.id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
-                    <TableCell className="font-medium text-[13px]">
+                    <TableCell
+                      className="font-medium text-[13px] cursor-pointer hover:text-primary transition-colors"
+                      onClick={() => router.push(`/profile/${candidate.id}`)}
+                    >
                       {candidate.name}
                     </TableCell>
                     <TableCell className="text-[13px] text-white/[0.35]">
@@ -223,22 +226,9 @@ export function CandidatesTable() {
                       <Button
                         variant="ghost"
                         size="icon-sm"
-                        className={
-                          candidate.isProfilePublic
-                            ? "text-white/30 hover:text-white/60"
-                            : "text-white/10 cursor-not-allowed"
-                        }
-                        onClick={() => {
-                          if (candidate.isProfilePublic) {
-                            router.push(`/profile/${candidate.id}`);
-                          }
-                        }}
-                        title={
-                          candidate.isProfilePublic
-                            ? "View profile"
-                            : "Profile not public"
-                        }
-                        disabled={!candidate.isProfilePublic}
+                        className="text-white/30 hover:text-white/60"
+                        onClick={() => router.push(`/profile/${candidate.id}`)}
+                        title="View profile"
                       >
                         <Eye className="size-3.5" />
                       </Button>
