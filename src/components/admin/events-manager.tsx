@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Dispatch, SetStateAction } from "react";
 import { Plus, Pencil, Trash2, Calendar, MapPin, Users, Globe } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -81,110 +81,15 @@ const defaultForm = {
   capacity: "",
 };
 
-export function EventsManager() {
-  const [events, setEvents] = useState<EventData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [editingEvent, setEditingEvent] = useState<EventData | null>(null);
-  const [formData, setFormData] = useState(defaultForm);
+interface EventFormProps {
+  formData: typeof defaultForm;
+  setFormData: Dispatch<SetStateAction<typeof defaultForm>>;
+  onSubmit: () => void;
+  submitLabel: string;
+}
 
-  const fetchEvents = useCallback(async () => {
-    try {
-      const res = await fetch("/api/admin/events");
-      const data = await res.json();
-      setEvents(data.events || []);
-    } catch {
-      toast.error("Failed to load events");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchEvents();
-  }, [fetchEvents]);
-
-  const handleAdd = async () => {
-    if (!formData.title || !formData.date || !formData.startTime) {
-      toast.error("Title, date, and start time are required");
-      return;
-    }
-    try {
-      const res = await fetch("/api/admin/events", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        toast.error(data.error || "Failed to create event");
-        return;
-      }
-      toast.success("Platform event created");
-      setAddDialogOpen(false);
-      setFormData(defaultForm);
-      fetchEvents();
-    } catch {
-      toast.error("Failed to create event");
-    }
-  };
-
-  const handleEdit = async () => {
-    if (!editingEvent) return;
-    try {
-      const res = await fetch(`/api/admin/events/${editingEvent.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) {
-        toast.error("Failed to update event");
-        return;
-      }
-      toast.success("Event updated");
-      setEditDialogOpen(false);
-      setEditingEvent(null);
-      fetchEvents();
-    } catch {
-      toast.error("Failed to update event");
-    }
-  };
-
-  const handleDelete = async (event: EventData) => {
-    if (!confirm(`Delete "${event.title}"? This cannot be undone.`)) return;
-    try {
-      const res = await fetch(`/api/admin/events/${event.id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) {
-        toast.error("Failed to delete event");
-        return;
-      }
-      toast.success("Event deleted");
-      fetchEvents();
-    } catch {
-      toast.error("Failed to delete event");
-    }
-  };
-
-  const openEdit = (event: EventData) => {
-    setEditingEvent(event);
-    setFormData({
-      title: event.title,
-      description: event.description || "",
-      type: event.type,
-      date: event.date.split("T")[0],
-      startTime: event.startTime,
-      endTime: event.endTime || "",
-      location: event.location || "",
-      isOnline: event.isOnline,
-      capacity: event.capacity?.toString() || "",
-    });
-    setEditDialogOpen(true);
-  };
-
-  const EventForm = ({ onSubmit, submitLabel }: { onSubmit: () => void; submitLabel: string }) => (
+function EventForm({ formData, setFormData, onSubmit, submitLabel }: EventFormProps) {
+  return (
     <div className="space-y-4 py-2">
       <div className="space-y-1.5">
         <Label className="text-white/[0.35] text-xs">Title</Label>
@@ -302,6 +207,110 @@ export function EventsManager() {
       </DialogFooter>
     </div>
   );
+}
+
+export function EventsManager() {
+  const [events, setEvents] = useState<EventData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<EventData | null>(null);
+  const [formData, setFormData] = useState(defaultForm);
+
+  const fetchEvents = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/events");
+      const data = await res.json();
+      setEvents(data.events || []);
+    } catch {
+      toast.error("Failed to load events");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
+
+  const handleAdd = async () => {
+    if (!formData.title || !formData.date || !formData.startTime) {
+      toast.error("Title, date, and start time are required");
+      return;
+    }
+    try {
+      const res = await fetch("/api/admin/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        toast.error(data.error || "Failed to create event");
+        return;
+      }
+      toast.success("Platform event created");
+      setAddDialogOpen(false);
+      setFormData(defaultForm);
+      fetchEvents();
+    } catch {
+      toast.error("Failed to create event");
+    }
+  };
+
+  const handleEdit = async () => {
+    if (!editingEvent) return;
+    try {
+      const res = await fetch(`/api/admin/events/${editingEvent.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      if (!res.ok) {
+        toast.error("Failed to update event");
+        return;
+      }
+      toast.success("Event updated");
+      setEditDialogOpen(false);
+      setEditingEvent(null);
+      fetchEvents();
+    } catch {
+      toast.error("Failed to update event");
+    }
+  };
+
+  const handleDelete = async (event: EventData) => {
+    if (!confirm(`Delete "${event.title}"? This cannot be undone.`)) return;
+    try {
+      const res = await fetch(`/api/admin/events/${event.id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        toast.error("Failed to delete event");
+        return;
+      }
+      toast.success("Event deleted");
+      fetchEvents();
+    } catch {
+      toast.error("Failed to delete event");
+    }
+  };
+
+  const openEdit = (event: EventData) => {
+    setEditingEvent(event);
+    setFormData({
+      title: event.title,
+      description: event.description || "",
+      type: event.type,
+      date: event.date.split("T")[0],
+      startTime: event.startTime,
+      endTime: event.endTime || "",
+      location: event.location || "",
+      isOnline: event.isOnline,
+      capacity: event.capacity?.toString() || "",
+    });
+    setEditDialogOpen(true);
+  };
 
   return (
     <div className="space-y-6">
@@ -325,7 +334,7 @@ export function EventsManager() {
             <DialogHeader>
               <DialogTitle>Create Platform Event</DialogTitle>
             </DialogHeader>
-            <EventForm onSubmit={handleAdd} submitLabel="Create Event" />
+            <EventForm formData={formData} setFormData={setFormData} onSubmit={handleAdd} submitLabel="Create Event" />
           </DialogContent>
         </Dialog>
       </div>
@@ -449,7 +458,7 @@ export function EventsManager() {
           <DialogHeader>
             <DialogTitle>Edit Event</DialogTitle>
           </DialogHeader>
-          <EventForm onSubmit={handleEdit} submitLabel="Save Changes" />
+          <EventForm formData={formData} setFormData={setFormData} onSubmit={handleEdit} submitLabel="Save Changes" />
         </DialogContent>
       </Dialog>
     </div>
