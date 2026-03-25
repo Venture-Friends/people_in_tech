@@ -468,8 +468,8 @@ export function CompaniesTable() {
               </div>
             </div>
             <DialogFooter>
-              <DialogClose>
-                <Button variant="outline" className="rounded-lg">Cancel</Button>
+              <DialogClose render={<Button variant="outline" className="rounded-lg" />}>
+                Cancel
               </DialogClose>
               <Button onClick={handleAdd} className="bg-primary text-primary-foreground rounded-lg">Create</Button>
             </DialogFooter>
@@ -678,8 +678,8 @@ export function CompaniesTable() {
             </div>
           )}
           <DialogFooter>
-            <DialogClose>
-              <Button variant="outline" className="rounded-lg">Cancel</Button>
+            <DialogClose render={<Button variant="outline" className="rounded-lg" />}>
+              Cancel
             </DialogClose>
             <Button onClick={handleApplyEnrichment} className="bg-primary text-primary-foreground rounded-lg">Apply Changes</Button>
           </DialogFooter>

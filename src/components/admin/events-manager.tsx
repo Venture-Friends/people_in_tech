@@ -295,8 +295,8 @@ export function EventsManager() {
         </div>
       </div>
       <DialogFooter>
-        <DialogClose>
-          <Button variant="outline" className="rounded-lg">Cancel</Button>
+        <DialogClose render={<Button variant="outline" className="rounded-lg" />}>
+          Cancel
         </DialogClose>
         <Button onClick={onSubmit} className="bg-primary text-primary-foreground rounded-lg">{submitLabel}</Button>
       </DialogFooter>
@@ -315,11 +315,11 @@ export function EventsManager() {
           </p>
         </div>
         <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
-          <DialogTrigger>
-            <Button size="sm" className="bg-primary text-primary-foreground rounded-lg">
-              <Plus className="size-4 mr-1" />
-              Add Platform Event
-            </Button>
+          <DialogTrigger
+            render={<Button size="sm" className="bg-primary text-primary-foreground rounded-lg" />}
+          >
+            <Plus className="size-4 mr-1" />
+            Add Platform Event
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>

@@ -181,10 +181,8 @@ export function AdminDashboardClient({
       <div className="flex flex-1 flex-col min-w-0">
         <header className="flex items-center gap-3 border-b border-white/[0.04] px-4 py-3 lg:hidden">
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-            <SheetTrigger>
-              <Button variant="ghost" size="icon">
-                <Menu className="size-5" />
-              </Button>
+            <SheetTrigger render={<Button variant="ghost" size="icon" />}>
+              <Menu className="size-5" />
             </SheetTrigger>
             <SheetContent side="left" className="w-[220px] p-0 bg-white/[0.02] border-r border-white/[0.04]">
               <SheetHeader className="sr-only">

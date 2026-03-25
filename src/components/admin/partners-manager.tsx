@@ -225,10 +225,8 @@ export function PartnersManager() {
         />
       </div>
       <DialogFooter>
-        <DialogClose>
-          <Button variant="outline" className="rounded-lg">
-            Cancel
-          </Button>
+        <DialogClose render={<Button variant="outline" className="rounded-lg" />}>
+          Cancel
         </DialogClose>
         <Button
           onClick={onSubmit}
@@ -252,14 +250,11 @@ export function PartnersManager() {
           </p>
         </div>
         <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
-          <DialogTrigger>
-            <Button
-              size="sm"
-              className="bg-primary text-primary-foreground rounded-lg"
-            >
-              <Plus className="size-4 mr-1" />
-              Add Partner
-            </Button>
+          <DialogTrigger
+            render={<Button size="sm" className="bg-primary text-primary-foreground rounded-lg" />}
+          >
+            <Plus className="size-4 mr-1" />
+            Add Partner
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>

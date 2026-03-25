@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "@/i18n/navigation";
-import { Link } from "@/i18n/navigation";
+import { useRouter, Link } from "@/i18n/navigation";
 import { Bookmark, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
@@ -70,10 +69,6 @@ export function JobCard({ job, isSaved = false }: JobCardProps) {
     e.stopPropagation();
     e.preventDefault();
     router.push(`/companies/${job.company.slug}`);
-  }
-
-  function handleViewClick(e: React.MouseEvent) {
-    e.stopPropagation();
   }
 
   return (
@@ -144,15 +139,14 @@ export function JobCard({ job, isSaved = false }: JobCardProps) {
           <Bookmark className={`size-4 ${saved ? "fill-primary text-primary" : ""}`} />
         </button>
 
-        {/* View button */}
-        <Link
-          href={`/jobs/${job.id}`}
-          onClick={handleViewClick}
+        {/* View button — decorative only, outer Link handles navigation */}
+        <span
           className="hidden shrink-0 items-center gap-1 rounded-lg border border-white/[0.06] bg-white/[0.03] px-4 py-2 text-[12px] font-medium text-foreground transition-colors hover:bg-white/[0.06] sm:inline-flex"
+          aria-hidden="true"
         >
           View
           <ArrowRight className="size-3" />
-        </Link>
+        </span>
       </div>
     </Link>
   );
