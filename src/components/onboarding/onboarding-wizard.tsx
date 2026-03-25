@@ -74,27 +74,6 @@ export function OnboardingWizard() {
     }
   }, [sessionStatus, router]);
 
-  // Profile guard: redirect to /discover if onboarding is already complete
-  useEffect(() => {
-    if (sessionStatus !== "authenticated" || isSubmitting) return;
-
-    let cancelled = false;
-    fetch("/api/onboarding/status")
-      .then((res) => res.json())
-      .then((data) => {
-        if (!cancelled && data.onboardingComplete) {
-          router.push("/discover");
-        }
-      })
-      .catch(() => {
-        // Silently ignore — user can still use the wizard
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [sessionStatus, router, isSubmitting]);
-
   // Restore step + draft from sessionStorage after hydration (runs once)
   useEffect(() => {
     if (hasRestoredRef.current) return;
