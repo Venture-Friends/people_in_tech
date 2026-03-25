@@ -62,9 +62,7 @@ export function ProfileSettings({ profile }: ProfileSettingsProps) {
       }
       toast.success("Account deleted");
       document.cookie = "pit-active-context=; path=/; max-age=0";
-      document.cookie = "next-auth.session-token=; path=/; max-age=0";
-      document.cookie = "__Secure-next-auth.session-token=; path=/; max-age=0";
-      await signOut({ callbackUrl: "/en/login" });
+      await signOut({ callbackUrl: "/login" });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed to delete account");
       setDeleting(false);
