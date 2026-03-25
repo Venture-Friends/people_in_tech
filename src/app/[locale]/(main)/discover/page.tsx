@@ -9,7 +9,7 @@ async function getInitialCompanies(): Promise<{
 }> {
   const [companies, total] = await Promise.all([
     prisma.company.findMany({
-      orderBy: { followers: { _count: "desc" } },
+      orderBy: [{ featured: "desc" }, { followers: { _count: "desc" } }],
       take: 20,
       include: {
         _count: {
@@ -32,6 +32,7 @@ async function getInitialCompanies(): Promise<{
     logo: c.logo,
     locations: c.locations,
     status: c.status,
+    featured: c.featured,
     followerCount: c._count.followers,
     jobCount: c._count.jobs,
   }));

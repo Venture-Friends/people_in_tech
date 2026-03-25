@@ -50,9 +50,15 @@ export function CompanyCard({ company }: { company: CompanyCardData }) {
   const technologies = parseTechnologies(company.technologies);
   const firstLetter = company.name.charAt(0).toUpperCase();
 
+  const isFeatured = company.featured;
+
   return (
     <Link href={`/companies/${company.slug}`} className="block">
-      <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-[22px] transition-all duration-300 hover:border-white/[0.1] hover:bg-white/[0.04] hover:-translate-y-[3px] hover:shadow-[0_16px_48px_rgba(0,0,0,0.3)]">
+      <div className={`rounded-2xl border backdrop-blur-[8px] p-[22px] transition-all duration-300 hover:-translate-y-[3px] ${
+        isFeatured
+          ? "border-primary/20 bg-primary/[0.03] shadow-[0_0_24px_rgba(159,239,0,0.06)] hover:border-primary/30 hover:bg-primary/[0.05] hover:shadow-[0_16px_48px_rgba(159,239,0,0.1)]"
+          : "border-white/[0.05] bg-white/[0.02] hover:border-white/[0.1] hover:bg-white/[0.04] hover:shadow-[0_16px_48px_rgba(0,0,0,0.3)]"
+      }`}>
         {/* Header: Logo + Name + Meta */}
         <div className="flex items-start gap-3">
           {company.logo ? (
@@ -78,7 +84,8 @@ export function CompanyCard({ company }: { company: CompanyCardData }) {
               )}
             </div>
             {company.featured && (
-              <span className="mt-1 inline-block rounded-md border border-primary/20 bg-primary/[0.06] px-2 py-0.5 text-[10px] font-medium text-primary">
+              <span className="mt-1 inline-flex items-center gap-1 rounded-md border border-primary/25 bg-primary/[0.08] px-2 py-0.5 text-[10px] font-semibold text-primary">
+                <svg className="size-3" viewBox="0 0 20 20" fill="currentColor"><path d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" /></svg>
                 Featured
               </span>
             )}
