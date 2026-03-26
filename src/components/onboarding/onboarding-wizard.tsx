@@ -67,9 +67,13 @@ export function OnboardingWizard() {
     reset,
   } = form;
 
-  // Client-side auth guard: redirect to /login if unauthenticated
+  // Client-side auth guard: redirect to /login if unauthenticated (only on initial load)
+  const hasCheckedAuth = useRef(false);
   useEffect(() => {
-    if (!sessionPending && !session) {
+    if (sessionPending) return;
+    if (hasCheckedAuth.current) return;
+    hasCheckedAuth.current = true;
+    if (!session) {
       router.push("/login");
     }
   }, [sessionPending, session, router]);
