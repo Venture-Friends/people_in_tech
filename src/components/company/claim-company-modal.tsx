@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
+import { authClient } from "@/lib/auth-client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -32,7 +32,7 @@ export function ClaimCompanyModal({
   isOpen,
   onOpenChange,
 }: ClaimCompanyModalProps) {
-  const { data: session } = useSession();
+  const { data: session } = authClient.useSession();
   const isLoggedIn = !!session?.user;
 
   const [isLoading, setIsLoading] = useState(false);

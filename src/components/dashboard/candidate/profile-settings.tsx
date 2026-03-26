@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { signOut } from "next-auth/react";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "@/i18n/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -48,6 +49,7 @@ interface ProfileSettingsProps {
 }
 
 export function ProfileSettings({ profile }: ProfileSettingsProps) {
+  const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -62,9 +64,8 @@ export function ProfileSettings({ profile }: ProfileSettingsProps) {
       }
       toast.success("Account deleted");
       document.cookie = "pit-active-context=; path=/; max-age=0";
-      document.cookie = "next-auth.session-token=; path=/; max-age=0";
-      document.cookie = "__Secure-next-auth.session-token=; path=/; max-age=0";
-      await signOut({ callbackUrl: "/en/login" });
+      await authClient.signOut();
+      router.push("/login");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed to delete account");
       setDeleting(false);

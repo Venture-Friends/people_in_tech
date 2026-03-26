@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession, signOut } from "next-auth/react";
+import { authClient } from "@/lib/auth-client";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -26,7 +26,7 @@ interface CompanyInfo {
 }
 
 export function UserMenu() {
-  const { data: session } = useSession();
+  const { data: session } = authClient.useSession();
   const t = useTranslations("nav");
   const router = useRouter();
 
@@ -204,9 +204,8 @@ export function UserMenu() {
         <DropdownMenuItem
           onClick={async () => {
             document.cookie = "pit-active-context=; path=/; max-age=0";
-            document.cookie = "next-auth.session-token=; path=/; max-age=0";
-            document.cookie = "__Secure-next-auth.session-token=; path=/; max-age=0";
-            await signOut({ callbackUrl: "/en/login" });
+            await authClient.signOut();
+            router.push("/login");
           }}
           variant="destructive"
         >

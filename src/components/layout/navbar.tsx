@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useSession } from "next-auth/react";
+import { authClient } from "@/lib/auth-client";
 import { Link, usePathname } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +24,7 @@ const navLinks = [
 
 export function Navbar() {
   const t = useTranslations("nav");
-  const { data: session, status } = useSession();
+  const { data: session, isPending } = authClient.useSession();
   const pathname = usePathname();
 
   return (
@@ -64,7 +64,7 @@ export function Navbar() {
 
           {/* Desktop Auth Buttons / User Menu */}
           <div className="hidden items-center gap-2 md:flex">
-            {status === "loading" ? (
+            {isPending ? (
               <div className="h-8 w-20 animate-pulse rounded-lg bg-muted" />
             ) : session?.user ? (
               <UserMenu />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
+import { authClient } from "@/lib/auth-client";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Bookmark, MapPin, Briefcase, Calendar, ChevronRight, GraduationCap } from "lucide-react";
@@ -73,7 +73,7 @@ function getRelativeTime(date: string): string {
 }
 
 export function JobDetail({ job, company, moreJobs }: JobDetailProps) {
-  const { data: session } = useSession();
+  const { data: session } = authClient.useSession();
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
 

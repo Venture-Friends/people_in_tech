@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useSession } from "next-auth/react";
+import { authClient } from "@/lib/auth-client";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
@@ -19,7 +19,7 @@ export function FollowButton({
   initialFollowed,
   initialCount,
 }: FollowButtonProps) {
-  const { data: session } = useSession();
+  const { data: session } = authClient.useSession();
   const router = useRouter();
   const [followed, setFollowed] = useState(initialFollowed);
   const [count, setCount] = useState(initialCount);

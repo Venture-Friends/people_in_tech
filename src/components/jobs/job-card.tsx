@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
+import { authClient } from "@/lib/auth-client";
 import { useRouter, Link } from "@/i18n/navigation";
 import { Bookmark, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
@@ -37,7 +37,7 @@ interface JobCardProps {
 }
 
 export function JobCard({ job, isSaved = false }: JobCardProps) {
-  const { data: session } = useSession();
+  const { data: session } = authClient.useSession();
   const router = useRouter();
   const [saved, setSaved] = useState(isSaved);
   const [saving, setSaving] = useState(false);

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSession } from "next-auth/react";
+import { authClient } from "@/lib/auth-client";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
@@ -44,7 +44,7 @@ const STEP_FIELDS: Record<number, (keyof OnboardingInput)[]> = {
 
 export function OnboardingWizard() {
   const t = useTranslations("onboarding");
-  const { data: session, status: sessionStatus } = useSession();
+  const { data: session, isPending: sessionPending } = authClient.useSession();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -69,10 +69,10 @@ export function OnboardingWizard() {
 
   // Client-side auth guard: redirect to /login if unauthenticated
   useEffect(() => {
-    if (sessionStatus === "unauthenticated") {
+    if (!sessionPending && !session) {
       router.push("/login");
     }
-  }, [sessionStatus, router]);
+  }, [sessionPending, session, router]);
 
   // Restore step + draft from sessionStorage after hydration (runs once)
   useEffect(() => {
@@ -223,7 +223,7 @@ export function OnboardingWizard() {
   }
 
   // Loading state — null step means still hydrating
-  if (currentStep === null || sessionStatus === "loading") {
+  if (currentStep === null || sessionPending) {
     return (
       <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center p-4">
         <Loader2 className="size-6 animate-spin text-white/30" />

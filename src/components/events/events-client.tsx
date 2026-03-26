@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useSession } from "next-auth/react";
+import { authClient } from "@/lib/auth-client";
 import { useTranslations } from "next-intl";
 import { EventCard, type EventCardData } from "@/components/shared/event-card";
 import { EventFilters } from "@/components/events/event-filters";
@@ -30,7 +30,7 @@ export function EventsClient({
   initialSavedIds = [],
 }: EventsClientProps) {
   const t = useTranslations("events");
-  const { data: session } = useSession();
+  const { data: session } = authClient.useSession();
 
   const [upcomingEvents, setUpcomingEvents] =
     useState<EventWithRegistration[]>(initialUpcoming);
