@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHash, randomBytes } from "crypto";
-import { hash } from "bcryptjs";
+import { hashPassword } from "better-auth/crypto";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(request: NextRequest) {
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
     // If no user exists, create one
     if (!user) {
       const randomPassword = randomBytes(16).toString("hex");
-      const passwordHash = await hash(randomPassword, 12);
+      const passwordHash = await hashPassword(randomPassword);
 
       user = await prisma.user.create({
         data: {

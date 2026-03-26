@@ -44,3 +44,5 @@ export const auth = betterAuth({
     },
   },
 });
+
+export type Auth = typeof auth;

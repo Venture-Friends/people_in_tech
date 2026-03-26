@@ -1,14 +1,8 @@
 import { PrismaClient } from "../src/generated/prisma/client.js";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-import { hash } from "bcryptjs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { hashPassword } from "better-auth/crypto";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const dbPath = path.resolve(__dirname, "..", "dev.db");
-
-const adapter = new PrismaBetterSqlite3({ url: `file:${dbPath}` });
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
@@ -16,8 +10,8 @@ async function main() {
 
   // ── 1. Users ──────────────────────────────────────────────────────────
 
-  const adminPassword = await hash("admin123", 10);
-  const demoPassword = await hash("demo123", 10);
+  const adminPassword = await hashPassword("admin123");
+  const demoPassword = await hashPassword("demo123");
 
   const admin = await prisma.user.upsert({
     where: { email: "admin@pos4work.gr" },
@@ -32,7 +26,7 @@ async function main() {
   });
   console.log(`✓ Admin user: ${admin.email}`);
 
-  const repPassword = await hash("rep123", 10);
+  const repPassword = await hashPassword("rep123");
 
   const companyRep = await prisma.user.upsert({
     where: { email: "rep@company.gr" },
