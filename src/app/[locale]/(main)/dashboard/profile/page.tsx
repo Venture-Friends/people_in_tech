@@ -1,7 +1,6 @@
-import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
-import { authOptions } from "@/lib/auth";
+import { getSession } from "@/lib/auth-session";
 import { ProfileEditor } from "@/components/dashboard/profile-editor";
 
 export default async function DashboardProfilePage({
@@ -12,7 +11,7 @@ export default async function DashboardProfilePage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const session = await getServerSession(authOptions);
+  const session = await getSession();
   if (!session?.user) {
     redirect(`/${locale}/login`);
   }

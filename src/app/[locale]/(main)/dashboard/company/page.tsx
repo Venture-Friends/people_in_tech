@@ -1,7 +1,6 @@
-import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
-import { authOptions } from "@/lib/auth";
+import { getSession } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
 import { getCompanyForUser } from "@/lib/company-helpers";
 import { CompanyDashboardClient } from "@/components/dashboard/company/dashboard-client";
@@ -14,7 +13,7 @@ export default async function CompanyDashboardPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const session = await getServerSession(authOptions);
+  const session = await getSession();
 
   if (!session?.user) {
     redirect(`/${locale}/login`);

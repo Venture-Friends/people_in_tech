@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getSession } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
 import { CompanyHero } from "@/components/company/company-hero";
 import { CompanyTabs } from "@/components/company/company-tabs";
@@ -99,7 +98,7 @@ export default async function CompanyProfilePage({ params }: PageProps) {
   // Check if current user follows this company and has a pending claim
   let isFollowing = false;
   let userHasPendingClaim = false;
-  const session = await getServerSession(authOptions);
+  const session = await getSession();
   if (session?.user) {
     const userId = (session.user as { id: string }).id;
     const [follow, pendingClaim] = await Promise.all([

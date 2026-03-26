@@ -1,6 +1,5 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getSession } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
 import { EventsClient } from "@/components/events/events-client";
 import type { EventCardData } from "@/components/shared/event-card";
@@ -83,7 +82,7 @@ export default async function EventsPage({
 
   // Fetch saved event IDs for logged-in user
   let savedEventIds: string[] = [];
-  const session = await getServerSession(authOptions);
+  const session = await getSession();
   if (session?.user) {
     const savedEvents = await prisma.savedEvent.findMany({
       where: { userId: session.user.id },
