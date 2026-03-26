@@ -78,23 +78,26 @@ export function OnboardingWizard() {
     }
   }, [sessionPending, session, router]);
 
-  // Restore step + draft from sessionStorage after hydration (runs once)
-  // Only restore if the draft belongs to the current user
+  // Restore step + draft from sessionStorage after session is loaded (runs once)
   useEffect(() => {
-    if (hasRestoredRef.current) return;
+    if (hasRestoredRef.current || sessionPending) return;
     hasRestoredRef.current = true;
+
+    const currentUserId = session?.user?.id;
 
     try {
       const savedDraft = sessionStorage.getItem(STORAGE_KEY_DRAFT);
       const savedStep = sessionStorage.getItem(STORAGE_KEY_STEP);
       const savedUser = sessionStorage.getItem("onboarding-user");
-      const currentUserId = session?.user?.id;
 
-      // If draft belongs to a different user, clear it and start fresh
-      if (savedUser && currentUserId && savedUser !== currentUserId) {
+      // If no saved user or different user, clear stale data and start fresh
+      if (!savedDraft || !savedUser || savedUser !== currentUserId) {
         sessionStorage.removeItem(STORAGE_KEY_STEP);
         sessionStorage.removeItem(STORAGE_KEY_DRAFT);
         sessionStorage.removeItem("onboarding-user");
+        if (currentUserId) {
+          sessionStorage.setItem("onboarding-user", currentUserId);
+        }
         setCurrentStep(1);
         reset({
           ...DEFAULT_VALUES,
@@ -103,27 +106,16 @@ export function OnboardingWizard() {
         return;
       }
 
-      // Save current user ID for future checks
-      if (currentUserId) {
-        sessionStorage.setItem("onboarding-user", currentUserId);
-      }
-
+      // Same user — restore draft
       const restoredStep = savedStep ? parseInt(savedStep, 10) : 1;
       setCurrentStep(isNaN(restoredStep) || restoredStep < 1 || restoredStep > 3 ? 1 : restoredStep);
 
-      if (savedDraft) {
-        const draft = JSON.parse(savedDraft) as Partial<OnboardingInput>;
-        reset({
-          ...DEFAULT_VALUES,
-          ...draft,
-          fullName: draft.fullName || session?.user?.name || "",
-        });
-      } else {
-        reset({
-          ...DEFAULT_VALUES,
-          fullName: session?.user?.name || "",
-        });
-      }
+      const draft = JSON.parse(savedDraft) as Partial<OnboardingInput>;
+      reset({
+        ...DEFAULT_VALUES,
+        ...draft,
+        fullName: draft.fullName || session?.user?.name || "",
+      });
     } catch {
       setCurrentStep(1);
       reset({
@@ -131,7 +123,7 @@ export function OnboardingWizard() {
         fullName: session?.user?.name || "",
       });
     }
-  }, [reset, session?.user?.name]);
+  }, [reset, sessionPending, session?.user?.id, session?.user?.name]);
 
   // Auto-save to sessionStorage via watch subscription (no re-render loop)
   useEffect(() => {
