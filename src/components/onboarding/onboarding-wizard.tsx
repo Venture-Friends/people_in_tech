@@ -212,14 +212,12 @@ export function OnboardingWizard() {
   }
 
   // Handle form submit with error navigation
-  async function handleFormSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleFormSubmit(e?: React.FormEvent | React.MouseEvent) {
+    e?.preventDefault?.();
 
     // Validate all fields first
     const valid = await trigger();
     if (!valid) {
-      // Find which step has the error and navigate there
-      const errorFields = Object.keys(errors);
       // Re-trigger to get fresh errors
       await trigger();
       const freshErrors = Object.keys(form.formState.errors);
@@ -236,7 +234,8 @@ export function OnboardingWizard() {
     }
 
     // All valid — submit
-    handleSubmit(onSubmit)(e);
+    const data = form.getValues();
+    onSubmit(data);
   }
 
   // Loading state — null step means still hydrating
@@ -315,14 +314,17 @@ export function OnboardingWizard() {
                 <div />
               )}
 
-              {currentStep < 3 ? (
-                <Button type="button" onClick={handleNext} size="lg">
+              {currentStep < 3 && (
+                <Button key="next" type="button" onClick={handleNext} size="lg">
                   {t("next")}
                   <ArrowRight className="size-4 ml-1" />
                 </Button>
-              ) : (
+              )}
+              {currentStep === 3 && (
                 <Button
-                  type="submit"
+                  key="submit"
+                  type="button"
+                  onClick={handleFormSubmit}
                   size="lg"
                   disabled={isSubmitting}
                   className="font-display"
