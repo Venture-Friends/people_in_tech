@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { getCompanyForUser } from "@/lib/company-helpers";
+import { getSession } from "@/lib/auth-session";
 
 function generateMockData() {
   const now = new Date();
@@ -56,7 +55,7 @@ function generateMockData() {
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getSession();
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { getCompanyForUser } from "@/lib/company-helpers";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
+import { getSession } from "@/lib/auth-session";
 
 const ALLOWED_TYPES = [
   "image/png",
@@ -29,7 +28,7 @@ function getExtension(mimeType: string): string {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getSession();
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
