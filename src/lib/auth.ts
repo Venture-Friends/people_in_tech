@@ -23,7 +23,6 @@ export const auth = betterAuth({
     },
   },
   user: {
-    modelName: "users",
     additionalFields: {
       role: {
         type: "string",
@@ -39,14 +38,10 @@ export const auth = betterAuth({
     },
   },
   session: {
-    modelName: "session",
     cookieCache: {
       enabled: true,
       maxAge: 5 * 60,
     },
-  },
-  account: {
-    modelName: "account",
   },
 });
 
