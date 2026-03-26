@@ -3,7 +3,6 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import { SessionProvider } from "@/components/providers/session-provider";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { MobileNav } from "@/components/layout/mobile-nav";
@@ -34,18 +33,16 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider messages={messages}>
-      <SessionProvider>
-        <AnimatedBackground />
-        <Navbar />
-        <main id="main-content" className="relative z-[2] min-h-screen pt-16 pb-16 sm:pb-0">
-          {children}
-        </main>
-        <Footer />
-        <MobileNav />
-        <Toaster />
-        <FeedbackWidget />
-        <TailwindIndicator />
-      </SessionProvider>
+      <AnimatedBackground />
+      <Navbar />
+      <main id="main-content" className="relative z-[2] min-h-screen pt-16 pb-16 sm:pb-0">
+        {children}
+      </main>
+      <Footer />
+      <MobileNav />
+      <Toaster />
+      <FeedbackWidget />
+      <TailwindIndicator />
     </NextIntlClientProvider>
   );
 }
