@@ -79,13 +79,34 @@ export function OnboardingWizard() {
   }, [sessionPending, session, router]);
 
   // Restore step + draft from sessionStorage after hydration (runs once)
+  // Only restore if the draft belongs to the current user
   useEffect(() => {
     if (hasRestoredRef.current) return;
     hasRestoredRef.current = true;
 
     try {
-      const savedStep = sessionStorage.getItem(STORAGE_KEY_STEP);
       const savedDraft = sessionStorage.getItem(STORAGE_KEY_DRAFT);
+      const savedStep = sessionStorage.getItem(STORAGE_KEY_STEP);
+      const savedUser = sessionStorage.getItem("onboarding-user");
+      const currentUserId = session?.user?.id;
+
+      // If draft belongs to a different user, clear it and start fresh
+      if (savedUser && currentUserId && savedUser !== currentUserId) {
+        sessionStorage.removeItem(STORAGE_KEY_STEP);
+        sessionStorage.removeItem(STORAGE_KEY_DRAFT);
+        sessionStorage.removeItem("onboarding-user");
+        setCurrentStep(1);
+        reset({
+          ...DEFAULT_VALUES,
+          fullName: session?.user?.name || "",
+        });
+        return;
+      }
+
+      // Save current user ID for future checks
+      if (currentUserId) {
+        sessionStorage.setItem("onboarding-user", currentUserId);
+      }
 
       const restoredStep = savedStep ? parseInt(savedStep, 10) : 1;
       setCurrentStep(isNaN(restoredStep) || restoredStep < 1 || restoredStep > 3 ? 1 : restoredStep);
