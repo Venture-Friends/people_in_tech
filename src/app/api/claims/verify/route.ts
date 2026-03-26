@@ -56,13 +56,13 @@ export async function GET(request: NextRequest) {
     // If no user exists, create one
     if (!user) {
       const randomPassword = randomBytes(16).toString("hex");
-      const passwordHash = await hashPassword(randomPassword);
+      const password = await hashPassword(randomPassword);
 
       user = await prisma.user.create({
         data: {
           name: pendingClaim.fullName,
           email: pendingClaim.workEmail,
-          passwordHash,
+          password,
           role: "CANDIDATE",
           emailVerified: true, // Verified via claim email
         },

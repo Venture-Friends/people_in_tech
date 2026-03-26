@@ -19,7 +19,7 @@ async function main() {
     create: {
       email: "admin@pos4work.gr",
       name: "Platform Admin",
-      passwordHash: adminPassword,
+      password: adminPassword,
       role: "ADMIN",
       emailVerified: true,
     },
@@ -34,7 +34,7 @@ async function main() {
     create: {
       email: "rep@company.gr",
       name: "Nikos Georgiou",
-      passwordHash: repPassword,
+      password: repPassword,
       role: "COMPANY_REP",
       emailVerified: true,
       avatarUrl: null,
@@ -53,7 +53,7 @@ async function main() {
     create: {
       email: "demo@candidate.gr",
       name: "Maria Papadopoulou",
-      passwordHash: demoPassword,
+      password: demoPassword,
       role: "CANDIDATE",
       emailVerified: true,
       candidateProfile: {
