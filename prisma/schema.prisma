@@ -48,7 +48,6 @@ model CandidateProfile {
   userId             String    @unique
   headline           String?
   experienceLevel    String    @default("STUDENT")
-  linkedinUrl        String?
   skills             String    @default("[]")
   roleInterests      String    @default("[]")
   industries         String    @default("[]")
@@ -59,7 +58,20 @@ model CandidateProfile {
   onboardingComplete Boolean   @default(false)
   lastSeenAlertsAt   DateTime?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // New fields
+  cvUrl              String?
+  portfolioUrl       String?
+  githubUrl          String?
+  availability       String    @default("NOT_SPECIFIED") // NOT_SPECIFIED | OPEN_TO_WORK | NOT_LOOKING | OPEN_TO_FREELANCE
+  preferredWorkType  String    @default("NOT_SPECIFIED") // NOT_SPECIFIED | REMOTE | HYBRID | ONSITE
+  salaryExpectation  String?                              // Free text, private field
+
+  // Relations
+  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workExperiences    WorkExperience[]
+  educations         Education[]
+  certifications     Certification[]
+  spokenLanguages    SpokenLanguage[]
 
   @@map("candidate_profiles")
 }
