@@ -8,7 +8,7 @@ import {
   ClipboardCheck,
   Briefcase,
   Calendar,
-  Mail,
+
   BarChart3,
   Handshake,
   FileText,
@@ -28,7 +28,6 @@ import { CandidatesTable } from "./candidates-table";
 import { ClaimsQueue } from "./claims-queue";
 import { JobsTable } from "./jobs-table";
 import { EventsManager } from "./events-manager";
-import { NewsletterComposer } from "./newsletter-composer";
 import { AnalyticsDashboard } from "./analytics-dashboard";
 import { PartnersManager } from "./partners-manager";
 import { ContentEditor } from "./content-editor";
@@ -58,7 +57,7 @@ const sidebarItems = [
   { id: "claims", label: "Claim Requests", icon: ClipboardCheck },
   { id: "jobs", label: "Job Listings", icon: Briefcase },
   { id: "events", label: "Events", icon: Calendar },
-  { id: "newsletters", label: "Newsletters", icon: Mail },
+
   { id: "partners", label: "Partners", icon: Handshake },
   { id: "content", label: "Content", icon: FileText },
   { id: "analytics", label: "Analytics", icon: BarChart3 },
@@ -147,8 +146,6 @@ export function AdminDashboardClient({
         return <JobsTable />;
       case "events":
         return <EventsManager />;
-      case "newsletters":
-        return <NewsletterComposer />;
       case "partners":
         return <PartnersManager />;
       case "content":
