@@ -54,7 +54,7 @@ export function JobsClient({ initialJobs, initialTotal }: JobsClientProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title="Job Openings" subtitle="Find your next opportunity in Greek tech" />
+      <PageHeader title="Open Roles" subtitle="Find your next opportunity in Greek tech" />
 
       <JobFilters
         search={search}
@@ -69,7 +69,7 @@ export function JobsClient({ initialJobs, initialTotal }: JobsClientProps) {
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <Briefcase className="size-4" />
         <span>
-          {total} {total === 1 ? "job" : "jobs"} found
+          {total} {total === 1 ? "role" : "roles"} found
         </span>
       </div>
 
@@ -84,7 +84,7 @@ export function JobsClient({ initialJobs, initialTotal }: JobsClientProps) {
         <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
           <Briefcase className="size-12 text-muted-foreground/40" />
           <p className="text-lg font-semibold text-foreground">
-            No jobs found
+            No roles found
           </p>
           <p className="text-sm text-muted-foreground">
             Try different filters or search terms

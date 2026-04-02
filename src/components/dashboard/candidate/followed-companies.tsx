@@ -43,7 +43,7 @@ export function FollowedCompanies({ companies: initialCompanies }: FollowedCompa
           You&apos;re not following any companies yet
         </h3>
         <p className="text-[14px] text-white/[0.35] mb-6">
-          Discover and follow companies to stay updated on their latest jobs and events.
+          Discover and follow companies to stay updated on new roles and events.
         </p>
         <Link href="/discover">
           <Button className="bg-primary text-primary-foreground hover:bg-primary/90">

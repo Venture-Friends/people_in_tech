@@ -103,7 +103,7 @@ export function SavedJobs({ jobs: initialJobs }: SavedJobsProps) {
           No saved jobs
         </h3>
         <p className="text-[14px] text-white/[0.35] mb-6">
-          Browse job listings and save the ones that interest you.
+          Browse open roles and save the ones that interest you.
         </p>
         <Link href="/jobs">
           <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
