@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter, Link } from "@/i18n/navigation";
-import { Bookmark, ArrowRight, Hand } from "lucide-react";
+import { Bookmark, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
 export interface JobCardData {
@@ -34,37 +34,13 @@ function formatJobType(type: string): string {
 interface JobCardProps {
   job: JobCardData;
   isSaved?: boolean;
-  isInterested?: boolean;
 }
 
-export function JobCard({ job, isSaved = false, isInterested: initialInterested = false }: JobCardProps) {
+export function JobCard({ job, isSaved = false }: JobCardProps) {
   const { data: session } = authClient.useSession();
   const router = useRouter();
   const [saved, setSaved] = useState(isSaved);
   const [saving, setSaving] = useState(false);
-  const [interested, setInterested] = useState(initialInterested);
-  const [toggling, setToggling] = useState(false);
-
-  async function handleInterest(e: React.MouseEvent) {
-    e.stopPropagation();
-    e.preventDefault();
-    if (!session?.user) {
-      toast.error("Please sign in to express interest");
-      return;
-    }
-    setToggling(true);
-    try {
-      const res = await fetch(`/api/jobs/${job.id}/interest`, { method: "POST" });
-      if (!res.ok) throw new Error("Failed");
-      const data = await res.json();
-      setInterested(data.interested);
-      toast.success(data.interested ? "Interest expressed" : "Interest withdrawn");
-    } catch {
-      toast.error("Something went wrong");
-    } finally {
-      setToggling(false);
-    }
-  }
 
   const firstLetter = job.company.name.charAt(0).toUpperCase();
 
@@ -152,18 +128,6 @@ export function JobCard({ job, isSaved = false, isInterested: initialInterested 
             {formatJobType(job.type)}
           </span>
         </div>
-
-        {/* Express Interest button — candidates only */}
-        {session?.user?.role === "CANDIDATE" && (
-          <button
-            onClick={handleInterest}
-            disabled={toggling}
-            className="shrink-0 rounded-full p-2 text-white/30 hover:text-white/60 hover:bg-white/[0.04] transition-colors"
-            aria-label={interested ? "Withdraw interest" : "Express interest"}
-          >
-            <Hand className={`size-4 ${interested ? "fill-primary text-primary" : ""}`} />
-          </button>
-        )}
 
         {/* Save button */}
         <button

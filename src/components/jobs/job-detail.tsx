@@ -4,7 +4,7 @@ import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Bookmark, MapPin, Briefcase, Calendar, ChevronRight, GraduationCap } from "lucide-react";
+import { ArrowRight, Bookmark, MapPin, Briefcase, Calendar, ChevronRight, GraduationCap, Hand } from "lucide-react";
 import { toast } from "sonner";
 
 interface JobDetailProps {
@@ -76,6 +76,8 @@ export function JobDetail({ job, company, moreJobs }: JobDetailProps) {
   const { data: session } = authClient.useSession();
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [interested, setInterested] = useState(false);
+  const [toggling, setToggling] = useState(false);
 
   const firstLetter = company.name.charAt(0).toUpperCase();
 
@@ -95,6 +97,25 @@ export function JobDetail({ job, company, moreJobs }: JobDetailProps) {
       toast.error("Failed to save job");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleInterest() {
+    if (!session?.user) {
+      toast.error("Please sign in to express interest");
+      return;
+    }
+    setToggling(true);
+    try {
+      const res = await fetch(`/api/jobs/${job.id}/interest`, { method: "POST" });
+      if (!res.ok) throw new Error("Failed");
+      const data = await res.json();
+      setInterested(data.interested);
+      toast.success(data.interested ? "Interest expressed — the company can now view your profile" : "Interest withdrawn");
+    } catch {
+      toast.error("Something went wrong");
+    } finally {
+      setToggling(false);
     }
   }
 
@@ -243,6 +264,19 @@ export function JobDetail({ job, company, moreJobs }: JobDetailProps) {
             Apply on {websiteHost || "company site"}
             <ArrowRight className="size-4" />
           </a>
+
+          {/* Express Interest button — candidates only */}
+          {session?.user?.role === "CANDIDATE" && (
+            <Button
+              variant="outline"
+              className={`w-full gap-2 border-white/[0.06] ${interested ? "border-primary/30 bg-primary/[0.06] text-primary hover:bg-primary/[0.1]" : "text-white/50 hover:text-white"}`}
+              onClick={handleInterest}
+              disabled={toggling}
+            >
+              <Hand className={`size-4 ${interested ? "fill-primary text-primary" : ""}`} />
+              {interested ? "Interest Expressed" : "Express Interest"}
+            </Button>
+          )}
 
           {/* Save button */}
           <Button
