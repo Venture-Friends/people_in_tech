@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
     create: {
       userId: session.user.id,
       headline: data.headline || null,
+      cvUrl: data.cvUrl || null,
       experienceLevel: data.experienceLevel,
       skills: JSON.stringify(data.skills),
       roleInterests: JSON.stringify(data.roleInterests),
@@ -50,6 +51,7 @@ export async function POST(request: NextRequest) {
     },
     update: {
       headline: data.headline || null,
+      cvUrl: data.cvUrl || null,
       experienceLevel: data.experienceLevel,
       skills: JSON.stringify(data.skills),
       roleInterests: JSON.stringify(data.roleInterests),
