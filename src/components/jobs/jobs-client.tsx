@@ -6,6 +6,10 @@ import { JobFilters } from "@/components/jobs/job-filters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Briefcase } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
+import { AuthGate } from "@/components/shared/auth-gate";
+import { authClient } from "@/lib/auth-client";
+
+const ANONYMOUS_LIMIT = 6;
 
 interface JobsClientProps {
   initialJobs: JobCardData[];
@@ -13,6 +17,8 @@ interface JobsClientProps {
 }
 
 export function JobsClient({ initialJobs, initialTotal }: JobsClientProps) {
+  const { data: session } = authClient.useSession();
+  const isAuthenticated = !!session?.user;
   const [jobs, setJobs] = useState<JobCardData[]>(initialJobs);
   const [total, setTotal] = useState(initialTotal);
   const [loading, setLoading] = useState(false);
@@ -91,11 +97,19 @@ export function JobsClient({ initialJobs, initialTotal }: JobsClientProps) {
           </p>
         </div>
       ) : (
-        <div className="flex flex-col gap-4">
-          {jobs.map((job) => (
-            <JobCard key={job.id} job={job} />
-          ))}
-        </div>
+        <>
+          <div className="flex flex-col gap-4">
+            {(!isAuthenticated && jobs.length > ANONYMOUS_LIMIT
+              ? jobs.slice(0, ANONYMOUS_LIMIT)
+              : jobs
+            ).map((job) => (
+              <JobCard key={job.id} job={job} />
+            ))}
+          </div>
+          {!isAuthenticated && jobs.length > ANONYMOUS_LIMIT && (
+            <AuthGate message={`Sign up to browse all ${total} open roles in Greek tech`} />
+          )}
+        </>
       )}
     </div>
   );
