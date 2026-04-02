@@ -76,6 +76,22 @@ model CandidateProfile {
   @@map("candidate_profiles")
 }
 
+model WorkExperience {
+  id                 String           @id @default(cuid())
+  candidateProfileId String
+  company            String
+  role               String
+  startDate          DateTime
+  endDate            DateTime?
+  current            Boolean          @default(false)
+  description        String?
+  order              Int              @default(0)
+
+  candidateProfile   CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade)
+
+  @@map("work_experiences")
+}
+
 model Company {
   id           String   @id @default(cuid())
   slug         String   @unique
