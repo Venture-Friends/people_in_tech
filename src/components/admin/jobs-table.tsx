@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Fragment } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Play, Pause, Trash2, ExternalLink, Plus, Pencil, Loader2 } from "lucide-react";
+import { Search, Play, Pause, Trash2, ExternalLink, Plus, Pencil, Loader2, Users, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,6 +51,15 @@ interface Job {
   externalUrl: string;
   status: string;
   postedAt: string;
+  interestCount: number;
+}
+
+interface InterestedCandidate {
+  userId: string;
+  name: string;
+  headline: string | null;
+  experienceLevel: string | null;
+  expressedAt: string;
 }
 
 interface EditJobFormData {
@@ -103,6 +112,11 @@ export function JobsTable() {
   const [companies, setCompanies] = useState<CompanyOption[]>([]);
   const [jobForm, setJobForm] = useState(initialJobForm);
   const [submitting, setSubmitting] = useState(false);
+
+  // Interested candidates state
+  const [expandedJobId, setExpandedJobId] = useState<string | null>(null);
+  const [interestedCandidates, setInterestedCandidates] = useState<InterestedCandidate[]>([]);
+  const [loadingInterested, setLoadingInterested] = useState(false);
 
   // Edit sheet state
   const [editSheetOpen, setEditSheetOpen] = useState(false);
@@ -227,6 +241,25 @@ export function JobsTable() {
     }
   };
 
+  const toggleInterested = async (jobId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (expandedJobId === jobId) {
+      setExpandedJobId(null);
+      return;
+    }
+    setExpandedJobId(jobId);
+    setLoadingInterested(true);
+    try {
+      const res = await fetch(`/api/admin/jobs/${jobId}/interested`);
+      const data = await res.json();
+      setInterestedCandidates(data.candidates || []);
+    } catch {
+      toast.error("Failed to load interested candidates");
+    } finally {
+      setLoadingInterested(false);
+    }
+  };
+
   const openEdit = (job: Job) => {
     setEditingJob(job);
     setEditFormData({
@@ -344,6 +377,7 @@ export function JobsTable() {
                 <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Type</TableHead>
                 <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Status</TableHead>
                 <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Posted</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Interested</TableHead>
                 <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02] text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -351,7 +385,7 @@ export function JobsTable() {
               {jobs.length === 0 ? (
                 <TableRow className="border-b border-white/[0.04] hover:bg-white/[0.02]">
                   <TableCell
-                    colSpan={7}
+                    colSpan={8}
                     className="text-center text-white/30 py-8"
                   >
                     No jobs found
@@ -359,8 +393,8 @@ export function JobsTable() {
                 </TableRow>
               ) : (
                 jobs.map((job) => (
+                  <Fragment key={job.id}>
                   <TableRow
-                    key={job.id}
                     className="border-b border-white/[0.04] hover:bg-white/[0.02] cursor-pointer"
                     onClick={() => openEdit(job)}
                   >
@@ -389,6 +423,20 @@ export function JobsTable() {
                     </TableCell>
                     <TableCell className="text-[13px] text-white/[0.35]">
                       {new Date(job.postedAt).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      {job.interestCount > 0 ? (
+                        <button
+                          onClick={(e) => toggleInterested(job.id, e)}
+                          className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-medium bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30 transition-colors"
+                        >
+                          <Users className="size-3" />
+                          {job.interestCount}
+                          {expandedJobId === job.id ? <ChevronUp className="size-3" /> : <ChevronDown className="size-3" />}
+                        </button>
+                      ) : (
+                        <span className="text-[11px] text-white/20">0</span>
+                      )}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
@@ -436,6 +484,47 @@ export function JobsTable() {
                       </div>
                     </TableCell>
                   </TableRow>
+                  {expandedJobId === job.id && (
+                    <TableRow className="border-b border-white/[0.04] bg-white/[0.01]">
+                      <TableCell colSpan={8} className="p-0">
+                        <div className="px-6 py-4">
+                          <h4 className="text-[12px] font-semibold text-white/50 uppercase tracking-wider mb-3">
+                            Interested Candidates
+                          </h4>
+                          {loadingInterested ? (
+                            <div className="flex items-center gap-2 text-white/30 text-sm py-2">
+                              <Loader2 className="size-3.5 animate-spin" /> Loading...
+                            </div>
+                          ) : interestedCandidates.length === 0 ? (
+                            <p className="text-sm text-white/25">No interested candidates yet.</p>
+                          ) : (
+                            <div className="space-y-2">
+                              {interestedCandidates.map((c) => (
+                                <a
+                                  key={c.userId}
+                                  href={`/profile/${c.userId}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center justify-between rounded-xl border border-white/[0.05] bg-white/[0.02] px-4 py-3 hover:bg-white/[0.04] transition-colors"
+                                >
+                                  <div>
+                                    <p className="text-[13px] font-medium text-foreground">{c.name}</p>
+                                    <p className="text-[11px] text-white/35">
+                                      {c.headline || c.experienceLevel || "Candidate"}
+                                    </p>
+                                  </div>
+                                  <span className="text-[11px] text-white/20">
+                                    {new Date(c.expressedAt).toLocaleDateString()}
+                                  </span>
+                                </a>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  </Fragment>
                 ))
               )}
             </TableBody>

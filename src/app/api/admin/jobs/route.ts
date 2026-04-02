@@ -49,6 +49,9 @@ export async function GET(request: NextRequest) {
         company: {
           select: { id: true, name: true, slug: true },
         },
+        _count: {
+          select: { interests: true },
+        },
       },
     });
 
@@ -63,6 +66,7 @@ export async function GET(request: NextRequest) {
       externalUrl: j.externalUrl,
       status: j.status,
       postedAt: j.postedAt.toISOString(),
+      interestCount: j._count.interests,
     }));
 
     return NextResponse.json({ jobs: mapped });
