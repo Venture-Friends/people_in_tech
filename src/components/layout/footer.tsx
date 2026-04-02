@@ -19,7 +19,7 @@ export function Footer() {
               People in Tech<span className="text-primary">.</span>
             </Link>
             <p className="mt-3 max-w-xs text-[13px] text-white/30 leading-relaxed">
-              Discover Greece&apos;s tech ecosystem. Powered by POS4work Innovation Hub.
+              Greece&apos;s premier tech talent pool. Powered by POS4work.
             </p>
           </div>
 

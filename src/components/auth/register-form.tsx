@@ -67,7 +67,7 @@ export function RegisterForm() {
           Create Account
         </h1>
         <p className="text-[15px] text-white/[0.35] mt-1.5">
-          Join the Greek tech community
+          Join Greece&apos;s tech talent pool
         </p>
       </div>
 
