@@ -17,7 +17,7 @@ export default async function DashboardProfilePage({
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
+    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <h1 className="font-display text-2xl font-bold text-white">
         My Profile
       </h1>
