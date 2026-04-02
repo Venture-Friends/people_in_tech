@@ -59,7 +59,7 @@ export const Layout = ({ children, previewText, unsubscribeUrl }: LayoutProps) =
                 letterSpacing: "-0.025em",
               }}
             >
-              Hiring Partners
+              People in Tech
             </Text>
           </Section>
 
@@ -91,7 +91,7 @@ export const Layout = ({ children, previewText, unsubscribeUrl }: LayoutProps) =
                 margin: "0 0 8px 0",
               }}
             >
-              POS4work — Discover Greek Tech
+              People in Tech — POS4work
             </Text>
             {unsubscribeUrl && (
               <Text

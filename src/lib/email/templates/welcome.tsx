@@ -15,7 +15,7 @@ const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://hiringpartners.gr";
 
 export const WelcomeEmail = ({ name }: WelcomeEmailProps) => {
   return (
-    <Layout previewText={`Welcome to Hiring Partners, ${name}!`}>
+    <Layout previewText={`Welcome to People in Tech, ${name}!`}>
       <Heading
         as="h1"
         style={{
@@ -26,7 +26,7 @@ export const WelcomeEmail = ({ name }: WelcomeEmailProps) => {
           lineHeight: "1.3",
         }}
       >
-        Welcome to Hiring Partners, {name}!
+        Welcome to People in Tech, {name}!
       </Heading>
       <Text
         style={{
@@ -36,10 +36,8 @@ export const WelcomeEmail = ({ name }: WelcomeEmailProps) => {
           margin: "0 0 24px 0",
         }}
       >
-        We&apos;re excited to have you on board. Hiring Partners is your gateway
-        to discovering the best tech companies in Greece — from innovative
-        startups to established industry leaders. Explore company profiles,
-        open roles, and upcoming events all in one place.
+        We&apos;re excited to have you on board. Welcome
+        to Greece&apos;s tech talent pool — browse company profiles, save roles, and let employers discover you.
       </Text>
       <Section style={{ textAlign: "center", margin: "32px 0 16px 0" }}>
         <Button
@@ -55,7 +53,7 @@ export const WelcomeEmail = ({ name }: WelcomeEmailProps) => {
             display: "inline-block",
           }}
         >
-          Start Exploring
+          Explore the Talent Pool
         </Button>
       </Section>
     </Layout>

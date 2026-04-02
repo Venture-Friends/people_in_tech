@@ -191,7 +191,7 @@ export const WeeklyDigest = ({
             display: "inline-block",
           }}
         >
-          Explore This Week
+          View This Week's Roles
         </Button>
       </Section>
     </Layout>
