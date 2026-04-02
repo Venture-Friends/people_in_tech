@@ -9,28 +9,41 @@ import {
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { ComboboxMultiSelect } from "@/components/shared/combobox-multi-select";
+import { SkillPicker } from "@/components/shared/skill-picker";
 import { cn } from "@/lib/utils";
-import { EXPERIENCE_LEVELS } from "@/lib/constants/onboarding";
+import {
+  EXPERIENCE_LEVELS,
+  ROLE_GROUPS,
+  ALL_ROLES,
+  MAX_ROLE_SELECTIONS,
+  INDUSTRY_OPTIONS,
+} from "@/lib/constants/onboarding";
 import type { OnboardingInput } from "@/lib/validations/onboarding";
 
-interface StepAboutProps {
+interface StepAboutInterestsProps {
   register: UseFormRegister<OnboardingInput>;
   watch: UseFormWatch<OnboardingInput>;
   setValue: UseFormSetValue<OnboardingInput>;
   errors: FieldErrors<OnboardingInput>;
 }
 
-export function StepAbout({
+export function StepAboutInterests({
   register,
   watch,
   setValue,
   errors,
-}: StepAboutProps) {
+}: StepAboutInterestsProps) {
   const t = useTranslations("onboarding");
   const currentLevel = watch("experienceLevel");
+  const roleInterests = watch("roleInterests");
+  const skills = watch("skills");
+  const industries = watch("industries");
 
   return (
     <div className="space-y-6">
+      {/* ── About section ── */}
       <div>
         <Label
           htmlFor="fullName"
@@ -93,8 +106,6 @@ export function StepAbout({
         <Label className="text-[13px] font-medium text-white/50">
           {t("experienceLevel")}
         </Label>
-
-        {/* Flat experience level grid */}
         <div
           className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2"
           role="radiogroup"
@@ -111,14 +122,14 @@ export function StepAbout({
                 onClick={() =>
                   setValue(
                     "experienceLevel",
-                    option.value as OnboardingInput["experienceLevel"]
+                    option.value as OnboardingInput["experienceLevel"],
                   )
                 }
                 className={cn(
                   "flex flex-col items-start rounded-xl border px-3 py-2.5 cursor-pointer transition-all text-left",
                   isSelected
                     ? "border-primary/[0.25] bg-primary/[0.05] text-primary ring-1 ring-primary/20"
-                    : "border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] text-white/40 hover:border-white/[0.1]"
+                    : "border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] text-white/40 hover:border-white/[0.1]",
                 )}
               >
                 <span className="text-[13px] font-medium">
@@ -127,7 +138,7 @@ export function StepAbout({
                 <span
                   className={cn(
                     "text-[11px] mt-0.5",
-                    isSelected ? "text-primary/60" : "text-white/25"
+                    isSelected ? "text-primary/60" : "text-white/25",
                   )}
                 >
                   {option.years} yrs
@@ -136,12 +147,54 @@ export function StepAbout({
             );
           })}
         </div>
-
         {errors.experienceLevel && (
           <p className="text-sm text-destructive mt-1">
             {errors.experienceLevel.message}
           </p>
         )}
+      </div>
+
+      <Separator className="border-white/[0.04]" />
+
+      {/* ── Interests section ── */}
+      <div>
+        <ComboboxMultiSelect
+          label={t("roleInterests")}
+          options={ALL_ROLES}
+          groups={ROLE_GROUPS as unknown as Record<string, string[]>}
+          selected={roleInterests || []}
+          onChange={(selected) =>
+            setValue("roleInterests", selected, { shouldValidate: true })
+          }
+          max={MAX_ROLE_SELECTIONS}
+          placeholder="Search roles..."
+        />
+        {errors.roleInterests && (
+          <p className="text-sm text-destructive mt-1">
+            {errors.roleInterests.message}
+          </p>
+        )}
+      </div>
+
+      <div>
+        <Label className="mb-2 text-[13px] font-medium text-white/50">
+          {t("skills")}
+        </Label>
+        <SkillPicker
+          selected={skills || []}
+          onChange={(s) => setValue("skills", s)}
+          placeholder={t("addSkill")}
+        />
+      </div>
+
+      <div>
+        <ComboboxMultiSelect
+          label={t("industries")}
+          options={INDUSTRY_OPTIONS}
+          selected={industries || []}
+          onChange={(selected) => setValue("industries", selected)}
+          placeholder="Search industries..."
+        />
       </div>
     </div>
   );
