@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
     const size = searchParams.get("size") || "";
     const hasRoles = searchParams.get("hasRoles") === "true";
     const verified = searchParams.get("verified") === "true";
+    const vcFunded = searchParams.get("vcFunded") === "true";
     const sort = searchParams.get("sort") || "mostFollowed";
     const page = parseInt(searchParams.get("page") || "1", 10);
     const limit = parseInt(searchParams.get("limit") || "20", 10);
@@ -49,6 +50,10 @@ export async function GET(request: NextRequest) {
 
     if (verified) {
       conditions.push({ status: "VERIFIED" });
+    }
+
+    if (vcFunded) {
+      conditions.push({ vcFunded: true });
     }
 
     if (conditions.length > 0) {
@@ -108,6 +113,7 @@ export async function GET(request: NextRequest) {
       followerCount: c._count.followers,
       jobCount: c._count.jobs,
       featured: c.featured,
+      vcFunded: c.vcFunded,
     }));
 
     return NextResponse.json({ companies: mapped, total });

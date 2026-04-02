@@ -15,6 +15,7 @@ export interface CompanyCardData {
   technologies?: string;
   size?: string;
   featured?: boolean;
+  vcFunded?: boolean;
 }
 
 function parseLocations(locationsJson: string): string[] {
@@ -83,12 +84,20 @@ export function CompanyCard({ company }: { company: CompanyCardData }) {
                 </svg>
               )}
             </div>
-            {company.featured && (
-              <span className="mt-1 inline-flex items-center gap-1 rounded-md border border-primary/25 bg-primary/[0.08] px-2 py-0.5 text-[10px] font-semibold text-primary">
-                <svg className="size-3" viewBox="0 0 20 20" fill="currentColor"><path d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" /></svg>
-                Featured
-              </span>
-            )}
+            <div className="mt-1 flex flex-wrap gap-1.5">
+              {company.featured && (
+                <span className="inline-flex items-center gap-1 rounded-md border border-primary/25 bg-primary/[0.08] px-2 py-0.5 text-[10px] font-semibold text-primary">
+                  <svg className="size-3" viewBox="0 0 20 20" fill="currentColor"><path d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" /></svg>
+                  Featured
+                </span>
+              )}
+              {company.vcFunded && (
+                <span className="inline-flex items-center gap-1 rounded-md border border-blue-400/25 bg-blue-500/[0.08] px-2 py-0.5 text-[10px] font-semibold text-blue-400">
+                  <svg className="size-3" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z" clipRule="evenodd" /></svg>
+                  VC Funded
+                </span>
+              )}
+            </div>
             <p className="mt-0.5 text-xs text-white/30">
               {company.industry} · {locations[0] || "Greece"}
             </p>

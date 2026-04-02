@@ -39,6 +39,7 @@ export function DiscoverClient({
     size: searchParams.get("size") || "",
     hasRoles: searchParams.get("hasRoles") === "true",
     verified: searchParams.get("verified") === "true",
+    vcFunded: searchParams.get("vcFunded") === "true",
   });
   const [sort, setSort] = useState(
     searchParams.get("sort") || "mostFollowed"
@@ -62,6 +63,7 @@ export function DiscoverClient({
       if (filtersVal.size) params.set("size", filtersVal.size);
       if (filtersVal.hasRoles) params.set("hasRoles", "true");
       if (filtersVal.verified) params.set("verified", "true");
+      if (filtersVal.vcFunded) params.set("vcFunded", "true");
       if (sortVal && sortVal !== "mostFollowed")
         params.set("sort", sortVal);
       return params.toString();
@@ -81,6 +83,7 @@ export function DiscoverClient({
         if (filtersVal.size) params.set("size", filtersVal.size);
         if (filtersVal.hasRoles) params.set("hasRoles", "true");
         if (filtersVal.verified) params.set("verified", "true");
+        if (filtersVal.vcFunded) params.set("vcFunded", "true");
         params.set("sort", sortVal);
 
         const response = await fetch(`/api/companies?${params.toString()}`);

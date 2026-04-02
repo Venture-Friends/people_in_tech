@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { Loader2, Linkedin } from "lucide-react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
@@ -12,6 +13,8 @@ import { Label } from "@/components/ui/label";
 export function RegisterForm() {
   const t = useTranslations("auth");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get("returnTo");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,7 +45,7 @@ export function RegisterForm() {
       }
 
       // autoSignIn: true means user is already logged in
-      router.push("/onboarding");
+      router.push(returnTo || "/onboarding");
     } finally {
       setIsLoading(false);
     }
@@ -146,7 +149,7 @@ export function RegisterForm() {
       {/* Sign in link */}
       <p className="mt-6 text-center text-sm text-white/30">
         {t("hasAccount")}{" "}
-        <Link href="/login" className="text-primary hover:underline">
+        <Link href={returnTo ? `/login?returnTo=${encodeURIComponent(returnTo)}` : "/login"} className="text-primary hover:underline">
           {t("signIn")}
         </Link>
       </p>
