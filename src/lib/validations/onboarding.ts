@@ -4,7 +4,6 @@ export const onboardingSchema = z.object({
   fullName: z.string().min(2),
   headline: z.string().optional(),
   linkedinUrl: z.string().url().optional().or(z.literal("")),
-  cvUrl: z.string().optional().or(z.literal("")),
   experienceLevel: z.enum([
     "STUDENT", "JUNIOR", "MID", "SENIOR", "LEAD",
     "MANAGER", "DIRECTOR",
@@ -13,9 +12,7 @@ export const onboardingSchema = z.object({
   skills: z.array(z.string()),
   industries: z.array(z.string()),
   preferredLocations: z.array(z.string()),
-  emailDigest: z.boolean(),
-  emailEvents: z.boolean(),
-  emailNewsletter: z.boolean(),
+  allowContactEmail: z.boolean(),
   language: z.enum(["en", "el"]),
 });
 

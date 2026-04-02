@@ -22,7 +22,6 @@ export async function POST(request: NextRequest) {
 
   const data = result.data;
 
-  // Update user name, locale, and linkedinUrl
   await prisma.user.update({
     where: { id: session.user.id },
     data: {
@@ -32,34 +31,27 @@ export async function POST(request: NextRequest) {
     },
   });
 
-  // Upsert candidate profile
   await prisma.candidateProfile.upsert({
     where: { userId: session.user.id },
     create: {
       userId: session.user.id,
       headline: data.headline || null,
-      cvUrl: data.cvUrl || null,
       experienceLevel: data.experienceLevel,
       skills: JSON.stringify(data.skills),
       roleInterests: JSON.stringify(data.roleInterests),
       industries: JSON.stringify(data.industries),
       preferredLocations: JSON.stringify(data.preferredLocations),
-      emailDigest: data.emailDigest,
-      emailEvents: data.emailEvents,
-      emailNewsletter: data.emailNewsletter,
+      allowContactEmail: data.allowContactEmail,
       onboardingComplete: true,
     },
     update: {
       headline: data.headline || null,
-      cvUrl: data.cvUrl || null,
       experienceLevel: data.experienceLevel,
       skills: JSON.stringify(data.skills),
       roleInterests: JSON.stringify(data.roleInterests),
       industries: JSON.stringify(data.industries),
       preferredLocations: JSON.stringify(data.preferredLocations),
-      emailDigest: data.emailDigest,
-      emailEvents: data.emailEvents,
-      emailNewsletter: data.emailNewsletter,
+      allowContactEmail: data.allowContactEmail,
       onboardingComplete: true,
     },
   });
