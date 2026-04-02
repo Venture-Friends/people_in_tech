@@ -148,6 +148,7 @@ model Company {
   careersUrl   String?
   status       String   @default("AUTO_GENERATED")
   featured     Boolean  @default(false)
+  vcFunded     Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
