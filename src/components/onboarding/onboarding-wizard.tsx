@@ -15,8 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { StepAbout } from "./step-about";
 import { StepInterests } from "./step-interests";
-import { StepCvUpload } from "./step-cv-upload";
-import type { ParsedCV } from "@/lib/cv-parser";
+import { StepPreferences } from "./step-preferences";
 
 const TOTAL_STEPS = 3;
 const STORAGE_KEY_STEP = "onboarding-step";
@@ -26,23 +25,19 @@ const DEFAULT_VALUES: OnboardingInput = {
   fullName: "",
   headline: "",
   linkedinUrl: "",
-  cvUrl: "",
   experienceLevel: "JUNIOR",
   roleInterests: [],
   skills: [],
   industries: [],
   preferredLocations: [],
-  emailDigest: true,
-  emailEvents: true,
-  emailNewsletter: false,
+  allowContactEmail: true,
   language: "en",
 };
 
-// Which fields belong to which step (step 3 has no form fields)
 const STEP_FIELDS: Record<number, (keyof OnboardingInput)[]> = {
   1: ["fullName", "headline", "linkedinUrl", "experienceLevel"],
-  2: ["roleInterests", "skills", "industries", "preferredLocations"],
-  3: [],
+  2: ["roleInterests", "skills", "industries"],
+  3: ["preferredLocations", "allowContactEmail", "language"],
 };
 
 export function OnboardingWizard() {
@@ -61,7 +56,6 @@ export function OnboardingWizard() {
 
   const {
     register,
-    handleSubmit: _handleSubmit,
     watch,
     setValue,
     trigger,
@@ -69,7 +63,7 @@ export function OnboardingWizard() {
     reset,
   } = form;
 
-  // Client-side auth guard: redirect to /login if unauthenticated (only on initial load)
+  // Client-side auth guard
   const hasCheckedAuth = useRef(false);
   useEffect(() => {
     if (sessionPending) return;
@@ -80,7 +74,7 @@ export function OnboardingWizard() {
     }
   }, [sessionPending, session, router]);
 
-  // Restore step + draft from sessionStorage after session is loaded (runs once)
+  // Restore step + draft from sessionStorage
   useEffect(() => {
     if (hasRestoredRef.current || sessionPending) return;
     hasRestoredRef.current = true;
@@ -92,7 +86,6 @@ export function OnboardingWizard() {
       const savedStep = sessionStorage.getItem(STORAGE_KEY_STEP);
       const savedUser = sessionStorage.getItem("onboarding-user");
 
-      // If no saved user or different user, clear stale data and start fresh
       if (!savedDraft || !savedUser || savedUser !== currentUserId) {
         sessionStorage.removeItem(STORAGE_KEY_STEP);
         sessionStorage.removeItem(STORAGE_KEY_DRAFT);
@@ -108,7 +101,6 @@ export function OnboardingWizard() {
         return;
       }
 
-      // Same user — restore draft
       const restoredStep = savedStep ? parseInt(savedStep, 10) : 1;
       setCurrentStep(
         isNaN(restoredStep) || restoredStep < 1 || restoredStep > TOTAL_STEPS
@@ -131,19 +123,18 @@ export function OnboardingWizard() {
     }
   }, [reset, sessionPending, session?.user?.id, session?.user?.name]);
 
-  // Auto-save to sessionStorage via watch subscription (no re-render loop)
+  // Auto-save to sessionStorage
   useEffect(() => {
     const subscription = watch((formValues) => {
       try {
         sessionStorage.setItem(STORAGE_KEY_DRAFT, JSON.stringify(formValues));
       } catch {
-        // Storage full or unavailable — ignore
+        // Storage full or unavailable
       }
     });
     return () => subscription.unsubscribe();
   }, [watch]);
 
-  // Persist current step
   const updateStep = useCallback((step: number) => {
     setCurrentStep(step);
     try {
@@ -153,67 +144,20 @@ export function OnboardingWizard() {
     }
   }, []);
 
-  // ── CV pre-fill helper ──
-
-  function handleCvParsed(data: ParsedCV, fileName: string) {
-    // Only pre-fill fields that are empty — don't overwrite what user entered
-    if (!form.getValues("fullName") && data.name) {
-      setValue("fullName", data.name);
-    }
-    if (!form.getValues("headline") && data.headline) {
-      setValue("headline", data.headline);
-    }
-
-    // Find LinkedIn URL from links — only if empty
-    if (!form.getValues("linkedinUrl")) {
-      const linkedinLink = data.links.find((l) =>
-        l.toLowerCase().includes("linkedin.com"),
-      );
-      if (linkedinLink) {
-        setValue("linkedinUrl", linkedinLink);
-      }
-    }
-
-    // Pre-fill skills only if empty
-    if ((!form.getValues("skills") || form.getValues("skills").length === 0) && data.skills.length > 0) {
-      setValue("skills", data.skills.slice(0, 15));
-    }
-
-    // Store the persisted file URL returned by the API
-    if (fileName) {
-      setValue("cvUrl", fileName);
-    }
-
-    // Submit after CV upload
-    handleFormSubmit();
-  }
-
-  function handleCvSkip() {
-    handleFormSubmit();
-  }
-
-  // ── Step navigation ──
-
+  // Step navigation
   const stepTitles: Record<number, string> = {
     1: t("step1Title"),
     2: t("step2Title"),
-    3: t("uploadCvTitle"),
+    3: t("step3Title"),
   };
 
   const stepSubtitles: Record<number, string> = {
     1: t("step1Subtitle"),
     2: t("step2Subtitle"),
-    3: t("uploadCvSubtitle"),
+    3: t("step3Subtitle"),
   };
 
-  async function handleNext() {
-    // Validate current step's fields before advancing
-    const fieldsToValidate = STEP_FIELDS[currentStep ?? 1];
-    const valid =
-      fieldsToValidate.length === 0
-        ? true
-        : await trigger(fieldsToValidate);
-    if (!valid) return;
+  function handleNext() {
     updateStep(Math.min((currentStep ?? 1) + 1, TOTAL_STEPS));
   }
 
@@ -221,9 +165,8 @@ export function OnboardingWizard() {
     updateStep(Math.max((currentStep ?? 1) - 1, 1));
   }
 
-  // Find first step with validation errors
   function getFirstStepWithError(errorFields: string[]): number {
-    for (const step of [1, 2]) {
+    for (const step of [1, 2, 3]) {
       if (STEP_FIELDS[step].some((f) => errorFields.includes(f))) {
         return step;
       }
@@ -245,7 +188,6 @@ export function OnboardingWizard() {
         throw new Error(errorData?.error || "Failed to save");
       }
 
-      // Clear sessionStorage on successful submit
       try {
         sessionStorage.removeItem(STORAGE_KEY_STEP);
         sessionStorage.removeItem(STORAGE_KEY_DRAFT);
@@ -253,7 +195,7 @@ export function OnboardingWizard() {
         // Ignore
       }
 
-      toast.success(t("welcomeMessage"));
+      toast.success(t("welcomeMessage") || "Welcome!");
       router.push("/discover");
     } catch {
       toast.error("Something went wrong. Please try again.");
@@ -262,14 +204,11 @@ export function OnboardingWizard() {
     }
   }
 
-  // Handle form submit with error navigation
   async function handleFormSubmit(e?: React.FormEvent | React.MouseEvent) {
     e?.preventDefault?.();
 
-    // Validate all fields first
     const valid = await trigger();
     if (!valid) {
-      // Re-trigger to get fresh errors
       await trigger();
       const freshErrors = Object.keys(form.formState.errors);
       const errorStep = getFirstStepWithError(freshErrors);
@@ -283,12 +222,11 @@ export function OnboardingWizard() {
       return;
     }
 
-    // All valid — submit
     const data = form.getValues();
     onSubmit(data);
   }
 
-  // Loading state — null step means still hydrating
+  // Loading state
   if (currentStep === null || sessionPending) {
     return (
       <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center p-4">
@@ -337,105 +275,75 @@ export function OnboardingWizard() {
         </div>
 
         {/* Glassmorphic card */}
-        <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-6 sm:p-8">
-          {/* Steps 1-2: Form-based steps */}
-          {(currentStep === 1 || currentStep === 2) && (
-            <form onSubmit={handleFormSubmit}>
-              <div style={{ display: currentStep === 1 ? "block" : "none" }}>
-                <StepAbout
-                  register={register}
-                  watch={watch}
-                  setValue={setValue}
-                  errors={errors}
-                />
-              </div>
+        <form
+          onSubmit={handleFormSubmit}
+          className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-6 sm:p-8"
+        >
+          <div style={{ display: currentStep === 1 ? "block" : "none" }}>
+            <StepAbout
+              register={register}
+              watch={watch}
+              setValue={setValue}
+              errors={errors}
+            />
+          </div>
 
-              <div style={{ display: currentStep === 2 ? "block" : "none" }}>
-                <StepInterests
-                  watch={watch}
-                  setValue={setValue}
-                  errors={errors}
-                />
-              </div>
+          <div style={{ display: currentStep === 2 ? "block" : "none" }}>
+            <StepInterests
+              watch={watch}
+              setValue={setValue}
+              errors={errors}
+            />
+          </div>
 
-              <div className="flex justify-between mt-8">
-                {currentStep > 1 ? (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={handleBack}
-                    size="lg"
-                    className="text-white/50 hover:text-white/80"
-                  >
-                    <ArrowLeft className="size-4 mr-1" />
-                    {t("back")}
-                  </Button>
-                ) : (
-                  <div />
+          <div style={{ display: currentStep === 3 ? "block" : "none" }}>
+            <StepPreferences watch={watch} setValue={setValue} />
+          </div>
+
+          <div className="flex justify-between mt-8">
+            {currentStep > 1 ? (
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={handleBack}
+                size="lg"
+                className="text-white/50 hover:text-white/80"
+              >
+                <ArrowLeft className="size-4 mr-1" />
+                {t("back")}
+              </Button>
+            ) : (
+              <div />
+            )}
+
+            {currentStep < TOTAL_STEPS && (
+              <Button
+                type="button"
+                onClick={handleNext}
+                size="lg"
+              >
+                {t("next")}
+                <ArrowRight className="size-4 ml-1" />
+              </Button>
+            )}
+            {currentStep === TOTAL_STEPS && (
+              <Button
+                type="button"
+                onClick={handleFormSubmit}
+                size="lg"
+                disabled={isSubmitting}
+                className="font-display"
+              >
+                {isSubmitting && (
+                  <Loader2 className="size-4 mr-1 animate-spin" />
                 )}
-
-                <Button
-                  key="next"
-                  type="button"
-                  onClick={handleNext}
-                  size="lg"
-                >
-                  {t("next")}
-                  <ArrowRight className="size-4 ml-1" />
-                </Button>
-              </div>
-            </form>
-          )}
-
-          {/* Step 3: CV Upload */}
-          {currentStep === 3 && (
-            <div>
-              <StepCvUpload
-                onParsed={handleCvParsed}
-                onSkip={handleCvSkip}
-              />
-
-              <div className="mt-8 flex flex-col items-center gap-3">
-                <Button
-                  type="button"
-                  onClick={handleFormSubmit}
-                  size="lg"
-                  disabled={isSubmitting}
-                  className="w-full font-display"
-                >
-                  {isSubmitting && (
-                    <Loader2 className="size-4 mr-1 animate-spin" />
-                  )}
-                  {isSubmitting ? t("completeSetup") : "Join the Talent Pool \u2192"}
-                </Button>
-
-                <button
-                  type="button"
-                  onClick={handleFormSubmit}
-                  disabled={isSubmitting}
-                  className="text-[13px] text-white/40 hover:text-white/60 transition-colors cursor-pointer"
-                >
-                  Skip and finish
-                </button>
-              </div>
-
-              {currentStep > 1 && (
-                <div className="mt-4 flex justify-start">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={handleBack}
-                    size="sm"
-                    className="text-white/50 hover:text-white/80"
-                  >
-                    <ArrowLeft className="size-4 mr-1" />
-                    {t("back")}
-                  </Button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+                {isSubmitting
+                  ? t("completeSetup")
+                  : t("joinTalentPool")}
+              </Button>
+            )}
+          </div>
+        </form>
       </div>
     </div>
   );

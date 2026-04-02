@@ -174,7 +174,9 @@
     "step2Subtitle": "What are you looking for?",
     "welcomeMessage": "Welcome!",
     "allowContactEmail": "Allow companies to contact me via email",
-    "allowContactEmailDesc": "Companies you express interest in can reach out to you"
+    "allowContactEmailDesc": "Companies you express interest in can reach out to you",
+    "step3Subtitle": "Almost done, set your preferences",
+    "joinTalentPool": "Join the Talent Pool"
   },
   "notFound": {
     "title": "Page not found",
