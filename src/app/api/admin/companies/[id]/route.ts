@@ -50,7 +50,7 @@ export async function PUT(
     const allowedFields = [
       "name", "industry", "website", "description", "linkedinUrl",
       "careersUrl", "logo", "coverImage", "size", "founded",
-      "locations", "technologies", "featured", "status",
+      "locations", "technologies", "featured", "vcFunded", "status",
     ];
 
     const data: Record<string, unknown> = {};

@@ -57,6 +57,7 @@ interface Company {
   technologies: string;
   status: string;
   featured: boolean;
+  vcFunded: boolean;
   followerCount: number;
   jobCount: number;
   createdAt: string;
@@ -76,6 +77,7 @@ interface EditFormData {
   locations: string;
   technologies: string;
   featured: boolean;
+  vcFunded: boolean;
 }
 
 const statusColors: Record<string, string> = {
@@ -134,6 +136,7 @@ export function CompaniesTable() {
     locations: "",
     technologies: "",
     featured: false,
+    vcFunded: false,
   });
   const [saving, setSaving] = useState(false);
   const [enrichingInEdit, setEnrichingInEdit] = useState(false);
@@ -225,6 +228,7 @@ export function CompaniesTable() {
         locations: JSON.stringify(locationsArr),
         technologies: JSON.stringify(techArr),
         featured: editFormData.featured,
+        vcFunded: editFormData.vcFunded,
       };
 
       const res = await fetch(`/api/admin/companies/${editingCompany.id}`, {
@@ -397,6 +401,7 @@ export function CompaniesTable() {
       locations: locations.join(", "),
       technologies: technologies.join(", "),
       featured: company.featured,
+      vcFunded: company.vcFunded,
     });
     setEditSheetOpen(true);
   };
@@ -960,6 +965,17 @@ export function CompaniesTable() {
                 <Switch
                   checked={editFormData.featured}
                   onCheckedChange={(checked) => updateEditField("featured", checked)}
+                  size="sm"
+                />
+              </div>
+              <div className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+                <div>
+                  <p className="text-[13px] text-white/70">VC Funded</p>
+                  <p className="text-[11px] text-white/25">Show VC-backed badge on company card</p>
+                </div>
+                <Switch
+                  checked={editFormData.vcFunded}
+                  onCheckedChange={(checked) => updateEditField("vcFunded", checked)}
                   size="sm"
                 />
               </div>

@@ -72,6 +72,7 @@ export async function GET(request: NextRequest) {
       technologies: c.technologies,
       status: c.status,
       featured: c.featured,
+      vcFunded: c.vcFunded,
       followerCount: c._count.followers,
       jobCount: c._count.jobs,
       createdAt: c.createdAt.toISOString(),
