@@ -167,7 +167,12 @@
     "completeSetup": "Complete Setup",
     "next": "Next",
     "back": "Back",
-    "stepOf": "Step {current} of {total}"
+    "stepOf": "Step {current} of {total}",
+    "uploadCvTitle": "Upload Your CV",
+    "uploadCvSubtitle": "Speed up your profile setup (optional)",
+    "step1Subtitle": "Tell us about yourself",
+    "step2Subtitle": "What are you looking for?",
+    "welcomeMessage": "Welcome!"
   },
   "notFound": {
     "title": "Page not found",

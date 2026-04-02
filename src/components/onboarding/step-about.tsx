@@ -9,41 +9,28 @@ import {
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { ComboboxMultiSelect } from "@/components/shared/combobox-multi-select";
-import { SkillPicker } from "@/components/shared/skill-picker";
 import { cn } from "@/lib/utils";
-import {
-  EXPERIENCE_LEVELS,
-  ROLE_GROUPS,
-  ALL_ROLES,
-  MAX_ROLE_SELECTIONS,
-  INDUSTRY_OPTIONS,
-} from "@/lib/constants/onboarding";
+import { EXPERIENCE_LEVELS } from "@/lib/constants/onboarding";
 import type { OnboardingInput } from "@/lib/validations/onboarding";
 
-interface StepAboutInterestsProps {
+interface StepAboutProps {
   register: UseFormRegister<OnboardingInput>;
   watch: UseFormWatch<OnboardingInput>;
   setValue: UseFormSetValue<OnboardingInput>;
   errors: FieldErrors<OnboardingInput>;
 }
 
-export function StepAboutInterests({
+export function StepAbout({
   register,
   watch,
   setValue,
   errors,
-}: StepAboutInterestsProps) {
+}: StepAboutProps) {
   const t = useTranslations("onboarding");
   const currentLevel = watch("experienceLevel");
-  const roleInterests = watch("roleInterests");
-  const skills = watch("skills");
-  const industries = watch("industries");
 
   return (
     <div className="space-y-6">
-      {/* ── About section ── */}
       <div>
         <Label
           htmlFor="fullName"
@@ -152,49 +139,6 @@ export function StepAboutInterests({
             {errors.experienceLevel.message}
           </p>
         )}
-      </div>
-
-      <Separator className="border-white/[0.04]" />
-
-      {/* ── Interests section ── */}
-      <div>
-        <ComboboxMultiSelect
-          label={t("roleInterests")}
-          options={ALL_ROLES}
-          groups={ROLE_GROUPS as unknown as Record<string, string[]>}
-          selected={roleInterests || []}
-          onChange={(selected) =>
-            setValue("roleInterests", selected, { shouldValidate: true })
-          }
-          max={MAX_ROLE_SELECTIONS}
-          placeholder="Search roles..."
-        />
-        {errors.roleInterests && (
-          <p className="text-sm text-destructive mt-1">
-            {errors.roleInterests.message}
-          </p>
-        )}
-      </div>
-
-      <div>
-        <Label className="mb-2 text-[13px] font-medium text-white/50">
-          {t("skills")}
-        </Label>
-        <SkillPicker
-          selected={skills || []}
-          onChange={(s) => setValue("skills", s)}
-          placeholder={t("addSkill")}
-        />
-      </div>
-
-      <div>
-        <ComboboxMultiSelect
-          label={t("industries")}
-          options={INDUSTRY_OPTIONS}
-          selected={industries || []}
-          onChange={(selected) => setValue("industries", selected)}
-          placeholder="Search industries..."
-        />
       </div>
     </div>
   );

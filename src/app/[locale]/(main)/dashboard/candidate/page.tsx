@@ -4,6 +4,7 @@ import { getSession } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
 import { getActiveContext } from "@/lib/context";
 import { DashboardClient } from "@/components/dashboard/candidate/dashboard-client";
+import { EmailVerificationBanner } from "@/components/shared/email-verification-banner";
 import type { CompanyCardData } from "@/components/shared/company-card";
 import type { SavedJobData } from "@/components/dashboard/candidate/saved-jobs";
 import type { AlertItem } from "@/components/dashboard/candidate/alerts-tab";
@@ -220,6 +221,7 @@ export default async function CandidateDashboardPage({
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
+      <EmailVerificationBanner />
       <DashboardClient
         companies={companies}
         savedJobs={savedJobsData}

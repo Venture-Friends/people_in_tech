@@ -167,7 +167,12 @@
     "completeSetup": "Ολοκλήρωση",
     "next": "Επόμενο",
     "back": "Πίσω",
-    "stepOf": "Βήμα {current} από {total}"
+    "stepOf": "Βήμα {current} από {total}",
+    "uploadCvTitle": "Ανέβασε το Βιογραφικό σου",
+    "uploadCvSubtitle": "Γέμισε γρήγορα το προφίλ σου (προαιρετικό)",
+    "step1Subtitle": "Πες μας για εσένα",
+    "step2Subtitle": "Τι αναζητάς;",
+    "welcomeMessage": "Καλώς ήρθες!"
   },
   "notFound": {
     "title": "Η σελίδα δεν βρέθηκε",

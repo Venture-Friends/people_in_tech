@@ -13,13 +13,12 @@ import {
   type OnboardingInput,
 } from "@/lib/validations/onboarding";
 import { Button } from "@/components/ui/button";
-import { StepEmailVerification } from "./step-email-verification";
+import { StepAbout } from "./step-about";
+import { StepInterests } from "./step-interests";
 import { StepCvUpload } from "./step-cv-upload";
-import { StepAboutInterests } from "./step-about-interests";
-import { StepPreferences } from "./step-preferences";
 import type { ParsedCV } from "@/lib/cv-parser";
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 3;
 const STORAGE_KEY_STEP = "onboarding-step";
 const STORAGE_KEY_DRAFT = "onboarding-draft";
 
@@ -39,12 +38,11 @@ const DEFAULT_VALUES: OnboardingInput = {
   language: "en",
 };
 
-// Which fields belong to which step (steps 1 & 2 have no form fields)
+// Which fields belong to which step (step 3 has no form fields)
 const STEP_FIELDS: Record<number, (keyof OnboardingInput)[]> = {
-  1: [], // Email verification — no form fields
-  2: [], // CV upload — no form fields
-  3: ["fullName", "headline", "linkedinUrl", "experienceLevel", "roleInterests", "skills", "industries"],
-  4: ["preferredLocations", "emailDigest", "emailEvents", "emailNewsletter", "language"],
+  1: ["fullName", "headline", "linkedinUrl", "experienceLevel"],
+  2: ["roleInterests", "skills", "industries", "preferredLocations"],
+  3: [],
 };
 
 export function OnboardingWizard() {
@@ -53,7 +51,6 @@ export function OnboardingWizard() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [direction, setDirection] = useState<"forward" | "back">("forward");
   const hasRestoredRef = useRef(false);
 
   const form = useForm<OnboardingInput>({
@@ -64,7 +61,7 @@ export function OnboardingWizard() {
 
   const {
     register,
-    handleSubmit,
+    handleSubmit: _handleSubmit,
     watch,
     setValue,
     trigger,
@@ -159,24 +156,26 @@ export function OnboardingWizard() {
   // ── CV pre-fill helper ──
 
   function handleCvParsed(data: ParsedCV, fileName: string) {
-    // Pre-fill form fields from parsed CV
-    if (data.name) {
+    // Only pre-fill fields that are empty — don't overwrite what user entered
+    if (!form.getValues("fullName") && data.name) {
       setValue("fullName", data.name);
     }
-    if (data.headline) {
+    if (!form.getValues("headline") && data.headline) {
       setValue("headline", data.headline);
     }
 
-    // Find LinkedIn URL from links
-    const linkedinLink = data.links.find((l) =>
-      l.toLowerCase().includes("linkedin.com"),
-    );
-    if (linkedinLink) {
-      setValue("linkedinUrl", linkedinLink);
+    // Find LinkedIn URL from links — only if empty
+    if (!form.getValues("linkedinUrl")) {
+      const linkedinLink = data.links.find((l) =>
+        l.toLowerCase().includes("linkedin.com"),
+      );
+      if (linkedinLink) {
+        setValue("linkedinUrl", linkedinLink);
+      }
     }
 
-    // Pre-fill skills (match against known skills in our system)
-    if (data.skills.length > 0) {
+    // Pre-fill skills only if empty
+    if ((!form.getValues("skills") || form.getValues("skills").length === 0) && data.skills.length > 0) {
       setValue("skills", data.skills.slice(0, 15));
     }
 
@@ -185,55 +184,51 @@ export function OnboardingWizard() {
       setValue("cvUrl", fileName);
     }
 
-    // Advance to next step
-    setDirection("forward");
-    updateStep(3);
+    // Submit after CV upload
+    handleFormSubmit();
   }
 
   function handleCvSkip() {
-    setDirection("forward");
-    updateStep(3);
-  }
-
-  function handleEmailVerified() {
-    setDirection("forward");
-    updateStep(2);
+    handleFormSubmit();
   }
 
   // ── Step navigation ──
 
   const stepTitles: Record<number, string> = {
-    1: "Verify Email",
-    2: "Upload Your CV",
-    3: t("step1Title"),
-    4: t("step3Title"),
+    1: t("step1Title"),
+    2: t("step2Title"),
+    3: t("uploadCvTitle"),
   };
 
   const stepSubtitles: Record<number, string> = {
-    1: "Confirm your email address to get started",
-    2: "Upload your CV to auto-fill your profile",
-    3: "Tell us about yourself and your interests",
-    4: "Almost done, set your preferences",
+    1: t("step1Subtitle"),
+    2: t("step2Subtitle"),
+    3: t("uploadCvSubtitle"),
   };
 
-  function handleNext() {
-    setDirection("forward");
+  async function handleNext() {
+    // Validate current step's fields before advancing
+    const fieldsToValidate = STEP_FIELDS[currentStep ?? 1];
+    const valid =
+      fieldsToValidate.length === 0
+        ? true
+        : await trigger(fieldsToValidate);
+    if (!valid) return;
     updateStep(Math.min((currentStep ?? 1) + 1, TOTAL_STEPS));
   }
 
   function handleBack() {
-    setDirection("back");
     updateStep(Math.max((currentStep ?? 1) - 1, 1));
   }
 
   // Find first step with validation errors
   function getFirstStepWithError(errorFields: string[]): number {
-    for (const step of [3, 4]) {
+    for (const step of [1, 2]) {
       if (STEP_FIELDS[step].some((f) => errorFields.includes(f))) {
         return step;
       }
     }
-    return 3;
+    return 1;
   }
 
   async function onSubmit(data: OnboardingInput) {
@@ -258,7 +253,7 @@ export function OnboardingWizard() {
         // Ignore
       }
 
-      toast.success("Welcome!");
+      toast.success(t("welcomeMessage"));
       router.push("/discover");
     } catch {
       toast.error("Something went wrong. Please try again.");
@@ -280,7 +275,6 @@ export function OnboardingWizard() {
       const errorStep = getFirstStepWithError(freshErrors);
 
       if (errorStep !== currentStep) {
-        setDirection("back");
         updateStep(errorStep);
         toast.error(`Please fix the highlighted fields on step ${errorStep}`);
       } else {
@@ -344,24 +338,11 @@ export function OnboardingWizard() {
 
         {/* Glassmorphic card */}
         <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-6 sm:p-8">
-          {/* Step 1: Email Verification */}
-          {currentStep === 1 && (
-            <StepEmailVerification onVerified={handleEmailVerified} onSkip={() => { setDirection("forward"); updateStep(2); }} />
-          )}
-
-          {/* Step 2: CV Upload */}
-          {currentStep === 2 && (
-            <StepCvUpload
-              onParsed={handleCvParsed}
-              onSkip={handleCvSkip}
-            />
-          )}
-
-          {/* Steps 3-4: Form-based steps */}
-          {(currentStep === 3 || currentStep === 4) && (
+          {/* Steps 1-2: Form-based steps */}
+          {(currentStep === 1 || currentStep === 2) && (
             <form onSubmit={handleFormSubmit}>
-              <div style={{ display: currentStep === 3 ? "block" : "none" }}>
-                <StepAboutInterests
+              <div style={{ display: currentStep === 1 ? "block" : "none" }}>
+                <StepAbout
                   register={register}
                   watch={watch}
                   setValue={setValue}
@@ -369,8 +350,12 @@ export function OnboardingWizard() {
                 />
               </div>
 
-              <div style={{ display: currentStep === 4 ? "block" : "none" }}>
-                <StepPreferences watch={watch} setValue={setValue} />
+              <div style={{ display: currentStep === 2 ? "block" : "none" }}>
+                <StepInterests
+                  watch={watch}
+                  setValue={setValue}
+                  errors={errors}
+                />
               </div>
 
               <div className="flex justify-between mt-8">
@@ -389,36 +374,66 @@ export function OnboardingWizard() {
                   <div />
                 )}
 
-                {currentStep < TOTAL_STEPS && (
-                  <Button
-                    key="next"
-                    type="button"
-                    onClick={handleNext}
-                    size="lg"
-                  >
-                    {t("next")}
-                    <ArrowRight className="size-4 ml-1" />
-                  </Button>
-                )}
-                {currentStep === TOTAL_STEPS && (
-                  <Button
-                    key="submit"
-                    type="button"
-                    onClick={handleFormSubmit}
-                    size="lg"
-                    disabled={isSubmitting}
-                    className="font-display"
-                  >
-                    {isSubmitting && (
-                      <Loader2 className="size-4 mr-1 animate-spin" />
-                    )}
-                    {isSubmitting
-                      ? t("completeSetup")
-                      : "Join the Talent Pool \u2192"}
-                  </Button>
-                )}
+                <Button
+                  key="next"
+                  type="button"
+                  onClick={handleNext}
+                  size="lg"
+                >
+                  {t("next")}
+                  <ArrowRight className="size-4 ml-1" />
+                </Button>
               </div>
             </form>
+          )}
+
+          {/* Step 3: CV Upload */}
+          {currentStep === 3 && (
+            <div>
+              <StepCvUpload
+                onParsed={handleCvParsed}
+                onSkip={handleCvSkip}
+              />
+
+              <div className="mt-8 flex flex-col items-center gap-3">
+                <Button
+                  type="button"
+                  onClick={handleFormSubmit}
+                  size="lg"
+                  disabled={isSubmitting}
+                  className="w-full font-display"
+                >
+                  {isSubmitting && (
+                    <Loader2 className="size-4 mr-1 animate-spin" />
+                  )}
+                  {isSubmitting ? t("completeSetup") : "Join the Talent Pool \u2192"}
+                </Button>
+
+                <button
+                  type="button"
+                  onClick={handleFormSubmit}
+                  disabled={isSubmitting}
+                  className="text-[13px] text-white/40 hover:text-white/60 transition-colors cursor-pointer"
+                >
+                  Skip and finish
+                </button>
+              </div>
+
+              {currentStep > 1 && (
+                <div className="mt-4 flex justify-start">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={handleBack}
+                    size="sm"
+                    className="text-white/50 hover:text-white/80"
+                  >
+                    <ArrowLeft className="size-4 mr-1" />
+                    {t("back")}
+                  </Button>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>
