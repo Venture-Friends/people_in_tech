@@ -28,8 +28,9 @@ export async function GET(request: NextRequest) {
     if (search) {
       conditions.push({
         OR: [
-          { name: { contains: search } },
-          { industry: { contains: search } },
+          { name: { contains: search, mode: "insensitive" } },
+          { industry: { contains: search, mode: "insensitive" } },
+          { slug: { contains: search, mode: "insensitive" } },
         ],
       });
     }

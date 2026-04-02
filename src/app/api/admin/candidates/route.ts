@@ -31,8 +31,8 @@ export async function GET(request: NextRequest) {
     if (search) {
       conditions.push({
         OR: [
-          { name: { contains: search } },
-          { email: { contains: search } },
+          { name: { contains: search, mode: "insensitive" } },
+          { email: { contains: search, mode: "insensitive" } },
         ],
       });
     }
