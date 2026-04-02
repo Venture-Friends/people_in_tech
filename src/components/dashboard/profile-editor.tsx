@@ -68,9 +68,7 @@ const defaultFormValues: ProfileFormData = {
   availability: "NOT_SPECIFIED",
   preferredWorkType: "NOT_SPECIFIED",
   salaryExpectation: "",
-  emailDigest: true,
-  emailEvents: true,
-  emailNewsletter: false,
+  allowContactEmail: true,
 };
 
 export function ProfileEditor() {
@@ -105,9 +103,7 @@ export function ProfileEditor() {
   });
 
   const avatarUrl = watch("avatarUrl");
-  const emailDigest = watch("emailDigest");
-  const emailEvents = watch("emailEvents");
-  const emailNewsletter = watch("emailNewsletter");
+  const allowContactEmail = watch("allowContactEmail");
 
   useEffect(() => {
     async function fetchProfile() {
@@ -138,9 +134,7 @@ export function ProfileEditor() {
           availability: cp?.availability || "NOT_SPECIFIED",
           preferredWorkType: cp?.preferredWorkType || "NOT_SPECIFIED",
           salaryExpectation: cp?.salaryExpectation || "",
-          emailDigest: cp?.emailDigest ?? true,
-          emailEvents: cp?.emailEvents ?? true,
-          emailNewsletter: cp?.emailNewsletter ?? false,
+          allowContactEmail: cp?.allowContactEmail ?? true,
         });
 
         // Relation data
@@ -291,35 +285,35 @@ export function ProfileEditor() {
 
   return (
     <div className="space-y-6">
-      {/* Completeness indicator */}
-      <ProfileCompleteness data={buildFullData()} />
-
       {/* Tab switcher */}
-      <div className="flex gap-1 rounded-lg bg-white/[0.03] p-1">
-        <button
-          type="button"
-          onClick={() => setActiveTab("edit")}
-          className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all ${
-            activeTab === "edit"
-              ? "bg-white/[0.08] text-white/80"
-              : "text-white/30 hover:text-white/50"
-          }`}
-        >
-          <Pencil className="size-3" />
-          Edit
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab("preview")}
-          className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all ${
-            activeTab === "preview"
-              ? "bg-white/[0.08] text-white/80"
-              : "text-white/30 hover:text-white/50"
-          }`}
-        >
-          <Eye className="size-3" />
-          Preview
-        </button>
+      <div className="flex items-center justify-between">
+        <h2 className="font-display text-lg font-semibold text-white">My Profile</h2>
+        <div className="flex gap-1 rounded-lg bg-white/[0.03] p-1">
+          <button
+            type="button"
+            onClick={() => setActiveTab("edit")}
+            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all ${
+              activeTab === "edit"
+                ? "bg-white/[0.08] text-white/80"
+                : "text-white/30 hover:text-white/50"
+            }`}
+          >
+            <Pencil className="size-3" />
+            Edit
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("preview")}
+            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all ${
+              activeTab === "preview"
+                ? "bg-white/[0.08] text-white/80"
+                : "text-white/30 hover:text-white/50"
+            }`}
+          >
+            <Eye className="size-3" />
+            Preview
+          </button>
+        </div>
       </div>
 
       {/* ── Preview Tab ────────────────────────────────────────────── */}
@@ -329,8 +323,9 @@ export function ProfileEditor() {
         </div>
       )}
 
-      {/* ── Edit Tab ───────────────────────────────────────────────── */}
+      {/* ── Edit Tab — two-column layout ──────────────────────────── */}
       {activeTab === "edit" && (
+        <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           {/* Avatar */}
           <div className="space-y-3">
@@ -453,44 +448,21 @@ export function ProfileEditor() {
           <section className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-6 space-y-6">
             <h3 className="text-sm font-medium text-white/50 uppercase tracking-widest">Account</h3>
 
-            {/* Email Notifications */}
-            <div className="space-y-4">
-              <p className="text-sm font-medium text-white/70">Email Notifications</p>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="emailDigest" className="flex flex-col gap-0.5 cursor-pointer">
-                    <span className="text-sm text-white/70">Weekly Digest</span>
-                    <span className="text-xs text-white/30">A summary of new jobs and companies each week</span>
-                  </Label>
-                  <Switch
-                    id="emailDigest"
-                    checked={emailDigest}
-                    onCheckedChange={(checked) => setValue("emailDigest", checked, { shouldDirty: true })}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="emailEvents" className="flex flex-col gap-0.5 cursor-pointer">
-                    <span className="text-sm text-white/70">Event Announcements</span>
-                    <span className="text-xs text-white/30">Notifications about upcoming tech events</span>
-                  </Label>
-                  <Switch
-                    id="emailEvents"
-                    checked={emailEvents}
-                    onCheckedChange={(checked) => setValue("emailEvents", checked, { shouldDirty: true })}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="emailNewsletter" className="flex flex-col gap-0.5 cursor-pointer">
-                    <span className="text-sm text-white/70">Community Newsletter</span>
-                    <span className="text-xs text-white/30">Stories and updates from the Greek tech community</span>
-                  </Label>
-                  <Switch
-                    id="emailNewsletter"
-                    checked={emailNewsletter}
-                    onCheckedChange={(checked) => setValue("emailNewsletter", checked, { shouldDirty: true })}
-                  />
-                </div>
+            {/* Contact preference */}
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="allowContactEmail" className="cursor-pointer text-sm text-white/70">
+                  Allow companies to contact me via email
+                </Label>
+                <p className="text-xs text-white/30 mt-0.5">
+                  Companies you express interest in can reach out to you
+                </p>
               </div>
+              <Switch
+                id="allowContactEmail"
+                checked={allowContactEmail}
+                onCheckedChange={(checked: boolean) => setValue("allowContactEmail", checked, { shouldDirty: true })}
+              />
             </div>
 
             {/* Danger zone */}
@@ -554,6 +526,21 @@ export function ProfileEditor() {
             )}
           </div>
         </form>
+
+        {/* Sticky sidebar — Profile Completeness */}
+        <div className="hidden lg:block">
+          <div className="sticky top-24">
+            <ProfileCompleteness data={buildFullData()} />
+          </div>
+        </div>
+        </div>
+      )}
+
+      {/* Mobile completeness — shown below form on small screens */}
+      {activeTab === "edit" && (
+        <div className="lg:hidden">
+          <ProfileCompleteness data={buildFullData()} />
+        </div>
       )}
     </div>
   );
