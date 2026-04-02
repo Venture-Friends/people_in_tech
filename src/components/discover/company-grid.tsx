@@ -5,6 +5,10 @@ import { useTranslations } from "next-intl";
 import { CompanyCard } from "@/components/shared/company-card";
 import type { CompanyCardData } from "@/components/shared/company-card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AuthGate } from "@/components/shared/auth-gate";
+import { authClient } from "@/lib/auth-client";
+
+const ANONYMOUS_LIMIT = 9;
 
 interface CompanyGridProps {
   companies: CompanyCardData[];
@@ -38,6 +42,8 @@ function SkeletonCard() {
 
 export function CompanyGrid({ companies, total, loading }: CompanyGridProps) {
   const t = useTranslations("discover");
+  const { data: session } = authClient.useSession();
+  const isAuthenticated = !!session?.user;
 
   if (loading) {
     return (
@@ -64,13 +70,20 @@ export function CompanyGrid({ companies, total, loading }: CompanyGridProps) {
     );
   }
 
+  const shouldGate = !isAuthenticated && companies.length > ANONYMOUS_LIMIT;
+  const visible = shouldGate ? companies.slice(0, ANONYMOUS_LIMIT) : companies;
+
   return (
     <div>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {companies.map((company) => (
+        {visible.map((company) => (
           <CompanyCard key={company.slug} company={company} />
         ))}
       </div>
+
+      {shouldGate && (
+        <AuthGate message={`Sign up to see all ${total} companies`} />
+      )}
     </div>
   );
 }
