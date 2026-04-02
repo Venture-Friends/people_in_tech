@@ -92,6 +92,21 @@ model WorkExperience {
   @@map("work_experiences")
 }
 
+model Education {
+  id                 String           @id @default(cuid())
+  candidateProfileId String
+  institution        String
+  degree             String?
+  field              String?
+  startYear          Int
+  endYear            Int?
+  order              Int              @default(0)
+
+  candidateProfile   CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade)
+
+  @@map("educations")
+}
+
 model Company {
   id           String   @id @default(cuid())
   slug         String   @unique
