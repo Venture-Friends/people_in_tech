@@ -5,7 +5,7 @@ import { routing } from "./i18n/routing";
 
 const intlMiddleware = createIntlMiddleware(routing);
 
-const protectedRoutes = ["/dashboard", "/admin", "/onboarding", "/profile"];
+const protectedRoutes = ["/dashboard", "/admin", "/onboarding"];
 const authRoutes = ["/login", "/register"];
 
 export function middleware(request: NextRequest) {
