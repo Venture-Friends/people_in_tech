@@ -155,7 +155,7 @@ export function OnboardingWizard() {
 
   const stepSubtitles: Record<number, string> = {
     1: "Tell us about yourself",
-    2: "What are you looking for?",
+    2: "What are you interested in?",
     3: "Almost done, set your preferences",
   };
 
@@ -334,7 +334,7 @@ export function OnboardingWizard() {
                   )}
                   {isSubmitting
                     ? t("completeSetup")
-                    : "Start Exploring \u2192"}
+                    : "Join the Talent Pool \u2192"}
                 </Button>
               )}
             </div>

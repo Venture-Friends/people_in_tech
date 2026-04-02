@@ -10,11 +10,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const CONTENT_KEYS = [
-  { key: "hero.heading", label: "Hero Heading", default: "Greece's Tech\nStarts Here.", type: "input" },
-  { key: "hero.subheading", label: "Hero Subheading", default: "Find the companies shaping Greek tech. Follow them, get alerts, discover roles.", type: "input" },
+  { key: "hero.heading", label: "Hero Heading", default: "Your Next Role\nStarts Here.", type: "input" },
+  { key: "hero.subheading", label: "Hero Subheading", default: "Join the talent pool trusted by leading tech employers in Greece. One profile, every opportunity.", type: "input" },
   { key: "hero.cta", label: "Hero CTA Text", default: "Explore Companies", type: "input" },
   { key: "about.text", label: "About Section Text", default: "", type: "textarea" },
-  { key: "footer.tagline", label: "Footer Tagline", default: "Powered by POS4work Innovation Hub", type: "input" },
+  { key: "footer.tagline", label: "Footer Tagline", default: "Greece's premier tech talent pool — powered by POS4work", type: "input" },
 ] as const;
 
 type ContentKeyDef = (typeof CONTENT_KEYS)[number];

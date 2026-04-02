@@ -139,7 +139,7 @@ export function DiscoverClient({
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title="Discover Companies" subtitle="Browse and follow top tech employers in Greece" />
+      <PageHeader title="Discover Companies" subtitle="Browse and follow top tech companies in Greece" />
 
       {/* Full-width search */}
       <SearchBar value={search} onChange={handleSearchChange} />

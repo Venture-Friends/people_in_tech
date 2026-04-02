@@ -4,9 +4,9 @@ import { inter, spaceGrotesk, notoSans } from "@/lib/fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "People in Tech — Discover the companies building Greece's tech future",
+  title: "People in Tech — Greece's tech talent pool",
   description:
-    "Discover the companies building Greece's tech future. Follow, get alerts, and find your next role.",
+    "Join the talent pool trusted by Greece's top tech companies. One profile, every opportunity.",
 };
 
 export default async function RootLayout({

@@ -6,20 +6,20 @@ const steps = [
   {
     icon: Search,
     number: "01",
-    title: "Explore",
-    description: "Browse 20+ innovative tech companies in Greece. Filter by industry, location, and tech stack.",
+    title: "Browse",
+    description: "Explore tech companies by sector, stack, or location. See who's hiring and what they're building.",
   },
   {
     icon: Bookmark,
     number: "02",
-    title: "Save & Track",
-    description: "Bookmark companies you're interested in. Build your personal watchlist of employers you care about.",
+    title: "Connect",
+    description: "Create your profile and let companies discover you. One application reaches every employer in the pool.",
   },
   {
     icon: Bell,
     number: "03",
-    title: "Get Notified",
-    description: "Receive alerts when your saved companies post new roles or host events. Never miss an opportunity.",
+    title: "Get Matched",
+    description: "Get notified when companies match your skills. Never miss a role that fits.",
   },
 ];
 
@@ -31,7 +31,7 @@ export function HowItWorks() {
           How It Works
         </h2>
         <p className="mb-12 text-center text-[15px] text-white/[0.35]">
-          Three simple steps to find your next opportunity
+          Three steps to join Greece&apos;s tech talent pool
         </p>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
