@@ -6,6 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Briefcase } from "lucide-react";
 import { format } from "date-fns";
+import { AuthGate } from "@/components/shared/auth-gate";
+import { authClient } from "@/lib/auth-client";
+
+const ANONYMOUS_ROLE_LIMIT = 2;
 
 interface JobListingData {
   id: string;
@@ -44,6 +48,8 @@ function formatType(type: string): string {
 
 export function RolesTab({ jobs }: { jobs: JobListingData[] }) {
   const t = useTranslations("company");
+  const { data: session } = authClient.useSession();
+  const isAuthenticated = !!session?.user;
 
   if (jobs.length === 0) {
     return (
@@ -54,9 +60,12 @@ export function RolesTab({ jobs }: { jobs: JobListingData[] }) {
     );
   }
 
+  const shouldGate = !isAuthenticated && jobs.length > ANONYMOUS_ROLE_LIMIT;
+  const visible = shouldGate ? jobs.slice(0, ANONYMOUS_ROLE_LIMIT) : jobs;
+
   return (
     <div className="space-y-3">
-      {jobs.map((job) => (
+      {visible.map((job) => (
         <Card key={job.id}>
           <CardContent className="flex items-center justify-between gap-4">
             <div className="min-w-0 flex-1">
@@ -88,6 +97,10 @@ export function RolesTab({ jobs }: { jobs: JobListingData[] }) {
           </CardContent>
         </Card>
       ))}
+
+      {shouldGate && (
+        <AuthGate message={`Sign up to see all ${jobs.length} roles`} />
+      )}
     </div>
   );
 }
