@@ -174,6 +174,7 @@ export default async function CompanyProfilePage({ params }: PageProps) {
 
       <div className="mt-8">
         <CompanyTabs
+          companyName={company.name}
           description={company.description}
           technologies={technologies}
           founded={company.founded}

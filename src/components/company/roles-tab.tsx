@@ -46,7 +46,12 @@ function formatType(type: string): string {
   }
 }
 
-export function RolesTab({ jobs }: { jobs: JobListingData[] }) {
+interface RolesTabProps {
+  jobs: JobListingData[];
+  companyName?: string;
+}
+
+export function RolesTab({ jobs, companyName }: RolesTabProps) {
   const t = useTranslations("company");
   const { data: session } = authClient.useSession();
   const isAuthenticated = !!session?.user;
@@ -99,7 +104,7 @@ export function RolesTab({ jobs }: { jobs: JobListingData[] }) {
       ))}
 
       {shouldGate && (
-        <AuthGate message={`Sign up to see all ${jobs.length} roles`} />
+        <AuthGate message={`Sign up to see all open roles${companyName ? ` at ${companyName}` : ""}`} />
       )}
     </div>
   );

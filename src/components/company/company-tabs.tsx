@@ -32,6 +32,7 @@ interface TeamMemberData {
 }
 
 interface CompanyTabsProps {
+  companyName: string;
   description: string | null;
   technologies: string[];
   founded: number | null;
@@ -47,6 +48,7 @@ interface CompanyTabsProps {
 }
 
 export function CompanyTabs({
+  companyName,
   description,
   technologies,
   founded,
@@ -119,7 +121,7 @@ export function CompanyTabs({
       </TabsContent>
 
       <TabsContent value="roles" className="mt-6">
-        <RolesTab jobs={jobs} />
+        <RolesTab jobs={jobs} companyName={companyName} />
       </TabsContent>
 
       <TabsContent value="events" className="mt-6">
