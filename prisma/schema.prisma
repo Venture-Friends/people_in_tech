@@ -55,6 +55,7 @@ model CandidateProfile {
   emailDigest        Boolean   @default(true)
   emailEvents        Boolean   @default(true)
   emailNewsletter    Boolean   @default(false)
+  allowContactEmail  Boolean   @default(true)
   onboardingComplete Boolean   @default(false)
   lastSeenAlertsAt   DateTime?
 
