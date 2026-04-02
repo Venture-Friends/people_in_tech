@@ -172,7 +172,9 @@
     "uploadCvSubtitle": "Speed up your profile setup (optional)",
     "step1Subtitle": "Tell us about yourself",
     "step2Subtitle": "What are you looking for?",
-    "welcomeMessage": "Welcome!"
+    "welcomeMessage": "Welcome!",
+    "allowContactEmail": "Allow companies to contact me via email",
+    "allowContactEmailDesc": "Companies you express interest in can reach out to you"
   },
   "notFound": {
     "title": "Page not found",

@@ -172,7 +172,9 @@
     "uploadCvSubtitle": "Γέμισε γρήγορα το προφίλ σου (προαιρετικό)",
     "step1Subtitle": "Πες μας για εσένα",
     "step2Subtitle": "Τι αναζητάς;",
-    "welcomeMessage": "Καλώς ήρθες!"
+    "welcomeMessage": "Καλώς ήρθες!",
+    "allowContactEmail": "Επιτρέψτε στις εταιρείες να επικοινωνήσουν μαζί μου",
+    "allowContactEmailDesc": "Εταιρείες στις οποίες εκδηλώνεις ενδιαφέρον μπορούν να σε βρουν"
   },
   "notFound": {
     "title": "Η σελίδα δεν βρέθηκε",
