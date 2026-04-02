@@ -22,12 +22,13 @@ export async function POST(request: NextRequest) {
 
   const data = result.data;
 
-  // Update user name and locale if changed
+  // Update user name, locale, and linkedinUrl
   await prisma.user.update({
     where: { id: session.user.id },
     data: {
       name: data.fullName,
       locale: data.language,
+      linkedinUrl: data.linkedinUrl || null,
     },
   });
 
@@ -38,7 +39,6 @@ export async function POST(request: NextRequest) {
       userId: session.user.id,
       headline: data.headline || null,
       experienceLevel: data.experienceLevel,
-      linkedinUrl: data.linkedinUrl || null,
       skills: JSON.stringify(data.skills),
       roleInterests: JSON.stringify(data.roleInterests),
       industries: JSON.stringify(data.industries),
@@ -51,7 +51,6 @@ export async function POST(request: NextRequest) {
     update: {
       headline: data.headline || null,
       experienceLevel: data.experienceLevel,
-      linkedinUrl: data.linkedinUrl || null,
       skills: JSON.stringify(data.skills),
       roleInterests: JSON.stringify(data.roleInterests),
       industries: JSON.stringify(data.industries),

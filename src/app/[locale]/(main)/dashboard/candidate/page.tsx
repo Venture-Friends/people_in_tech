@@ -43,7 +43,7 @@ export default async function CandidateDashboardPage({
   const [user, candidateProfile, follows, savedJobs, savedEventsRaw] = await Promise.all([
     prisma.user.findUnique({
       where: { id: userId },
-      select: { name: true },
+      select: { name: true, linkedinUrl: true },
     }),
     prisma.candidateProfile.findUnique({
       where: { userId },
@@ -223,7 +223,7 @@ export default async function CandidateDashboardPage({
   const profile: ProfileData = {
     name: user?.name || "",
     headline: candidateProfile?.headline || "",
-    linkedinUrl: candidateProfile?.linkedinUrl || "",
+    linkedinUrl: user?.linkedinUrl || "",
     experienceLevel: candidateProfile?.experienceLevel || "STUDENT",
     skills: candidateProfile ? JSON.parse(candidateProfile.skills) : [],
     roleInterests: candidateProfile ? JSON.parse(candidateProfile.roleInterests) : [],
