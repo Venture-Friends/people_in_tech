@@ -34,6 +34,7 @@ export const profileUpdateSchema = z.object({
     .enum(["NOT_SPECIFIED", "REMOTE", "HYBRID", "ONSITE"])
     .optional(),
   salaryExpectation: z.string().max(100).or(z.literal("")).optional().nullable(),
+  allowContactEmail: z.boolean().optional(),
 });
 
 export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;

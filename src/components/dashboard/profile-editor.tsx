@@ -68,9 +68,7 @@ const defaultFormValues: ProfileFormData = {
   availability: "NOT_SPECIFIED",
   preferredWorkType: "NOT_SPECIFIED",
   salaryExpectation: "",
-  emailDigest: true,
-  emailEvents: true,
-  emailNewsletter: false,
+  allowContactEmail: true,
 };
 
 export function ProfileEditor() {
@@ -105,9 +103,7 @@ export function ProfileEditor() {
   });
 
   const avatarUrl = watch("avatarUrl");
-  const emailDigest = watch("emailDigest");
-  const emailEvents = watch("emailEvents");
-  const emailNewsletter = watch("emailNewsletter");
+  const allowContactEmail = watch("allowContactEmail");
 
   useEffect(() => {
     async function fetchProfile() {
@@ -138,9 +134,7 @@ export function ProfileEditor() {
           availability: cp?.availability || "NOT_SPECIFIED",
           preferredWorkType: cp?.preferredWorkType || "NOT_SPECIFIED",
           salaryExpectation: cp?.salaryExpectation || "",
-          emailDigest: cp?.emailDigest ?? true,
-          emailEvents: cp?.emailEvents ?? true,
-          emailNewsletter: cp?.emailNewsletter ?? false,
+          allowContactEmail: cp?.allowContactEmail ?? true,
         });
 
         // Relation data
@@ -458,43 +452,23 @@ export function ProfileEditor() {
           <section className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-6 space-y-6">
             <h3 className="text-sm font-medium text-white/50 uppercase tracking-widest">Account</h3>
 
-            {/* Email Notifications */}
+            {/* Contact Preferences */}
             <div className="space-y-4">
-              <p className="text-sm font-medium text-white/70">Email Notifications</p>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="emailDigest" className="flex flex-col gap-0.5 cursor-pointer">
-                    <span className="text-sm text-white/70">Weekly Digest</span>
-                    <span className="text-xs text-white/30">A summary of new jobs and companies each week</span>
+              <p className="text-sm font-medium text-white/70">Contact Preferences</p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="allowContactEmail" className="cursor-pointer text-sm text-white/60">
+                    Allow companies to contact me via email
                   </Label>
-                  <Switch
-                    id="emailDigest"
-                    checked={emailDigest}
-                    onCheckedChange={(checked) => setValue("emailDigest", checked, { shouldDirty: true })}
-                  />
+                  <p className="text-[11px] text-white/25 mt-0.5">
+                    Companies you express interest in can reach out to you
+                  </p>
                 </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="emailEvents" className="flex flex-col gap-0.5 cursor-pointer">
-                    <span className="text-sm text-white/70">Event Announcements</span>
-                    <span className="text-xs text-white/30">Notifications about upcoming tech events</span>
-                  </Label>
-                  <Switch
-                    id="emailEvents"
-                    checked={emailEvents}
-                    onCheckedChange={(checked) => setValue("emailEvents", checked, { shouldDirty: true })}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="emailNewsletter" className="flex flex-col gap-0.5 cursor-pointer">
-                    <span className="text-sm text-white/70">Community Newsletter</span>
-                    <span className="text-xs text-white/30">Stories and updates from the Greek tech community</span>
-                  </Label>
-                  <Switch
-                    id="emailNewsletter"
-                    checked={emailNewsletter}
-                    onCheckedChange={(checked) => setValue("emailNewsletter", checked, { shouldDirty: true })}
-                  />
-                </div>
+                <Switch
+                  id="allowContactEmail"
+                  checked={allowContactEmail}
+                  onCheckedChange={(checked: boolean) => setValue("allowContactEmail", checked, { shouldDirty: true })}
+                />
               </div>
             </div>
 

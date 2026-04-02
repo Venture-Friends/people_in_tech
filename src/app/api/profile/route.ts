@@ -37,6 +37,7 @@ export async function GET() {
             availability: true,
             preferredWorkType: true,
             salaryExpectation: true,
+            allowContactEmail: true,
             workExperiences: { orderBy: { order: "asc" } },
             educations: { orderBy: { order: "asc" } },
             certifications: { orderBy: { order: "asc" } },
@@ -129,6 +130,8 @@ export async function PUT(request: NextRequest) {
       cpUpdate.preferredWorkType = data.preferredWorkType;
     if (data.salaryExpectation !== undefined)
       cpUpdate.salaryExpectation = data.salaryExpectation || null;
+    if (data.allowContactEmail !== undefined)
+      cpUpdate.allowContactEmail = data.allowContactEmail;
 
     // Update User
     if (Object.keys(userUpdate).length > 0) {

@@ -35,9 +35,7 @@ const profileUpdateSchema = z.object({
   roleInterests: z.array(z.string()),
   industries: z.array(z.string()),
   preferredLocations: z.array(z.string()),
-  emailDigest: z.boolean(),
-  emailEvents: z.boolean(),
-  emailNewsletter: z.boolean(),
+  allowContactEmail: z.boolean(),
 });
 
 export async function GET() {
@@ -73,9 +71,7 @@ export async function GET() {
       roleInterests: JSON.parse(profile.roleInterests),
       industries: JSON.parse(profile.industries),
       preferredLocations: JSON.parse(profile.preferredLocations),
-      emailDigest: profile.emailDigest,
-      emailEvents: profile.emailEvents,
-      emailNewsletter: profile.emailNewsletter,
+      allowContactEmail: profile.allowContactEmail,
     });
   } catch (error) {
     console.error("Error fetching candidate profile:", error);
@@ -128,9 +124,7 @@ export async function PUT(request: NextRequest) {
         roleInterests: JSON.stringify(data.roleInterests),
         industries: JSON.stringify(data.industries),
         preferredLocations: JSON.stringify(data.preferredLocations),
-        emailDigest: data.emailDigest,
-        emailEvents: data.emailEvents,
-        emailNewsletter: data.emailNewsletter,
+        allowContactEmail: data.allowContactEmail,
       },
     });
 
