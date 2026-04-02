@@ -6,7 +6,6 @@
  * raw text produced by pdf-parse or mammoth.
  */
 
-import pdfParse from "pdf-parse";
 import mammoth from "mammoth";
 
 // ── Types ────────────────────────────────────────────────────────
@@ -46,6 +45,9 @@ export async function extractTextFromFile(
     mimeType === "application/pdf" ||
     mimeType === "application/x-pdf"
   ) {
+    // Dynamic import: pdf-parse@1.1.1 crashes on static import
+    // because it tries to load a test fixture file at module init.
+    const pdfParse = (await import("pdf-parse")).default;
     const result = await pdfParse(buffer);
     return result.text;
   }
@@ -127,7 +129,6 @@ const PHONE_RE =
   /(?:\+?\d{1,3}[-.\s]?)?\(?\d{2,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{3,4}/;
 const URL_RE =
   /https?:\/\/[^\s,)<>]+/g;
-const LINKEDIN_RE = /linkedin\.com\/in\/[^\s,)<>]+/i;
 
 function extractEmail(text: string): string | null {
   const match = text.match(EMAIL_RE);
