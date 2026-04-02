@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { getSession } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
@@ -62,38 +62,10 @@ async function getUser(id: string) {
   });
 }
 
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
-  const { id } = await params;
-  const user = await prisma.user.findUnique({
-    where: { id },
-    select: {
-      name: true,
-      publicTitle: true,
-      bio: true,
-      isProfilePublic: true,
-    },
-  });
-
-  if (!user) {
-    return { title: "Profile Not Found" };
-  }
-
-  if (!user.isProfilePublic) {
-    return {
-      title: "Profile | People in Tech",
-      description: "Candidate profile on People in Tech",
-    };
-  }
-
-  const title = user.publicTitle
-    ? `${user.name} - ${user.publicTitle} | People in Tech`
-    : `${user.name} | People in Tech`;
-
+export async function generateMetadata(): Promise<Metadata> {
   return {
-    title,
-    description: user.bio?.slice(0, 160) || undefined,
+    title: "Profile | People in Tech",
+    description: "Candidate profile on People in Tech",
   };
 }
 
@@ -107,15 +79,50 @@ export default async function PublicProfilePage({ params }: PageProps) {
     notFound();
   }
 
-  // Privacy check: if profile is not public, only admins can see it
-  const isPublic = user.isProfilePublic;
-  if (!isPublic) {
-    const session = await getSession();
-    const isAdmin = session?.user?.role === "ADMIN";
-    if (!isAdmin) {
-      return <ProfilePrivate name={user.name} />;
+  // Access control: only ADMIN and COMPANY_REP (with interest) can view
+  const session = await getSession();
+
+  if (!session?.user) {
+    redirect(`/${locale}/login?returnTo=/profile/${id}`);
+  }
+
+  const viewerRole = session.user.role;
+
+  if (viewerRole === "CANDIDATE") {
+    // Candidates cannot view other candidates' profiles
+    notFound();
+  }
+
+  if (viewerRole === "COMPANY_REP") {
+    // Company rep can only view if candidate expressed interest in one of their jobs
+    const claim = await prisma.companyClaim.findFirst({
+      where: {
+        userId: session.user.id,
+        status: "APPROVED",
+      },
+      select: { companyId: true },
+    });
+
+    if (!claim) {
+      notFound();
+    }
+
+    const hasInterest = await prisma.jobInterest.findFirst({
+      where: {
+        userId: id, // the candidate whose profile we're viewing
+        job: {
+          companyId: claim.companyId,
+        },
+      },
+    });
+
+    if (!hasInterest) {
+      notFound();
     }
   }
+
+  // ADMIN can always view — no additional check needed
+  const isPublic = user.isProfilePublic;
 
   const profile = user.candidateProfile;
   const skills = profile ? parseJsonArray(profile.skills) : [];
@@ -128,7 +135,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
       {/* Admin badge for private profiles viewed by admin */}
-      {!isPublic && (
+      {!isPublic && viewerRole === "ADMIN" && (
         <div className="mb-4 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs text-amber-400">
           This profile is private. You are viewing it as an admin.
         </div>
