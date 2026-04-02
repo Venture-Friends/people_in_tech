@@ -294,32 +294,37 @@ export function ProfileEditor() {
       {/* Completeness indicator */}
       <ProfileCompleteness data={buildFullData()} />
 
-      {/* Tab switcher */}
-      <div className="flex gap-1 rounded-lg bg-white/[0.03] p-1">
-        <button
-          type="button"
-          onClick={() => setActiveTab("edit")}
-          className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all ${
-            activeTab === "edit"
-              ? "bg-white/[0.08] text-white/80"
-              : "text-white/30 hover:text-white/50"
-          }`}
-        >
-          <Pencil className="size-3" />
-          Edit
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab("preview")}
-          className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all ${
-            activeTab === "preview"
-              ? "bg-white/[0.08] text-white/80"
-              : "text-white/30 hover:text-white/50"
-          }`}
-        >
-          <Eye className="size-3" />
-          Preview
-        </button>
+      {/* Header with tab switcher */}
+      <div className="flex items-center justify-between mb-2">
+        <div>
+          <h2 className="font-display text-lg font-semibold text-white">Edit Profile</h2>
+        </div>
+        <div className="flex gap-1 rounded-lg bg-white/[0.03] p-1">
+          <button
+            type="button"
+            onClick={() => setActiveTab("edit")}
+            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all ${
+              activeTab === "edit"
+                ? "bg-white/[0.08] text-white/80"
+                : "text-white/30 hover:text-white/50"
+            }`}
+          >
+            <Pencil className="size-3" />
+            Edit
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("preview")}
+            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all ${
+              activeTab === "preview"
+                ? "bg-white/[0.08] text-white/80"
+                : "text-white/30 hover:text-white/50"
+            }`}
+          >
+            <Eye className="size-3" />
+            Preview
+          </button>
+        </div>
       </div>
 
       {/* ── Preview Tab ────────────────────────────────────────────── */}
