@@ -107,6 +107,30 @@ model Education {
   @@map("educations")
 }
 
+model Certification {
+  id                 String           @id @default(cuid())
+  candidateProfileId String
+  name               String
+  issuer             String?
+  year               Int?
+  order              Int              @default(0)
+
+  candidateProfile   CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade)
+
+  @@map("certifications")
+}
+
+model SpokenLanguage {
+  id                 String           @id @default(cuid())
+  candidateProfileId String
+  name               String
+  proficiency        String           @default("CONVERSATIONAL") // NATIVE | FLUENT | CONVERSATIONAL | BASIC
+
+  candidateProfile   CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade)
+
+  @@map("spoken_languages")
+}
+
 model Company {
   id           String   @id @default(cuid())
   slug         String   @unique
