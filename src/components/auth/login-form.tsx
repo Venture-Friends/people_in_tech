@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { Loader2, Linkedin } from "lucide-react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
@@ -12,6 +13,8 @@ import { Label } from "@/components/ui/label";
 export function LoginForm() {
   const t = useTranslations("auth");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get("returnTo");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,7 +38,7 @@ export function LoginForm() {
         return;
       }
 
-      router.push("/discover");
+      router.push(returnTo || "/discover");
     } finally {
       setIsLoading(false);
     }
@@ -125,7 +128,7 @@ export function LoginForm() {
       {/* Sign up link */}
       <p className="mt-6 text-center text-sm text-white/30">
         {t("noAccount")}{" "}
-        <Link href="/register" className="text-primary hover:underline">
+        <Link href={returnTo ? `/register?returnTo=${encodeURIComponent(returnTo)}` : "/register"} className="text-primary hover:underline">
           {t("signUp")}
         </Link>
       </p>
