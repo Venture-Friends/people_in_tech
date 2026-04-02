@@ -56,11 +56,11 @@ async function main() {
       password: demoPassword,
       role: "CANDIDATE",
       emailVerified: true,
+      linkedinUrl: "https://linkedin.com/in/maria-papadopoulou",
       candidateProfile: {
         create: {
           headline: "Full-Stack Developer | React & Node.js",
           experienceLevel: "MID",
-          linkedinUrl: "https://linkedin.com/in/maria-papadopoulou",
           skills: JSON.stringify([
             "React",
             "TypeScript",
@@ -85,6 +85,62 @@ async function main() {
     },
   });
   console.log(`✓ Demo candidate: ${candidate.email}`);
+
+  // ── 1b. Candidate Profile Enrichment ──────────────────────────────────
+
+  const candidateProfile = await prisma.candidateProfile.findUnique({
+    where: { userId: candidate.id },
+  });
+
+  if (candidateProfile) {
+    await prisma.workExperience.deleteMany({ where: { candidateProfileId: candidateProfile.id } });
+    await prisma.workExperience.createMany({
+      data: [
+        {
+          candidateProfileId: candidateProfile.id,
+          company: "Skroutz",
+          role: "Senior Frontend Engineer",
+          startDate: new Date("2023-01-15"),
+          current: true,
+          description: "Led the redesign of the merchant dashboard. Built component library used across 4 teams.",
+          order: 0,
+        },
+        {
+          candidateProfileId: candidateProfile.id,
+          company: "Blueground",
+          role: "Frontend Developer",
+          startDate: new Date("2020-06-01"),
+          endDate: new Date("2022-12-31"),
+          description: "Built the guest-facing booking flow and internal property management tools.",
+          order: 1,
+        },
+      ],
+    });
+
+    await prisma.education.deleteMany({ where: { candidateProfileId: candidateProfile.id } });
+    await prisma.education.create({
+      data: {
+        candidateProfileId: candidateProfile.id,
+        institution: "National Technical University of Athens",
+        degree: "Bachelor's",
+        field: "Electrical & Computer Engineering",
+        startYear: 2015,
+        endYear: 2020,
+      },
+    });
+
+    await prisma.candidateProfile.update({
+      where: { id: candidateProfile.id },
+      data: {
+        availability: "OPEN_TO_WORK",
+        preferredWorkType: "HYBRID",
+        portfolioUrl: "https://maria.dev",
+        githubUrl: "https://github.com/mariapapadopoulou",
+      },
+    });
+
+    console.log(`✓ Candidate profile enriched with work experience, education, and preferences`);
+  }
 
   // ── 2. Companies ──────────────────────────────────────────────────────
 
@@ -111,6 +167,7 @@ async function main() {
       ]),
       status: "VERIFIED",
       featured: true,
+      vcFunded: true,
     },
     {
       slug: "viva-wallet",
@@ -157,6 +214,7 @@ async function main() {
       ]),
       status: "VERIFIED",
       featured: true,
+      vcFunded: true,
     },
     {
       slug: "skroutz",
@@ -456,6 +514,7 @@ async function main() {
       ]),
       status: "VERIFIED",
       featured: false,
+      vcFunded: true,
     },
     {
       slug: "welcome-pickups",

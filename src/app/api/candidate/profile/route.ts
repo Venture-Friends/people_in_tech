@@ -53,7 +53,7 @@ export async function GET() {
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { name: true },
+      select: { name: true, linkedinUrl: true },
     });
 
     const profile = await prisma.candidateProfile.findUnique({
@@ -67,7 +67,7 @@ export async function GET() {
     return NextResponse.json({
       name: user?.name || "",
       headline: profile.headline || "",
-      linkedinUrl: profile.linkedinUrl || "",
+      linkedinUrl: user?.linkedinUrl || "",
       experienceLevel: profile.experienceLevel,
       skills: JSON.parse(profile.skills),
       roleInterests: JSON.parse(profile.roleInterests),
@@ -109,10 +109,13 @@ export async function PUT(request: NextRequest) {
 
     const data = result.data;
 
-    // Update user name
+    // Update user name and linkedinUrl
     await prisma.user.update({
       where: { id: session.user.id },
-      data: { name: data.name },
+      data: {
+        name: data.name,
+        linkedinUrl: data.linkedinUrl || null,
+      },
     });
 
     // Update candidate profile
@@ -121,7 +124,6 @@ export async function PUT(request: NextRequest) {
       data: {
         headline: data.headline || null,
         experienceLevel: data.experienceLevel,
-        linkedinUrl: data.linkedinUrl || null,
         skills: JSON.stringify(data.skills),
         roleInterests: JSON.stringify(data.roleInterests),
         industries: JSON.stringify(data.industries),
