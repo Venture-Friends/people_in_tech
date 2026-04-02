@@ -31,7 +31,7 @@ export function LatestJobs({ jobs }: LatestJobsProps) {
         </div>
 
         {shouldGate && (
-          <AuthGate message={`Sign up to see all ${jobs.length} roles`} />
+          <AuthGate message="Join the talent pool to discover all open roles" />
         )}
       </div>
     </section>

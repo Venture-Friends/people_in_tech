@@ -26,13 +26,13 @@ export function AuthGate({
           </div>
           <h3 className="text-lg font-semibold text-foreground">{message}</h3>
           <p className="mt-1 text-sm text-white/30">
-            Create a free account to unlock everything
+            Free to join. Set up your profile in under 2 minutes.
           </p>
           <Link
             href={`/register?returnTo=${encodeURIComponent(pathname)}`}
             className="mt-6 inline-flex h-10 items-center justify-center rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Get Started — It&apos;s Free
+            Get Started for Free
           </Link>
           <p className="mt-3 text-xs text-white/20">
             Already have an account?{" "}

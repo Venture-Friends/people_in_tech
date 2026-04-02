@@ -49,6 +49,16 @@
     "invalidCredentials": "Invalid email or password",
     "emailExists": "Email already registered"
   },
+  "gate": {
+    "discoverMessage": "Join {count}+ tech professionals discovering opportunities in Greece",
+    "rolesMessage": "Sign up to see all open roles at {company}",
+    "rolesMessageGeneric": "Sign up to see all open roles",
+    "landingJobsMessage": "Join the talent pool to discover all open roles",
+    "secondary": "Free to join. Set up your profile in under 2 minutes.",
+    "cta": "Get Started for Free",
+    "hasAccount": "Already have an account?",
+    "signIn": "Sign in"
+  },
   "discover": {
     "title": "Discover Companies",
     "searchPlaceholder": "Search companies, sectors, technologies...",

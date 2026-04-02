@@ -82,7 +82,7 @@ export function CompanyGrid({ companies, total, loading }: CompanyGridProps) {
       </div>
 
       {shouldGate && (
-        <AuthGate message={`Sign up to see all ${total} companies`} />
+        <AuthGate message={`Join ${total}+ tech professionals discovering opportunities in Greece`} />
       )}
     </div>
   );
