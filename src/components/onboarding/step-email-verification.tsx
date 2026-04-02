@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { CheckCircle, Mail, Loader2, RefreshCw } from "lucide-react";
@@ -8,20 +8,37 @@ import { Button } from "@/components/ui/button";
 
 interface StepEmailVerificationProps {
   onVerified: () => void;
+  onSkip?: () => void;
 }
 
 export function StepEmailVerification({
   onVerified,
+  onSkip,
 }: StepEmailVerificationProps) {
   const { data: session, isPending } = authClient.useSession();
   const [resending, setResending] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const interval = setInterval(() => {
+      setResendCooldown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [resendCooldown]);
 
   const isVerified = session?.user?.emailVerified === true;
   const email = session?.user?.email;
 
   async function handleResend() {
-    if (!email) return;
+    if (!email || resendCooldown > 0) return;
     setResending(true);
     try {
       await authClient.sendVerificationEmail({
@@ -29,6 +46,7 @@ export function StepEmailVerification({
         callbackURL: window.location.href,
       });
       toast.success("Verification email sent! Check your inbox.");
+      setResendCooldown(60);
     } catch {
       toast.error("Failed to send verification email. Try again.");
     } finally {
@@ -119,7 +137,7 @@ export function StepEmailVerification({
           variant="ghost"
           onClick={handleResend}
           size="lg"
-          disabled={resending}
+          disabled={resending || resendCooldown > 0}
           className="text-white/50 hover:text-white/80"
         >
           {resending ? (
@@ -127,9 +145,22 @@ export function StepEmailVerification({
           ) : (
             <Mail className="size-4 mr-1" />
           )}
-          {resending ? "Sending..." : "Resend verification email"}
+          {resending
+            ? "Sending..."
+            : resendCooldown > 0
+              ? `Resend in ${resendCooldown}s`
+              : "Resend verification email"}
         </Button>
       </div>
+
+      {onSkip && (
+        <button
+          onClick={onSkip}
+          className="mt-4 text-sm text-white/40 underline underline-offset-4 transition-colors hover:text-white/60"
+        >
+          Skip for now
+        </button>
+      )}
     </div>
   );
 }

@@ -119,7 +119,7 @@ export function AboutTab({
                 return (
                   <Link
                     key={member.userId}
-                    href={`/people/${member.userId}`}
+                    href={`/profile/${member.userId}`}
                     className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 transition-colors hover:border-white/[0.1] hover:bg-white/[0.04]"
                   >
                     {member.avatarUrl ? (

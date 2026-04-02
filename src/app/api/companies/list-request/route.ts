@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
       // Confirm to requester
       await sendEmail({
         to: contactEmail,
-        subject: "We received your listing request — Hiring Partners",
+        subject: "We received your listing request — People in Tech",
         template: "claim-submitted",
         data: {
           name: session?.user?.name || contactEmail.split("@")[0],

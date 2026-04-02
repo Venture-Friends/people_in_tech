@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     const { sendBatchEmail, generateUnsubscribeUrl } = await import("@/lib/email");
     const batch = profiles.map((profile) => ({
       to: profile.user.email,
-      subject: "Your weekly digest — Hiring Partners",
+      subject: "Your weekly digest — People in Tech",
       template: "weekly-digest" as const,
       data: {
         name: profile.user.name,

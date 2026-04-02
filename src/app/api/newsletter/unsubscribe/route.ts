@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
     const { sendEmail } = await import("@/lib/email");
     await sendEmail({
       to: email,
-      subject: "You've been unsubscribed — Hiring Partners",
+      subject: "You've been unsubscribed — People in Tech",
       template: "unsubscribe-confirm",
       data: { email },
     });

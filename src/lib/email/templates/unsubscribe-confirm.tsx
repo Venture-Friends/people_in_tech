@@ -44,7 +44,7 @@ export const UnsubscribeConfirm = ({ email }: UnsubscribeConfirmProps) => {
           margin: "0",
         }}
       >
-        You will no longer receive promotional emails from Hiring Partners.
+        You will no longer receive promotional emails from People in Tech.
         You may still receive transactional emails related to your account
         activity.
       </Text>

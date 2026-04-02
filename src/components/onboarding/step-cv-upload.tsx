@@ -26,6 +26,7 @@ export function StepCvUpload({ onParsed, onSkip }: StepCvUploadProps) {
   const [file, setFile] = useState<File | null>(null);
   const [parsing, setParsing] = useState(false);
   const [parsed, setParsed] = useState<ParsedCV | null>(null);
+  const [cvUrl, setCvUrl] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -63,8 +64,9 @@ export function StepCvUpload({ onParsed, onSkip }: StepCvUploadProps) {
         throw new Error(data?.error || "Failed to parse CV");
       }
 
-      const { data } = await res.json();
-      setParsed(data);
+      const result = await res.json();
+      setParsed(result.data);
+      if (result.cvUrl) setCvUrl(result.cvUrl);
       toast.success("CV parsed successfully!");
     } catch (err) {
       toast.error(
@@ -93,11 +95,12 @@ export function StepCvUpload({ onParsed, onSkip }: StepCvUploadProps) {
   function handleRemove() {
     setFile(null);
     setParsed(null);
+    setCvUrl(null);
   }
 
   function handleContinue() {
     if (parsed && file) {
-      onParsed(parsed, file.name);
+      onParsed(parsed, cvUrl || file.name);
     }
   }
 

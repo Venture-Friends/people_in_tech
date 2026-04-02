@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
       // Send confirmation email to claimant
       await sendEmail({
         to: workEmail,
-        subject: `Verify your claim for ${company.name} — Hiring Partners`,
+        subject: `Verify your claim for ${company.name} — People in Tech`,
         template: "claim-submitted",
         data: {
           name: fullName,

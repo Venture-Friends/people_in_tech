@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { writeFile, mkdir } from "fs/promises";
+import path from "path";
 import { getSession } from "@/lib/auth-session";
 import { parseFileToCV } from "@/lib/cv-parser";
 
@@ -43,7 +45,18 @@ export async function POST(request: NextRequest) {
 
     const parsed = await parseFileToCV(buffer, file.type);
 
-    return NextResponse.json({ success: true, data: parsed });
+    // Save file to disk
+    const uploadDir = path.join(process.cwd(), "public", "uploads", "cvs");
+    await mkdir(uploadDir, { recursive: true });
+
+    const ext = file.name.split(".").pop() || "pdf";
+    const fileName = `${session.user.id}-${Date.now()}.${ext}`;
+    const filePath = path.join(uploadDir, fileName);
+    await writeFile(filePath, buffer);
+
+    const cvUrl = `/uploads/cvs/${fileName}`;
+
+    return NextResponse.json({ success: true, data: parsed, cvUrl });
   } catch (error) {
     console.error("[parse-cv] Error:", error);
     return NextResponse.json(

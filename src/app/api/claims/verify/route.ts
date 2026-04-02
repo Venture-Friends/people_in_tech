@@ -119,7 +119,7 @@ export async function GET(request: NextRequest) {
       if (adminEmails.length > 0) {
         await sendEmail({
           to: adminEmails,
-          subject: `New company claim: ${pendingClaim.company.name} — Hiring Partners`,
+          subject: `New company claim: ${pendingClaim.company.name} — People in Tech`,
           template: "claim-admin-alert",
           data: {
             claimantName: pendingClaim.fullName,

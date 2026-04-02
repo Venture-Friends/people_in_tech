@@ -10,6 +10,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+function getSafeReturnTo(returnTo: string | null, fallback: string): string {
+  if (returnTo && returnTo.startsWith("/") && !returnTo.startsWith("//")) {
+    return returnTo;
+  }
+  return fallback;
+}
+
 export function RegisterForm() {
   const t = useTranslations("auth");
   const router = useRouter();
@@ -45,7 +52,7 @@ export function RegisterForm() {
       }
 
       // autoSignIn: true means user is already logged in
-      router.push(returnTo || "/onboarding");
+      router.push(getSafeReturnTo(returnTo, "/onboarding"));
     } finally {
       setIsLoading(false);
     }

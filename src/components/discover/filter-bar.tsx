@@ -189,7 +189,7 @@ export function FilterBar({ filters, onFilterChange, industries }: FilterBarProp
             onFilterChange({ ...filters, vcFunded: !filters.vcFunded })
           }
         >
-          VC Funded
+          {t("filterVcFunded")}
         </Button>
       </div>
     </div>}

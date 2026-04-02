@@ -61,7 +61,7 @@ export function SectionVisibility({
         isProfilePublic &&
         userId && (
           <a
-            href={`/people/${userId}`}
+            href={`/profile/${userId}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-sm text-emerald-400/70 transition-colors hover:text-emerald-400"

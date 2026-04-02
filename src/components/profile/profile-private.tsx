@@ -1,4 +1,5 @@
 import { Lock } from "lucide-react";
+import Link from "next/link";
 
 export function ProfilePrivate({ name }: { name: string }) {
   return (
@@ -13,6 +14,12 @@ export function ProfilePrivate({ name }: { name: string }) {
         <span className="text-white/60">{name}</span> has chosen to keep their
         profile private. If you know them, ask them to share their profile link.
       </p>
+      <Link
+        href="/discover"
+        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white/[0.05] px-5 py-2.5 text-sm font-medium text-white/70 transition-colors hover:bg-white/[0.08] hover:text-white"
+      >
+        Back to Discover
+      </Link>
     </div>
   );
 }

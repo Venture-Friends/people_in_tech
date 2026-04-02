@@ -180,8 +180,10 @@ export function OnboardingWizard() {
       setValue("skills", data.skills.slice(0, 15));
     }
 
-    // Store the file name as cvUrl placeholder
-    setValue("cvUrl", fileName);
+    // Store the persisted file URL returned by the API
+    if (fileName) {
+      setValue("cvUrl", fileName);
+    }
 
     // Advance to next step
     setDirection("forward");
@@ -344,7 +346,7 @@ export function OnboardingWizard() {
         <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-6 sm:p-8">
           {/* Step 1: Email Verification */}
           {currentStep === 1 && (
-            <StepEmailVerification onVerified={handleEmailVerified} />
+            <StepEmailVerification onVerified={handleEmailVerified} onSkip={() => { setDirection("forward"); updateStep(2); }} />
           )}
 
           {/* Step 2: CV Upload */}

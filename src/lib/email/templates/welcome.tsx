@@ -11,7 +11,7 @@ interface WelcomeEmailProps {
   name: string;
 }
 
-const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://hiringpartners.gr";
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://peopleintech.gr";
 
 export const WelcomeEmail = ({ name }: WelcomeEmailProps) => {
   return (

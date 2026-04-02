@@ -8,14 +8,14 @@ interface ProfileData {
   publicTitle?: string;
   avatarUrl?: string;
   linkedinUrl?: string;
-  candidateProfile?: {
-    headline?: string;
-    skills?: string[];
-    workExperiences?: unknown[];
-    educations?: unknown[];
-    cvUrl?: string;
-    availability?: string;
-  } | null;
+  headline?: string;
+  skills?: string[];
+  roleInterests?: string[];
+  experienceLevel?: string;
+  workExperiences?: unknown[];
+  educations?: unknown[];
+  cvUrl?: string;
+  availability?: string;
 }
 
 interface CheckItem {
@@ -24,20 +24,24 @@ interface CheckItem {
 }
 
 function computeChecks(data: ProfileData): CheckItem[] {
-  const cp = data.candidateProfile;
   return [
     { label: "Name", done: !!data.name },
-    { label: "Headline or public title", done: !!(cp?.headline || data.publicTitle) },
+    { label: "Headline or public title", done: !!(data.headline || data.publicTitle) },
     { label: "Bio", done: !!data.bio },
     { label: "Avatar", done: !!data.avatarUrl },
-    { label: "At least 1 skill", done: (cp?.skills?.length ?? 0) > 0 },
-    { label: "Work experience", done: (cp?.workExperiences?.length ?? 0) > 0 },
-    { label: "Education", done: (cp?.educations?.length ?? 0) > 0 },
+    { label: "At least 1 skill", done: (data.skills?.length ?? 0) > 0 },
+    { label: "Role interests", done: (data.roleInterests?.length ?? 0) > 0 },
+    {
+      label: "Experience level",
+      done: !!data.experienceLevel && data.experienceLevel !== "" && data.experienceLevel !== "NOT_SPECIFIED",
+    },
+    { label: "Work experience", done: (data.workExperiences?.length ?? 0) > 0 },
+    { label: "Education", done: (data.educations?.length ?? 0) > 0 },
     { label: "LinkedIn URL", done: !!data.linkedinUrl },
-    { label: "CV uploaded", done: !!cp?.cvUrl },
+    { label: "CV uploaded", done: !!data.cvUrl },
     {
       label: "Availability set",
-      done: !!cp?.availability && cp.availability !== "NOT_SPECIFIED",
+      done: !!data.availability && data.availability !== "NOT_SPECIFIED",
     },
   ];
 }

@@ -29,9 +29,29 @@ function parseJsonArray(jsonString: string): string[] {
 async function getUser(id: string) {
   return prisma.user.findUnique({
     where: { id },
-    include: {
+    select: {
+      id: true,
+      name: true,
+      image: true,
+      avatarUrl: true,
+      bio: true,
+      publicTitle: true,
+      linkedinUrl: true,
+      website: true,
+      role: true,
+      isProfilePublic: true,
       candidateProfile: {
-        include: {
+        select: {
+          headline: true,
+          skills: true,
+          roleInterests: true,
+          industries: true,
+          preferredLocations: true,
+          availability: true,
+          preferredWorkType: true,
+          portfolioUrl: true,
+          githubUrl: true,
+          cvUrl: true,
           workExperiences: { orderBy: { order: "asc" } },
           educations: { orderBy: { order: "asc" } },
           certifications: { orderBy: { order: "asc" } },
@@ -48,11 +68,23 @@ export async function generateMetadata({
   const { id } = await params;
   const user = await prisma.user.findUnique({
     where: { id },
-    select: { name: true, publicTitle: true, bio: true },
+    select: {
+      name: true,
+      publicTitle: true,
+      bio: true,
+      isProfilePublic: true,
+    },
   });
 
   if (!user) {
     return { title: "Profile Not Found" };
+  }
+
+  if (!user.isProfilePublic) {
+    return {
+      title: "Profile | People in Tech",
+      description: "Candidate profile on People in Tech",
+    };
   }
 
   const title = user.publicTitle
@@ -71,7 +103,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
 
   const user = await getUser(id);
 
-  if (!user) {
+  if (!user || user.role !== "CANDIDATE") {
     notFound();
   }
 

@@ -10,14 +10,14 @@ export const profileUpdateSchema = z.object({
     .or(z.string().startsWith("/uploads/"))
     .or(z.literal(""))
     .optional(),
-  bio: z.string().max(500).optional(),
-  publicTitle: z.string().max(120).optional(),
+  bio: z.string().max(500).optional().nullable(),
+  publicTitle: z.string().max(120).optional().nullable(),
   linkedinUrl: z.string().url().or(z.literal("")).optional(),
   website: z.string().url().or(z.literal("")).optional(),
   isProfilePublic: z.boolean().optional(),
 
   // CandidateProfile table
-  headline: z.string().max(200).optional(),
+  headline: z.string().max(200).optional().nullable(),
   experienceLevel: z
     .enum(["STUDENT", "JUNIOR", "MID", "SENIOR", "LEAD", "MANAGER", "DIRECTOR"])
     .optional(),
@@ -25,15 +25,15 @@ export const profileUpdateSchema = z.object({
   roleInterests: z.array(z.string()).optional(),
   industries: z.array(z.string()).optional(),
   preferredLocations: z.array(z.string()).optional(),
-  portfolioUrl: z.string().url().or(z.literal("")).optional(),
-  githubUrl: z.string().url().or(z.literal("")).optional(),
+  portfolioUrl: z.string().url().or(z.literal("")).optional().nullable(),
+  githubUrl: z.string().url().or(z.literal("")).optional().nullable(),
   availability: z
     .enum(["NOT_SPECIFIED", "OPEN_TO_WORK", "NOT_LOOKING", "OPEN_TO_FREELANCE"])
     .optional(),
   preferredWorkType: z
     .enum(["NOT_SPECIFIED", "REMOTE", "HYBRID", "ONSITE"])
     .optional(),
-  salaryExpectation: z.string().max(100).or(z.literal("")).optional(),
+  salaryExpectation: z.string().max(100).or(z.literal("")).optional().nullable(),
 });
 
 export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;

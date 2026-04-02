@@ -10,6 +10,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+function getSafeReturnTo(returnTo: string | null, fallback: string): string {
+  if (returnTo && returnTo.startsWith("/") && !returnTo.startsWith("//")) {
+    return returnTo;
+  }
+  return fallback;
+}
+
 export function LoginForm() {
   const t = useTranslations("auth");
   const router = useRouter();
@@ -38,7 +45,7 @@ export function LoginForm() {
         return;
       }
 
-      router.push(returnTo || "/discover");
+      router.push(getSafeReturnTo(returnTo, "/discover"));
     } finally {
       setIsLoading(false);
     }

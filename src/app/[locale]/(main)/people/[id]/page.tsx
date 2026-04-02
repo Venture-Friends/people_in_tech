@@ -65,7 +65,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${user.name} | Hiring Partners`,
+    title: `${user.name} | People in Tech`,
     description: user.publicTitle || undefined,
   };
 }

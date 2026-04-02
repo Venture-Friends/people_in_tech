@@ -12,7 +12,7 @@ interface NewsletterProps {
 
 export const Newsletter = ({ content, unsubscribeUrl }: NewsletterProps) => {
   return (
-    <Layout previewText="Hiring Partners Newsletter" unsubscribeUrl={unsubscribeUrl}>
+    <Layout previewText="People in Tech Newsletter" unsubscribeUrl={unsubscribeUrl}>
       <Heading
         as="h1"
         style={{
