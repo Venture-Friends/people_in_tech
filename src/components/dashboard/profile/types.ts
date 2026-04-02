@@ -55,6 +55,9 @@ export interface ProfileFormData {
   availability: string;
   preferredWorkType: string;
   salaryExpectation: string;
+  emailDigest: boolean;
+  emailEvents: boolean;
+  emailNewsletter: boolean;
 }
 
 export interface FullProfileData extends ProfileFormData {

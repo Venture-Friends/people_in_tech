@@ -6,7 +6,6 @@ import { getActiveContext } from "@/lib/context";
 import { DashboardClient } from "@/components/dashboard/candidate/dashboard-client";
 import type { CompanyCardData } from "@/components/shared/company-card";
 import type { SavedJobData } from "@/components/dashboard/candidate/saved-jobs";
-import type { ProfileData } from "@/components/dashboard/candidate/profile-settings";
 import type { AlertItem } from "@/components/dashboard/candidate/alerts-tab";
 import type { SavedEventData } from "@/components/dashboard/candidate/saved-events-tab";
 
@@ -219,27 +218,11 @@ export default async function CandidateDashboardPage({
     alertsCount = alerts.filter((a) => a.isNew).length;
   }
 
-  // Build profile data
-  const profile: ProfileData = {
-    name: user?.name || "",
-    headline: candidateProfile?.headline || "",
-    linkedinUrl: user?.linkedinUrl || "",
-    experienceLevel: candidateProfile?.experienceLevel || "STUDENT",
-    skills: candidateProfile ? JSON.parse(candidateProfile.skills) : [],
-    roleInterests: candidateProfile ? JSON.parse(candidateProfile.roleInterests) : [],
-    industries: candidateProfile ? JSON.parse(candidateProfile.industries) : [],
-    preferredLocations: candidateProfile ? JSON.parse(candidateProfile.preferredLocations) : [],
-    emailDigest: candidateProfile?.emailDigest ?? true,
-    emailEvents: candidateProfile?.emailEvents ?? true,
-    emailNewsletter: candidateProfile?.emailNewsletter ?? false,
-  };
-
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
       <DashboardClient
         companies={companies}
         savedJobs={savedJobsData}
-        profile={profile}
         alerts={alerts}
         savedEvents={savedEventsData}
         userName={user?.name || undefined}

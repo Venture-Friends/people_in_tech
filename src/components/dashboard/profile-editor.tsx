@@ -1,9 +1,21 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import {
   Loader2,
@@ -12,6 +24,7 @@ import {
   Camera,
   Eye,
   Pencil,
+  Trash2,
 } from "lucide-react";
 
 import type {
@@ -55,6 +68,9 @@ const defaultFormValues: ProfileFormData = {
   availability: "NOT_SPECIFIED",
   preferredWorkType: "NOT_SPECIFIED",
   salaryExpectation: "",
+  emailDigest: true,
+  emailEvents: true,
+  emailNewsletter: false,
 };
 
 export function ProfileEditor() {
@@ -63,8 +79,11 @@ export function ProfileEditor() {
   const [uploading, setUploading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>("edit");
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { data: session } = authClient.useSession();
+  const router = useRouter();
 
   // Relation data (managed outside react-hook-form)
   const [workExperiences, setWorkExperiences] = useState<WorkExperienceEntry[]>([]);
@@ -86,6 +105,9 @@ export function ProfileEditor() {
   });
 
   const avatarUrl = watch("avatarUrl");
+  const emailDigest = watch("emailDigest");
+  const emailEvents = watch("emailEvents");
+  const emailNewsletter = watch("emailNewsletter");
 
   useEffect(() => {
     async function fetchProfile() {
@@ -116,6 +138,9 @@ export function ProfileEditor() {
           availability: cp?.availability || "NOT_SPECIFIED",
           preferredWorkType: cp?.preferredWorkType || "NOT_SPECIFIED",
           salaryExpectation: cp?.salaryExpectation || "",
+          emailDigest: cp?.emailDigest ?? true,
+          emailEvents: cp?.emailEvents ?? true,
+          emailNewsletter: cp?.emailNewsletter ?? false,
         });
 
         // Relation data
@@ -217,6 +242,25 @@ export function ProfileEditor() {
       );
     } finally {
       setUploading(false);
+    }
+  }
+
+  async function handleDeleteAccount() {
+    setDeleting(true);
+    try {
+      const res = await fetch("/api/candidate/profile", { method: "DELETE" });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Failed to delete account");
+      }
+      await authClient.signOut();
+      router.push("/login");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to delete account"
+      );
+      setDeleting(false);
+      setDeleteOpen(false);
     }
   }
 
@@ -403,6 +447,96 @@ export function ProfileEditor() {
               userId={userId}
               isAdmin={isAdmin}
             />
+          </section>
+
+          {/* ── Account ────────────────────────────────────────────── */}
+          <section className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-6 space-y-6">
+            <h3 className="text-sm font-medium text-white/50 uppercase tracking-widest">Account</h3>
+
+            {/* Email Notifications */}
+            <div className="space-y-4">
+              <p className="text-sm font-medium text-white/70">Email Notifications</p>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="emailDigest" className="flex flex-col gap-0.5 cursor-pointer">
+                    <span className="text-sm text-white/70">Weekly Digest</span>
+                    <span className="text-xs text-white/30">A summary of new jobs and companies each week</span>
+                  </Label>
+                  <Switch
+                    id="emailDigest"
+                    checked={emailDigest}
+                    onCheckedChange={(checked) => setValue("emailDigest", checked, { shouldDirty: true })}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="emailEvents" className="flex flex-col gap-0.5 cursor-pointer">
+                    <span className="text-sm text-white/70">Event Announcements</span>
+                    <span className="text-xs text-white/30">Notifications about upcoming tech events</span>
+                  </Label>
+                  <Switch
+                    id="emailEvents"
+                    checked={emailEvents}
+                    onCheckedChange={(checked) => setValue("emailEvents", checked, { shouldDirty: true })}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="emailNewsletter" className="flex flex-col gap-0.5 cursor-pointer">
+                    <span className="text-sm text-white/70">Community Newsletter</span>
+                    <span className="text-xs text-white/30">Stories and updates from the Greek tech community</span>
+                  </Label>
+                  <Switch
+                    id="emailNewsletter"
+                    checked={emailNewsletter}
+                    onCheckedChange={(checked) => setValue("emailNewsletter", checked, { shouldDirty: true })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Danger zone */}
+            <div className="rounded-xl border border-red-500/[0.12] bg-red-500/[0.04] p-4 space-y-3">
+              <p className="text-sm font-medium text-red-400/70">Danger Zone</p>
+              <p className="text-xs text-white/30">Permanently delete your account and all associated data. This action cannot be undone.</p>
+              <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+                <DialogTrigger
+                  className="flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/[0.06] px-3 py-2 text-xs font-medium text-red-400/70 transition-colors hover:bg-red-500/[0.12] hover:text-red-400"
+                >
+                  <Trash2 className="size-3.5" />
+                  Delete Account
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Delete Account</DialogTitle>
+                    <DialogDescription>
+                      Are you sure you want to permanently delete your account? All your data, saved jobs, companies, and profile information will be removed. This cannot be undone.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setDeleteOpen(false)}
+                      disabled={deleting}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      onClick={handleDeleteAccount}
+                      disabled={deleting}
+                    >
+                      {deleting ? (
+                        <Loader2 className="mr-2 size-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="mr-2 size-4" />
+                      )}
+                      Delete Account
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
           </section>
 
           {/* Save button */}

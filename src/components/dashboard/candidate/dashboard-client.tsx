@@ -3,17 +3,16 @@
 import { useState } from "react";
 import { FollowedCompanies } from "./followed-companies";
 import { SavedJobs, type SavedJobData } from "./saved-jobs";
-import { ProfileSettings, type ProfileData } from "./profile-settings";
 import { AlertsTab, type AlertItem } from "./alerts-tab";
 import { SavedEventsTab, type SavedEventData } from "./saved-events-tab";
 import { type CompanyCardData } from "@/components/shared/company-card";
-import { Heart, Bookmark, Bell, Calendar, Settings } from "lucide-react";
+import { Heart, Bookmark, Bell, Calendar, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Link } from "@/i18n/navigation";
 
 interface DashboardClientProps {
   companies: (CompanyCardData & { id: string })[];
   savedJobs: SavedJobData[];
-  profile: ProfileData;
   alerts?: AlertItem[];
   savedEvents?: SavedEventData[];
   userName?: string;
@@ -26,13 +25,11 @@ const TABS = [
   { value: "saved-jobs", label: "Saved Jobs", icon: Bookmark },
   { value: "alerts", label: "Alerts", icon: Bell },
   { value: "saved-events", label: "Saved Events", icon: Calendar },
-  { value: "settings", label: "Settings", icon: Settings },
 ] as const;
 
 export function DashboardClient({
   companies,
   savedJobs,
-  profile,
   alerts: initialAlerts = [],
   savedEvents = [],
   userName,
@@ -59,10 +56,21 @@ export function DashboardClient({
   return (
     <div>
       {/* Welcome header */}
-      <h1 className="font-display text-[42px] font-bold tracking-[-0.03em] text-foreground">
-        Dashboard
-      </h1>
-      <p className="mt-1 text-[15px] text-white/[0.35]">{userName ? `Welcome back, ${userName}` : "Welcome back"}</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="font-display text-[42px] font-bold tracking-[-0.03em] text-foreground">
+            Dashboard
+          </h1>
+          <p className="mt-1 text-[15px] text-white/[0.35]">{userName ? `Welcome back, ${userName}` : "Welcome back"}</p>
+        </div>
+        <Link
+          href="/dashboard/profile"
+          className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-2.5 text-sm font-medium text-white/60 transition-colors hover:bg-white/[0.06] hover:text-white"
+        >
+          <Pencil className="size-4" />
+          Edit Profile
+        </Link>
+      </div>
 
       {/* Stats row */}
       <div className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -131,10 +139,6 @@ export function DashboardClient({
 
       {activeTab === "saved-events" && (
         <SavedEventsTab events={savedEvents} />
-      )}
-
-      {activeTab === "settings" && (
-        <ProfileSettings profile={profile} />
       )}
     </div>
   );
