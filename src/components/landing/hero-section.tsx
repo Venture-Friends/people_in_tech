@@ -23,7 +23,7 @@ export function HeroSection({ stats }: HeroSectionProps) {
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center text-center">
           <h1 className="font-display text-4xl font-bold tracking-[-0.04em] text-foreground leading-[1.02] md:text-5xl lg:text-[76px]">
-            Greece&apos;s Tech
+            Your Next Role
             <br />
             <span className="text-white/[0.18]">Starts Here.</span>
           </h1>
@@ -35,7 +35,7 @@ export function HeroSection({ stats }: HeroSectionProps) {
           {/* Search bar */}
           <Link href="/discover" className="mt-8 flex w-full max-w-[540px] items-center gap-3 rounded-[14px] border border-white/[0.07] bg-white/[0.03] px-4 py-3 backdrop-blur-[12px] transition-colors hover:border-white/[0.12] hover:bg-white/[0.05]">
             <Search className="size-5 text-white/30" />
-            <span className="flex-1 text-[15px] text-white/25">Search companies, roles, events...</span>
+            <span className="flex-1 text-[15px] text-white/25">Search companies, roles, or skills...</span>
             <kbd className="hidden rounded-md border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-white/30 sm:inline-block">⌘K</kbd>
           </Link>
 

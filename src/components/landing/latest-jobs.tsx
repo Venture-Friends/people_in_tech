@@ -14,7 +14,7 @@ export function LatestJobs({ jobs }: LatestJobsProps) {
   return (
     <section className="w-full py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeader title="Latest Jobs" href="/jobs" />
+        <SectionHeader title="Latest Roles" href="/jobs" />
         <div className="flex flex-col gap-3">
           {jobs.map((job) => (
             <JobCard key={job.id} job={job} />
