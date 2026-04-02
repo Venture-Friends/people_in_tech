@@ -32,7 +32,7 @@ export function AuthGate({
             href={`/register?returnTo=${encodeURIComponent(pathname)}`}
             className="mt-6 inline-flex h-10 items-center justify-center rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Get Started for Free
+            Get Started
           </Link>
           <p className="mt-3 text-xs text-white/20">
             Already have an account?{" "}
