@@ -11,6 +11,7 @@ export interface Filters {
   size: string;
   hasRoles: boolean;
   verified: boolean;
+  vcFunded: boolean;
 }
 
 interface FilterBarProps {
@@ -47,7 +48,7 @@ export function FilterBar({ filters, onFilterChange, industries }: FilterBarProp
 
   const activeCount = [
     filters.industry, filters.location, filters.size,
-    filters.hasRoles, filters.verified,
+    filters.hasRoles, filters.verified, filters.vcFunded,
   ].filter(Boolean).length;
 
   function chipClass(active: boolean) {
@@ -179,6 +180,16 @@ export function FilterBar({ filters, onFilterChange, industries }: FilterBarProp
           }
         >
           {t("filterVerified")}
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className={chipClass(filters.vcFunded)}
+          onClick={() =>
+            onFilterChange({ ...filters, vcFunded: !filters.vcFunded })
+          }
+        >
+          VC Funded
         </Button>
       </div>
     </div>}
