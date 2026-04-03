@@ -191,15 +191,15 @@ export function CompanyHero({
 
         {/* Status / Claim section */}
         <div className="mt-4">
-          {status === "CLAIMED" || userHasPendingClaim ? (
+          {userHasPendingClaim ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-white/[0.04] border border-white/[0.06] px-3 py-1 text-xs text-white/40">
               <Clock className="size-3" />
               {t("claimPending")}
             </span>
-          ) : status !== "VERIFIED" ? (
+          ) : status === "VERIFIED" ? null : (
             <div className="flex items-center gap-2">
               <span className="rounded-full bg-white/[0.04] border border-white/[0.06] px-3 py-1 text-xs text-white/40">
-                Auto-generated profile
+                {status === "CLAIMED" ? "Claim in review" : "Auto-generated profile"}
               </span>
               <Button
                 variant="link"
@@ -211,7 +211,7 @@ export function CompanyHero({
                 <ArrowRight className="size-3.5" />
               </Button>
             </div>
-          ) : null}
+          )}
         </div>
       </div>
 
