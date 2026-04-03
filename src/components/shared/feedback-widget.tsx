@@ -96,6 +96,7 @@ function FeedbackWidgetInner() {
   };
 
   const handleOverlayMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent native drag/selection so mousemove fires during draw
     const [x, y] = getPos(e);
 
     // If currently editing a pin comment, submit it first
@@ -280,7 +281,7 @@ function FeedbackWidgetInner() {
       {/* Transparent overlay for capturing mouse events */}
       <div
         className="fixed inset-0 z-[100]"
-        style={{ cursor: mode === "pin" ? "crosshair" : "default" }}
+        style={{ cursor: "crosshair" }}
         onMouseDown={handleOverlayMouseDown}
         onMouseMove={handleOverlayMouseMove}
         onMouseUp={handleOverlayMouseUp}
