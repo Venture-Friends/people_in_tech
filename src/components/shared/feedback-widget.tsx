@@ -117,20 +117,20 @@ function FeedbackWidgetInner() {
     const onMouseUp = () => {
       if (modeRef.current !== "draw" || !isDrawing.current) return;
       isDrawing.current = false;
-      if (currentStrokePoints.current.length >= 2) {
+      // Capture points BEFORE clearing the ref — the setAnnotations callback
+      // executes later (React batching), so the ref would be empty by then.
+      const capturedPoints: [number, number][] = [...currentStrokePoints.current];
+      currentStrokePoints.current = [];
+      setLiveStroke(null);
+      if (capturedPoints.length >= 2) {
         setAnnotations((prev) => [
           ...prev,
           {
             type: "stroke",
-            stroke: {
-              points: [...currentStrokePoints.current],
-              color: "#ef4444",
-            },
+            stroke: { points: capturedPoints, color: "#ef4444" },
           },
         ]);
       }
-      currentStrokePoints.current = [];
-      setLiveStroke(null);
     };
 
     document.addEventListener("mousemove", onMouseMove);
