@@ -149,6 +149,7 @@ model Company {
   technologies String   @default("[]")
   careersUrl   String?
   status       String   @default("AUTO_GENERATED")
+  contactInfo  Json?
   featured     Boolean  @default(false)
   vcFunded     Boolean  @default(false)
   createdAt    DateTime @default(now())

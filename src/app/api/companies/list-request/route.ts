@@ -29,6 +29,13 @@ export async function POST(request: NextRequest) {
         website: website || null,
         industry: "Other",
         status: "PENDING",
+        contactInfo: {
+          name: session?.user?.name || contactEmail.split("@")[0],
+          email: contactEmail,
+          phone: contactPhone || null,
+          role: yourRole,
+          message: message || null,
+        },
       },
     });
 
