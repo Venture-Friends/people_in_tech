@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 import { getSession } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
+import { uploadFile } from "@/lib/upload";
 
 const ALLOWED_TYPES = [
   "application/pdf",
@@ -42,20 +41,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const ext =
-      path.extname(file.name).toLowerCase() ||
-      (file.type === "application/pdf" ? ".pdf" : ".docx");
-    const timestamp = Date.now();
-    const filename = `${session.user.id}-${timestamp}${ext}`;
-
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "cvs");
-    await mkdir(uploadDir, { recursive: true });
-
-    const filePath = path.join(uploadDir, filename);
+    const ext = file.type === "application/pdf" ? "pdf" : "docx";
+    const filename = `${session.user.id}-${Date.now()}.${ext}`;
     const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(filePath, buffer);
 
-    const cvUrl = `/uploads/cvs/${filename}`;
+    const cvUrl = await uploadFile(buffer, `cvs/${filename}`, file.type);
 
     // Persist the URL on CandidateProfile
     await prisma.candidateProfile.upsert({

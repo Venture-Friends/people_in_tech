@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 import { getSession } from "@/lib/auth-session";
 import { parseFileToCV } from "@/lib/cv-parser";
+import { uploadFile } from "@/lib/upload";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 const ALLOWED_TYPES = [
@@ -40,21 +39,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
+    const buffer = Buffer.from(await file.arrayBuffer());
     const parsed = await parseFileToCV(buffer, file.type);
 
-    // Save file to disk
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "cvs");
-    await mkdir(uploadDir, { recursive: true });
-
     const ext = file.name.split(".").pop() || "pdf";
-    const fileName = `${session.user.id}-${Date.now()}.${ext}`;
-    const filePath = path.join(uploadDir, fileName);
-    await writeFile(filePath, buffer);
-
-    const cvUrl = `/uploads/cvs/${fileName}`;
+    const filename = `${session.user.id}-${Date.now()}.${ext}`;
+    const cvUrl = await uploadFile(buffer, `cvs/${filename}`, file.type);
 
     return NextResponse.json({ success: true, data: parsed, cvUrl });
   } catch (error) {

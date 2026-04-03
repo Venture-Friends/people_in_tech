@@ -232,7 +232,7 @@ function FeedbackWidgetInner() {
       const data = await res.json();
 
       if (data.success) {
-        toast.success(`Feedback #${data.id} saved`);
+        toast.success("Feedback saved");
       } else {
         toast.error("Failed to save feedback");
       }
