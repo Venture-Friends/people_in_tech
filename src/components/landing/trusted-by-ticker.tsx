@@ -1,3 +1,5 @@
+"use client";
+
 import { Link } from "@/i18n/navigation";
 
 interface LogoItem {
@@ -21,7 +23,7 @@ function LogoLink({ company }: { company: LogoItem }) {
   );
 
   const className =
-    "shrink-0 px-6 py-4 transition-all duration-300 opacity-50 hover:opacity-100 hover:scale-105";
+    "shrink-0 px-8 py-4 transition-all duration-300 opacity-50 hover:opacity-100 hover:scale-105";
 
   if (company.url) {
     return (
@@ -50,20 +52,25 @@ function LogoLink({ company }: { company: LogoItem }) {
 export function TrustedByTicker({ logos }: TrustedByTickerProps) {
   if (!logos || logos.length === 0) return null;
 
+  // Repeat logos enough times so the strip is wider than the viewport
+  // to create a seamless scroll. Minimum 8 items per set.
+  const repeatCount = Math.max(1, Math.ceil(8 / logos.length));
+  const set = Array.from({ length: repeatCount }, () => logos).flat();
+
   return (
-    <section className="py-10">
+    <section className="w-full py-10">
       <p className="text-center text-xs font-medium uppercase tracking-[0.2em] text-white/20 mb-8">
         Trusted by
       </p>
       <div
-        className="overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_12%,white_88%,transparent)]"
+        className="group w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_12%,white_88%,transparent)]"
       >
-        <div className="flex w-max items-center gap-16 animate-marquee hover:[animation-play-state:paused]">
-          {logos.map((company, i) => (
-            <LogoLink key={`a-${company.name}-${i}`} company={company} />
+        <div className="flex w-max items-center gap-16 animate-marquee group-hover:[animation-play-state:paused]">
+          {set.map((company, i) => (
+            <LogoLink key={`a-${i}`} company={company} />
           ))}
-          {logos.map((company, i) => (
-            <LogoLink key={`b-${company.name}-${i}`} company={company} />
+          {set.map((company, i) => (
+            <LogoLink key={`b-${i}`} company={company} />
           ))}
         </div>
       </div>
