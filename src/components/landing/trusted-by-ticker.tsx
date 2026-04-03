@@ -49,37 +49,35 @@ function LogoLink({ company }: { company: LogoItem }) {
   return <span className={className}>{logoEl}</span>;
 }
 
-const MIN_LOGOS_FOR_MARQUEE = 5;
-
 export function TrustedByTicker({ logos }: TrustedByTickerProps) {
   if (!logos || logos.length === 0) return null;
 
-  const useMarquee = logos.length >= MIN_LOGOS_FOR_MARQUEE;
+  // Build a set with enough items to fill the viewport for seamless looping.
+  // Keep gap tight so logos reappear quickly when there are few.
+  const repeatCount = Math.max(2, Math.ceil(10 / logos.length));
+  const set = Array.from({ length: repeatCount }, () => logos).flat();
+
+  // Faster speed for fewer logos so you don't wait long between appearances
+  const duration = Math.max(10, logos.length * 4);
 
   return (
     <section className="w-full py-10">
       <p className="text-center text-xs font-medium uppercase tracking-[0.2em] text-white/20 mb-8">
         Trusted by
       </p>
-
-      {useMarquee ? (
-        <div className="group w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_12%,white_88%,transparent)]">
-          <div className="flex w-max items-center gap-16 animate-marquee group-hover:[animation-play-state:paused]">
-            {logos.map((company, i) => (
-              <LogoLink key={`a-${i}`} company={company} />
-            ))}
-            {logos.map((company, i) => (
-              <LogoLink key={`b-${i}`} company={company} />
-            ))}
-          </div>
-        </div>
-      ) : (
-        <div className="flex items-center justify-center gap-12 sm:gap-16 flex-wrap px-8">
-          {logos.map((company, i) => (
-            <LogoLink key={i} company={company} />
+      <div className="group w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_12%,white_88%,transparent)]">
+        <div
+          className="flex w-max items-center gap-10 animate-marquee group-hover:[animation-play-state:paused]"
+          style={{ animationDuration: `${duration}s` }}
+        >
+          {set.map((company, i) => (
+            <LogoLink key={`a-${i}`} company={company} />
+          ))}
+          {set.map((company, i) => (
+            <LogoLink key={`b-${i}`} company={company} />
           ))}
         </div>
-      )}
+      </div>
     </section>
   );
 }
