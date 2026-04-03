@@ -12,6 +12,7 @@ import {
   MessageSquare,
   Clock,
   CheckCircle,
+  ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -23,13 +24,14 @@ type ClaimStatus = "PENDING" | "APPROVED" | "REJECTED" | "ALL";
 
 interface Claim {
   id: string;
+  source: "claim" | "pending";
   companyId: string;
   companyName: string;
   companySlug: string;
   companyIndustry: string;
-  userId: string;
-  userName: string;
-  userEmail: string;
+  userId: string | null;
+  userName: string | null;
+  userEmail: string | null;
   fullName: string;
   jobTitle: string;
   workEmail: string;
@@ -98,6 +100,33 @@ export function ClaimsQueue({ onClaimProcessed }: { onClaimProcessed?: () => voi
   };
 
   const handleReject = async (claim: Claim) => {
+    if (claim.source === "pending") {
+      // For pending-source claims, dismiss via DELETE
+      const realId = claim.id.replace("pending-", "");
+      setProcessingId(claim.id);
+      try {
+        const res = await fetch(`/api/admin/pending-claims/${realId}`, {
+          method: "DELETE",
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          toast.error(data.error || "Failed to dismiss pending claim");
+          return;
+        }
+
+        toast.success(`Pending claim for ${claim.companyName} dismissed.`);
+        setClaims((prev) => prev.filter((c) => c.id !== claim.id));
+        setShowRejectInput(null);
+        onClaimProcessed?.();
+      } catch {
+        toast.error("Failed to dismiss pending claim");
+      } finally {
+        setProcessingId(null);
+      }
+      return;
+    }
+
     const note = reviewNotes[claim.id];
     if (!note || note.trim().length === 0) {
       toast.error("A reason is required when rejecting a claim");
@@ -203,7 +232,15 @@ export function ClaimsQueue({ onClaimProcessed }: { onClaimProcessed?: () => voi
                 <div>
                   <h3 className="font-display text-base font-semibold text-foreground flex items-center gap-2">
                     <Building2 className="size-4 text-primary" />
-                    {claim.companyName}
+                    <a
+                      href={"/companies/" + claim.companySlug}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-primary transition-colors inline-flex items-center gap-1"
+                    >
+                      {claim.companyName}
+                      <ExternalLink className="size-3 text-white/20" />
+                    </a>
                   </h3>
                   <div className="flex items-center gap-2 mt-1">
                     <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium bg-white/[0.05] text-white/[0.35]">
@@ -215,17 +252,24 @@ export function ClaimsQueue({ onClaimProcessed }: { onClaimProcessed?: () => voi
                     </span>
                   </div>
                 </div>
-                <span
-                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium border ${
-                    claim.status === "APPROVED"
-                      ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
-                      : claim.status === "REJECTED"
-                        ? "bg-red-500/20 text-red-400 border-red-500/30"
-                        : "bg-amber-500/20 text-amber-400 border-amber-500/30"
-                  }`}
-                >
-                  {claim.status}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium border ${
+                      claim.status === "APPROVED"
+                        ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+                        : claim.status === "REJECTED"
+                          ? "bg-red-500/20 text-red-400 border-red-500/30"
+                          : "bg-amber-500/20 text-amber-400 border-amber-500/30"
+                    }`}
+                  >
+                    {claim.status}
+                  </span>
+                  {claim.source === "pending" && (
+                    <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium border bg-violet-500/20 text-violet-400 border-violet-500/30">
+                      Email unverified
+                    </span>
+                  )}
+                </div>
               </div>
 
               <div className="h-px bg-white/[0.04] my-3" />
@@ -279,9 +323,11 @@ export function ClaimsQueue({ onClaimProcessed }: { onClaimProcessed?: () => voi
                 </div>
               )}
 
-              <div className="mt-3 text-xs text-white/30">
-                Account: {claim.userName} ({claim.userEmail})
-              </div>
+              {claim.userName && (
+                <div className="mt-3 text-xs text-white/30">
+                  Account: {claim.userName} ({claim.userEmail})
+                </div>
+              )}
 
               <div className="h-px bg-white/[0.04] my-3" />
 
@@ -323,7 +369,7 @@ export function ClaimsQueue({ onClaimProcessed }: { onClaimProcessed?: () => voi
               ) : (
                 <>
                   {/* Review note input (shown for reject or optionally for approve) */}
-                  {showRejectInput === claim.id && (
+                  {showRejectInput === claim.id && claim.source !== "pending" && (
                     <div className="mb-3 space-y-1.5">
                       <Label htmlFor={`note-${claim.id}`} className="text-white/[0.35] text-xs">
                         Rejection Reason <span className="text-red-400">*</span>
@@ -349,13 +395,23 @@ export function ClaimsQueue({ onClaimProcessed }: { onClaimProcessed?: () => voi
                       size="sm"
                       className="bg-primary text-primary-foreground rounded-lg"
                       onClick={() => handleApprove(claim)}
-                      disabled={processingId === claim.id}
+                      disabled={processingId === claim.id || claim.source === "pending"}
                     >
                       <CheckCircle2 className="size-4 mr-1" />
                       Approve
                     </Button>
 
-                    {showRejectInput === claim.id ? (
+                    {claim.source === "pending" ? (
+                      <Button
+                        size="sm"
+                        className="border border-red-400/30 text-red-400 hover:bg-red-400/10 rounded-lg bg-transparent"
+                        onClick={() => handleReject(claim)}
+                        disabled={processingId === claim.id}
+                      >
+                        <XCircle className="size-4 mr-1" />
+                        Dismiss
+                      </Button>
+                    ) : showRejectInput === claim.id ? (
                       <>
                         <Button
                           size="sm"
