@@ -16,6 +16,7 @@ export interface CompanyCardData {
   size?: string;
   featured?: boolean;
   vcFunded?: boolean;
+  representative?: { name: string; title: string } | null;
 }
 
 function parseLocations(locationsJson: string): string[] {
@@ -78,7 +79,7 @@ export function CompanyCard({ company }: { company: CompanyCardData }) {
               <span className="truncate text-[15px] font-semibold text-foreground">
                 {company.name}
               </span>
-              {company.status === "VERIFIED" && (
+              {company.status === "VERIFIED" && company.representative && (
                 <svg className="size-4 shrink-0 text-primary" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
                 </svg>
@@ -115,6 +116,23 @@ export function CompanyCard({ company }: { company: CompanyCardData }) {
                 {tech}
               </span>
             ))}
+          </div>
+        )}
+
+        {/* Representative */}
+        {company.representative && (
+          <div className="mt-3 flex items-center gap-2">
+            <div className={`flex size-5 items-center justify-center rounded-full text-[10px] font-bold ${
+              company.status === "VERIFIED"
+                ? "bg-emerald-500/20 text-emerald-400"
+                : "bg-amber-500/20 text-amber-400"
+            }`}>
+              {company.representative.name.charAt(0)}
+            </div>
+            <span className="text-[11px] text-white/40">
+              <span className="text-white/60">{company.representative.name}</span>
+              {" · "}{company.representative.title}
+            </span>
           </div>
         )}
 

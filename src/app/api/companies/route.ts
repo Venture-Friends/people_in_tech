@@ -95,6 +95,12 @@ export async function GET(request: NextRequest) {
               },
             },
           },
+          claims: {
+            where: { status: "APPROVED" },
+            orderBy: { createdAt: "desc" },
+            take: 1,
+            select: { fullName: true, jobTitle: true },
+          },
         },
       }),
       prisma.company.count({ where }),
@@ -114,6 +120,11 @@ export async function GET(request: NextRequest) {
       jobCount: c._count.jobs,
       featured: c.featured,
       vcFunded: c.vcFunded,
+      representative: c.claims[0]
+        ? { name: c.claims[0].fullName, title: c.claims[0].jobTitle }
+        : c.contactInfo && typeof c.contactInfo === "object" && "name" in (c.contactInfo as Record<string, unknown>)
+          ? { name: (c.contactInfo as Record<string, string>).name, title: (c.contactInfo as Record<string, string>).role || "Representative" }
+          : null,
     }));
 
     return NextResponse.json({ companies: mapped, total });
