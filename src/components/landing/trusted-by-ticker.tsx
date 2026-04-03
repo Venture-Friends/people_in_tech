@@ -49,31 +49,37 @@ function LogoLink({ company }: { company: LogoItem }) {
   return <span className={className}>{logoEl}</span>;
 }
 
+const MIN_LOGOS_FOR_MARQUEE = 5;
+
 export function TrustedByTicker({ logos }: TrustedByTickerProps) {
   if (!logos || logos.length === 0) return null;
 
-  // Repeat logos enough times so the strip is wider than the viewport
-  // to create a seamless scroll. Minimum 8 items per set.
-  const repeatCount = Math.max(1, Math.ceil(8 / logos.length));
-  const set = Array.from({ length: repeatCount }, () => logos).flat();
+  const useMarquee = logos.length >= MIN_LOGOS_FOR_MARQUEE;
 
   return (
     <section className="w-full py-10">
       <p className="text-center text-xs font-medium uppercase tracking-[0.2em] text-white/20 mb-8">
         Trusted by
       </p>
-      <div
-        className="group w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_12%,white_88%,transparent)]"
-      >
-        <div className="flex w-max items-center gap-16 animate-marquee group-hover:[animation-play-state:paused]">
-          {set.map((company, i) => (
-            <LogoLink key={`a-${i}`} company={company} />
-          ))}
-          {set.map((company, i) => (
-            <LogoLink key={`b-${i}`} company={company} />
+
+      {useMarquee ? (
+        <div className="group w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_12%,white_88%,transparent)]">
+          <div className="flex w-max items-center gap-16 animate-marquee group-hover:[animation-play-state:paused]">
+            {logos.map((company, i) => (
+              <LogoLink key={`a-${i}`} company={company} />
+            ))}
+            {logos.map((company, i) => (
+              <LogoLink key={`b-${i}`} company={company} />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="flex items-center justify-center gap-12 sm:gap-16 flex-wrap px-8">
+          {logos.map((company, i) => (
+            <LogoLink key={i} company={company} />
           ))}
         </div>
-      </div>
+      )}
     </section>
   );
 }
