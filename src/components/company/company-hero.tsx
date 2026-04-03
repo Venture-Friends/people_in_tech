@@ -31,6 +31,12 @@ interface CompanyHeroProps {
   initialFollowed: boolean;
   followerCount: number;
   userHasPendingClaim?: boolean;
+  representativeClaim?: {
+    fullName: string;
+    jobTitle: string;
+    linkedinUrl: string | null;
+    status: string;
+  } | null;
 }
 
 const SIZE_LABELS: Record<string, string> = {
@@ -56,6 +62,7 @@ export function CompanyHero({
   initialFollowed,
   followerCount,
   userHasPendingClaim = false,
+  representativeClaim,
 }: CompanyHeroProps) {
   const t = useTranslations("company");
   const [claimModalOpen, setClaimModalOpen] = useState(false);
@@ -213,6 +220,38 @@ export function CompanyHero({
             </div>
           )}
         </div>
+
+        {/* Representative info for VERIFIED companies */}
+        {representativeClaim && status === "VERIFIED" && (
+          <div className="mt-3 flex items-center gap-2 rounded-lg bg-emerald-500/[0.06] border border-emerald-500/[0.12] px-3 py-2">
+            <div className="flex size-7 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold">
+              {representativeClaim.fullName.charAt(0)}
+            </div>
+            <div className="text-sm">
+              <span className="font-medium text-emerald-400">{representativeClaim.fullName}</span>
+              <span className="text-white/30"> · {representativeClaim.jobTitle}</span>
+            </div>
+            {representativeClaim.linkedinUrl && (
+              <a href={representativeClaim.linkedinUrl} target="_blank" rel="noopener noreferrer" className="ml-auto text-white/30 hover:text-primary">
+                <Linkedin className="size-4" />
+              </a>
+            )}
+          </div>
+        )}
+
+        {/* Representative info for CLAIMED companies */}
+        {representativeClaim && status === "CLAIMED" && (
+          <div className="mt-2 flex items-center gap-2 rounded-lg bg-amber-500/[0.06] border border-amber-500/[0.12] px-3 py-2">
+            <div className="flex size-7 items-center justify-center rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold">
+              {representativeClaim.fullName.charAt(0)}
+            </div>
+            <div className="text-sm">
+              <span className="font-medium text-amber-400">{representativeClaim.fullName}</span>
+              <span className="text-white/30"> · {representativeClaim.jobTitle}</span>
+              <span className="text-white/20"> (pending verification)</span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Claim modal */}
