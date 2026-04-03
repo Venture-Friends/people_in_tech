@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 import { getSession } from "@/lib/auth-session";
+import { uploadFile } from "@/lib/upload";
 
 const ALLOWED_TYPES = [
   "image/png",
@@ -44,18 +43,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const ext = path.extname(file.name).toLowerCase() || `.${file.type.split("/")[1]}`;
-    const timestamp = Date.now();
-    const filename = `${session.user.id}-${timestamp}${ext}`;
-
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "avatars");
-    await mkdir(uploadDir, { recursive: true });
-
-    const filePath = path.join(uploadDir, filename);
+    const ext = file.name.split(".").pop()?.toLowerCase() || file.type.split("/")[1];
+    const filename = `${session.user.id}-${Date.now()}.${ext}`;
     const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(filePath, buffer);
 
-    const avatarUrl = `/uploads/avatars/${filename}`;
+    const avatarUrl = await uploadFile(buffer, `avatars/${filename}`, file.type);
     return NextResponse.json({ avatarUrl });
   } catch (error) {
     console.error("Upload avatar error:", error);

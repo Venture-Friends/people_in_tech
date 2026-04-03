@@ -7,7 +7,6 @@ export const profileUpdateSchema = z.object({
   avatarUrl: z
     .string()
     .url()
-    .or(z.string().startsWith("/uploads/"))
     .or(z.literal(""))
     .optional(),
   bio: z.string().max(500).optional().nullable(),

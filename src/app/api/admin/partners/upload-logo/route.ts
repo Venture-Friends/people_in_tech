@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 import { getSession } from "@/lib/auth-session";
+import { uploadFile } from "@/lib/upload";
 
 async function requireAdmin() {
   const session = await getSession();
@@ -26,20 +25,6 @@ const ALLOWED_TYPES = [
 ];
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
-
-/**
- * Sanitize filename: remove special characters, keep extension.
- */
-function sanitizeFilename(name: string): string {
-  const ext = path.extname(name).toLowerCase();
-  const base = path
-    .basename(name, ext)
-    .replace(/[^a-zA-Z0-9_-]/g, "_")
-    .replace(/_+/g, "_")
-    .substring(0, 50);
-  const timestamp = Date.now();
-  return `${timestamp}_${base}${ext}`;
-}
 
 export async function POST(request: NextRequest) {
   const auth = await requireAdmin();
@@ -70,17 +55,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const filename = sanitizeFilename(file.name);
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "partners");
-
-    // Ensure directory exists
-    await mkdir(uploadDir, { recursive: true });
-
-    const filePath = path.join(uploadDir, filename);
+    const base = file.name
+      .replace(/\.[^.]+$/, "")
+      .replace(/[^a-zA-Z0-9_-]/g, "_")
+      .replace(/_+/g, "_")
+      .substring(0, 50);
+    const ext = file.name.split(".").pop()?.toLowerCase() || "png";
+    const filename = `${Date.now()}_${base}.${ext}`;
     const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(filePath, buffer);
 
-    const logoUrl = `/uploads/partners/${filename}`;
+    const logoUrl = await uploadFile(buffer, `partners/${filename}`, file.type);
     return NextResponse.json({ logoUrl });
   } catch (error) {
     console.error("Upload logo error:", error);

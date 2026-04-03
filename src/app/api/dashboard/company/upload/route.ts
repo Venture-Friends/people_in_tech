@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCompanyForUser } from "@/lib/company-helpers";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 import { getSession } from "@/lib/auth-session";
+import { uploadFile } from "@/lib/upload";
 
 const ALLOWED_TYPES = [
   "image/png",
@@ -14,17 +13,6 @@ const ALLOWED_TYPES = [
 
 const MAX_LOGO_SIZE = 2 * 1024 * 1024; // 2MB
 const MAX_COVER_SIZE = 5 * 1024 * 1024; // 5MB
-
-function getExtension(mimeType: string): string {
-  const map: Record<string, string> = {
-    "image/png": ".png",
-    "image/jpeg": ".jpg",
-    "image/jpg": ".jpg",
-    "image/svg+xml": ".svg",
-    "image/webp": ".webp",
-  };
-  return map[mimeType] || ".jpg";
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -82,24 +70,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const ext = getExtension(file.type);
-    const timestamp = Date.now();
-    const filename = `${company.id}-${field}-${timestamp}${ext}`;
-    const uploadDir = path.join(
-      process.cwd(),
-      "public",
-      "uploads",
-      "companies"
-    );
-
-    // Ensure directory exists
-    await mkdir(uploadDir, { recursive: true });
-
-    const filePath = path.join(uploadDir, filename);
+    const extMap: Record<string, string> = {
+      "image/png": "png",
+      "image/jpeg": "jpg",
+      "image/jpg": "jpg",
+      "image/svg+xml": "svg",
+      "image/webp": "webp",
+    };
+    const ext = extMap[file.type] || "jpg";
+    const filename = `${company.id}-${field}-${Date.now()}.${ext}`;
     const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(filePath, buffer);
 
-    const url = `/uploads/companies/${filename}`;
+    const url = await uploadFile(buffer, `companies/${filename}`, file.type);
     return NextResponse.json({ url });
   } catch (error) {
     console.error("Company upload error:", error);

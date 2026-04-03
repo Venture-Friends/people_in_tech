@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback, Fragment } from "react";
+import { useState, useEffect, useCallback, useMemo, Fragment } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Play, Pause, Trash2, ExternalLink, Plus, Pencil, Loader2, Users, ChevronDown, ChevronUp } from "lucide-react";
+import { useSortableTable, SortableHead } from "@/components/admin/sortable-header";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -112,6 +113,17 @@ export function JobsTable() {
   const [companies, setCompanies] = useState<CompanyOption[]>([]);
   const [jobForm, setJobForm] = useState(initialJobForm);
   const [submitting, setSubmitting] = useState(false);
+
+  const jobGetters = useMemo(() => ({
+    title: (j: Job) => j.title,
+    company: (j: Job) => j.companyName,
+    location: (j: Job) => j.location,
+    type: (j: Job) => j.type,
+    status: (j: Job) => j.status,
+    posted: (j: Job) => j.postedAt,
+    interested: (j: Job) => j.interestCount,
+  }), []);
+  const { sorted: sortedJobs, sort: jobSort, toggle: toggleJobSort } = useSortableTable(jobs, jobGetters);
 
   // Interested candidates state
   const [expandedJobId, setExpandedJobId] = useState<string | null>(null);
@@ -371,13 +383,13 @@ export function JobsTable() {
           <Table>
             <TableHeader>
               <TableRow className="border-b border-white/[0.04] hover:bg-transparent">
-                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Title</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Company</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Location</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Type</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Status</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Posted</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Interested</TableHead>
+                <SortableHead label="Title" sortKey="title" currentKey={jobSort.key} direction={jobSort.direction} onToggle={toggleJobSort} />
+                <SortableHead label="Company" sortKey="company" currentKey={jobSort.key} direction={jobSort.direction} onToggle={toggleJobSort} />
+                <SortableHead label="Location" sortKey="location" currentKey={jobSort.key} direction={jobSort.direction} onToggle={toggleJobSort} />
+                <SortableHead label="Type" sortKey="type" currentKey={jobSort.key} direction={jobSort.direction} onToggle={toggleJobSort} />
+                <SortableHead label="Status" sortKey="status" currentKey={jobSort.key} direction={jobSort.direction} onToggle={toggleJobSort} />
+                <SortableHead label="Posted" sortKey="posted" currentKey={jobSort.key} direction={jobSort.direction} onToggle={toggleJobSort} />
+                <SortableHead label="Interested" sortKey="interested" currentKey={jobSort.key} direction={jobSort.direction} onToggle={toggleJobSort} />
                 <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02] text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -392,7 +404,7 @@ export function JobsTable() {
                   </TableCell>
                 </TableRow>
               ) : (
-                jobs.map((job) => (
+                sortedJobs.map((job) => (
                   <Fragment key={job.id}>
                   <TableRow
                     className="border-b border-white/[0.04] hover:bg-white/[0.02] cursor-pointer"

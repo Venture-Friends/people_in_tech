@@ -448,3 +448,17 @@ model Verification {
   @@index([identifier])
   @@map("verification")
 }
+
+model Feedback {
+  id             String   @id @default(cuid())
+  pageUrl        String
+  comment        String?
+  pins           String   @default("[]")
+  drawings       String   @default("[]")
+  screenshot     Bytes
+  viewport       String   @default("{}")
+  scrollPosition String   @default("{}")
+  createdAt      DateTime @default(now())
+
+  @@map("feedback")
+}

@@ -1,3 +1,5 @@
+"use client";
+
 import { Link } from "@/i18n/navigation";
 
 interface LogoItem {
@@ -7,80 +9,73 @@ interface LogoItem {
   url?: string;
 }
 
-// Fallback companies when no partners are configured
-const FEATURED_COMPANIES: LogoItem[] = [
-  { name: "Workable", logo: "/logos/workable.svg", slug: "workable" },
-  { name: "Hack The Box", logo: "/logos/hack-the-box.svg", slug: "hack-the-box" },
-  { name: "Skroutz", logo: "/logos/skroutz.svg", slug: "skroutz" },
-];
-
 interface TrustedByTickerProps {
   logos?: LogoItem[];
 }
 
-function LogoSet({ items }: { items: LogoItem[] }) {
-  return (
-    <div className="flex shrink-0 min-w-full items-center justify-around gap-12 sm:gap-16">
-      {items.map((company, i) => {
-        const logoEl = (
-          <img
-            src={company.logo}
-            alt={company.name}
-            className="h-10 sm:h-12 w-auto max-w-[140px] object-contain"
-          />
-        );
-
-        if (company.url) {
-          return (
-            <a
-              key={`${company.name}-${i}`}
-              href={company.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="shrink-0 transition-opacity duration-300 opacity-70 hover:opacity-100"
-            >
-              {logoEl}
-            </a>
-          );
-        }
-
-        if (company.slug) {
-          return (
-            <Link
-              key={`${company.slug}-${i}`}
-              href={`/companies/${company.slug}`}
-              className="shrink-0 transition-opacity duration-300 opacity-70 hover:opacity-100"
-            >
-              {logoEl}
-            </Link>
-          );
-        }
-
-        return (
-          <span key={`${company.name}-${i}`} className="shrink-0 opacity-70">
-            {logoEl}
-          </span>
-        );
-      })}
-    </div>
+function LogoLink({ company }: { company: LogoItem }) {
+  const logoEl = (
+    <img
+      src={company.logo}
+      alt={company.name}
+      className="max-h-10 w-auto object-contain"
+    />
   );
+
+  const className =
+    "shrink-0 px-8 py-4 transition-all duration-300 opacity-50 hover:opacity-100 hover:scale-105";
+
+  if (company.url) {
+    return (
+      <a
+        href={company.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={className}
+      >
+        {logoEl}
+      </a>
+    );
+  }
+
+  if (company.slug) {
+    return (
+      <Link href={`/companies/${company.slug}`} className={className}>
+        {logoEl}
+      </Link>
+    );
+  }
+
+  return <span className={className}>{logoEl}</span>;
 }
 
 export function TrustedByTicker({ logos }: TrustedByTickerProps) {
-  const items = logos && logos.length > 0 ? logos : FEATURED_COMPANIES;
+  if (!logos || logos.length === 0) return null;
+
+  // Build a set with enough items to fill the viewport for seamless looping.
+  // Keep gap tight so logos reappear quickly when there are few.
+  const repeatCount = Math.max(2, Math.ceil(10 / logos.length));
+  const set = Array.from({ length: repeatCount }, () => logos).flat();
+
+  // Faster speed for fewer logos so you don't wait long between appearances
+  const duration = Math.max(10, logos.length * 4);
 
   return (
-    <section className="pt-8 pb-12 overflow-hidden">
+    <section className="w-full py-10">
       <p className="text-center text-xs font-medium uppercase tracking-[0.2em] text-white/20 mb-8">
         Trusted by
       </p>
-      <div
-        className="flex overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"
-        aria-hidden="true"
-      >
-        <div className="flex animate-marquee">
-          <LogoSet items={items} />
-          <LogoSet items={items} />
+      <div className="group w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_12%,white_88%,transparent)]">
+        <div
+          className="flex w-max items-center gap-10 animate-marquee group-hover:[animation-play-state:paused]"
+          style={{ animationDuration: `${duration}s` }}
+        >
+          {set.map((company, i) => (
+            <LogoLink key={`a-${i}`} company={company} />
+          ))}
+          {set.map((company, i) => (
+            <LogoLink key={`b-${i}`} company={company} />
+          ))}
         </div>
       </div>
     </section>

@@ -23,7 +23,7 @@ export function HeroSection({ stats }: HeroSectionProps) {
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center text-center">
           <h1 className="font-display text-4xl font-bold tracking-[-0.04em] text-foreground leading-[1.02] md:text-5xl lg:text-[76px]">
-            Your Next Role
+            Greece&apos;s Tech
             <br />
             <span className="text-white/[0.18]">Starts Here.</span>
           </h1>

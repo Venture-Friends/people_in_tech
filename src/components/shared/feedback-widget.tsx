@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { authClient } from "@/lib/auth-client";
 
 type Mode = "pin" | "draw";
 type State = "idle" | "annotate" | "submitting";
@@ -30,7 +31,10 @@ interface Stroke {
 type Annotation = { type: "pin"; pin: Pin } | { type: "stroke"; stroke: Stroke };
 
 export function FeedbackWidget() {
-  if (process.env.NODE_ENV !== "development") return null;
+  const { data: session } = authClient.useSession();
+  const isAdmin = session?.user?.role === "ADMIN";
+
+  if (process.env.NODE_ENV !== "development" && !isAdmin) return null;
 
   return <FeedbackWidgetInner />;
 }
@@ -42,12 +46,21 @@ function FeedbackWidgetInner() {
   const [editingPinIndex, setEditingPinIndex] = useState<number | null>(null);
   const [pinComment, setPinComment] = useState("");
   const [feedbackComment, setFeedbackComment] = useState("");
+  const [viewportSize, setViewportSize] = useState({ w: 1920, h: 1080 });
 
   const svgRef = useRef<SVGSVGElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const isDrawing = useRef(false);
   const currentStrokePoints = useRef<[number, number][]>([]);
   const [liveStroke, setLiveStroke] = useState<[number, number][] | null>(null);
+
+  // Set viewport size on client to avoid SSR mismatch
+  useEffect(() => {
+    const update = () => setViewportSize({ w: window.innerWidth, h: window.innerHeight });
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
 
   const pins = annotations.filter((a): a is { type: "pin"; pin: Pin } => a.type === "pin");
   const strokes = annotations.filter(
@@ -74,10 +87,6 @@ function FeedbackWidgetInner() {
     setState("annotate");
   };
 
-  const getPos = (e: React.MouseEvent): [number, number] => {
-    return [e.clientX, e.clientY];
-  };
-
   const findPinAtPos = (x: number, y: number): number | null => {
     // Check if click is within 20px of an existing pin (check in reverse so topmost pin wins)
     for (let i = annotations.length - 1; i >= 0; i--) {
@@ -91,8 +100,51 @@ function FeedbackWidgetInner() {
     return null;
   };
 
+  // Use document-level listeners for draw drag — React synthetic events on a div
+  // can miss mousemove during rapid re-renders and native drag interference.
+  const modeRef = useRef(mode);
+  modeRef.current = mode;
+
+  useEffect(() => {
+    if (state !== "annotate") return;
+
+    const onMouseMove = (e: MouseEvent) => {
+      if (modeRef.current !== "draw" || !isDrawing.current) return;
+      currentStrokePoints.current.push([e.clientX, e.clientY]);
+      setLiveStroke([...currentStrokePoints.current]);
+    };
+
+    const onMouseUp = () => {
+      if (modeRef.current !== "draw" || !isDrawing.current) return;
+      isDrawing.current = false;
+      // Capture points BEFORE clearing the ref — the setAnnotations callback
+      // executes later (React batching), so the ref would be empty by then.
+      const capturedPoints: [number, number][] = [...currentStrokePoints.current];
+      currentStrokePoints.current = [];
+      setLiveStroke(null);
+      if (capturedPoints.length >= 2) {
+        setAnnotations((prev) => [
+          ...prev,
+          {
+            type: "stroke",
+            stroke: { points: capturedPoints, color: "#ef4444" },
+          },
+        ]);
+      }
+    };
+
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+    return () => {
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
+    };
+  }, [state]);
+
   const handleOverlayMouseDown = (e: React.MouseEvent) => {
-    const [x, y] = getPos(e);
+    e.preventDefault();
+    const x = e.clientX;
+    const y = e.clientY;
 
     // If currently editing a pin comment, submit it first
     if (editingPinIndex !== null) {
@@ -122,32 +174,6 @@ function FeedbackWidgetInner() {
       currentStrokePoints.current = [[x, y]];
       setLiveStroke([[x, y]]);
     }
-  };
-
-  const handleOverlayMouseMove = (e: React.MouseEvent) => {
-    if (mode !== "draw" || !isDrawing.current) return;
-    const [x, y] = getPos(e);
-    currentStrokePoints.current.push([x, y]);
-    setLiveStroke([...currentStrokePoints.current]);
-  };
-
-  const handleOverlayMouseUp = () => {
-    if (mode !== "draw" || !isDrawing.current) return;
-    isDrawing.current = false;
-    if (currentStrokePoints.current.length >= 2) {
-      setAnnotations((prev) => [
-        ...prev,
-        {
-          type: "stroke",
-          stroke: {
-            points: [...currentStrokePoints.current],
-            color: "#ef4444",
-          },
-        },
-      ]);
-    }
-    currentStrokePoints.current = [];
-    setLiveStroke(null);
   };
 
   const handlePinCommentSubmit = () => {
@@ -184,8 +210,8 @@ function FeedbackWidgetInner() {
     setState("submitting");
     try {
       // Build annotated screenshot by rendering annotations onto a canvas
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+      const w = viewportSize.w;
+      const h = viewportSize.h;
       const canvas = document.createElement("canvas");
       canvas.width = w;
       canvas.height = h;
@@ -232,7 +258,7 @@ function FeedbackWidgetInner() {
       const data = await res.json();
 
       if (data.success) {
-        toast.success(`Feedback #${data.id} saved`);
+        toast.success("Feedback saved");
       } else {
         toast.error("Failed to save feedback");
       }
@@ -275,18 +301,15 @@ function FeedbackWidgetInner() {
     <>
       {/* Transparent overlay for capturing mouse events */}
       <div
-        className="fixed inset-0 z-[100]"
-        style={{ cursor: mode === "pin" ? "crosshair" : "default" }}
+        className="fixed inset-0 z-[100] select-none"
+        style={{ cursor: "crosshair", touchAction: "none" }}
         onMouseDown={handleOverlayMouseDown}
-        onMouseMove={handleOverlayMouseMove}
-        onMouseUp={handleOverlayMouseUp}
-        onMouseLeave={handleOverlayMouseUp}
       >
         {/* SVG layer for rendering annotations */}
         <svg
           ref={svgRef}
           className="absolute inset-0 w-full h-full pointer-events-none"
-          viewBox={`0 0 ${typeof window !== "undefined" ? window.innerWidth : 1920} ${typeof window !== "undefined" ? window.innerHeight : 1080}`}
+          viewBox={`0 0 ${viewportSize.w} ${viewportSize.h}`}
         >
           {/* Subtle border to show annotation mode is active */}
           <rect
