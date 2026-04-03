@@ -109,7 +109,7 @@ export function CompanyHero({
         {/* Name */}
         <div className="flex items-center gap-2">
           <h1 className="font-display text-[26px] font-bold text-foreground">{name}</h1>
-          {status === "VERIFIED" && (
+          {status === "VERIFIED" && representativeClaim && (
             <svg
               className="size-5 shrink-0"
               viewBox="0 0 20 20"
