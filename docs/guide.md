@@ -2,7 +2,7 @@
 
 **Platform:** Hiring Partners (POS4work)
 **Stack:** Next.js 16, Prisma, NextAuth, React Email
-**Last updated:** 2026-03-19
+**Last updated:** 2026-04-03
 
 ---
 
@@ -56,7 +56,7 @@ npx prisma generate
 # Development
 npm run dev
 
-# Production build
+# Production build (runs prisma generate + db push + next build)
 npm run build
 npm start
 ```
@@ -110,6 +110,7 @@ The app runs at `http://localhost:3000` by default. It supports two locales: Eng
 | Size | Company size field |
 | Has Open Roles | Only companies with active job listings |
 | Verified | Only companies with VERIFIED status |
+| VC Funded | Only VC-backed companies (shows blue badge on card) |
 
 **Sort options:**
 
@@ -143,6 +144,15 @@ Results are paginated (20 per page by default).
 | Location | Location ascending |
 
 Job cards are fully clickable and navigate to the job detail page. Results are paginated (20 per page).
+
+### 2.5.1 Express Interest
+
+On a job detail page, candidates can click **"Express Interest"** to signal interest to the company.
+
+- **Toggle:** `POST /api/jobs/[id]/interest` (requires login, `CANDIDATE` role only).
+- When interest is expressed, the company can view the candidate's profile.
+- The interest can be toggled off at any time.
+- Admin sees interest counts per job in the admin jobs table, with an expandable list of interested candidates linking to their profiles.
 
 ### 2.6 Events
 
@@ -178,6 +188,8 @@ Events are sorted by date (upcoming: ascending, past: descending). Paginated (50
 - **Delete account:** `DELETE /api/candidate/profile` -- permanently deletes the user and all related data (cascade deletes handle follows, saved items, claims, etc.).
 - **Mark alerts read:** `POST /api/candidate/alerts/read` -- updates `lastSeenAlertsAt` timestamp.
 
+**Note:** Users with the `COMPANY_REP` role use the same candidate dashboard as regular candidates. They do not have access to a separate company editing interface -- all company management is handled by admin.
+
 ---
 
 ## 3. Company Claim Flows
@@ -195,6 +207,8 @@ Events are sorted by date (upcoming: ascending, past: descending). Paginated (50
 **Restrictions:**
 - Cannot claim an already-verified company.
 - Cannot submit duplicate pending claims for the same company.
+
+**Visibility on CLAIMED companies:** When a company has `CLAIMED` status, the user who submitted the claim sees a "Claim Pending" badge. Other users still see the "Claim this page" button alongside a "Claim in review" label, allowing multiple legitimate owners to submit claims.
 
 ### 3.2 Claiming without an Account (Public)
 
@@ -217,11 +231,13 @@ Events are sorted by date (upcoming: ascending, past: descending). Paginated (50
 
 1. Visit `/list-company`.
 2. Fill the form: Company Name, Website, Contact Email, Contact Phone, Your Role, Message.
-3. `POST /api/companies/list-request` creates a new company record with status `PENDING` and industry `Other`.
-4. If the user is logged in, a `CompanyClaim` is also created linking the user to the company.
-5. Email notifications are sent:
+3. **Duplicate detection:** If a company with the same name already exists (case-insensitive), the form shows an amber warning with a link to the existing company page instead of creating a duplicate. The user is directed to claim the existing company instead.
+4. `POST /api/companies/list-request` creates a new company record with status `PENDING`, industry `Other`, and stores contact info in the `contactInfo` JSON field on the company record.
+5. If the user is logged in, a `CompanyClaim` is also created linking the user to the company.
+6. Email notifications are sent:
    - All admins receive a `claim-admin-alert` email.
    - The requester receives a `claim-submitted` confirmation email.
+7. The listing request appears in the admin Claims Queue under "Listing Requests" (see Section 4.5).
 
 ---
 
@@ -235,7 +251,7 @@ All admin routes require the `ADMIN` role. The admin panel is accessible at `/ad
 
 The admin dashboard displays:
 
-- **KPIs:** Total companies, total candidates, pending claims (badge count), active jobs.
+- **KPIs:** Total companies, total candidates, pending claims (includes CompanyClaims + unverified PendingClaims + listing requests), active jobs.
 - **Top Companies:** Top 5 by follower count.
 - **Analytics:** Experience level distribution, top 10 skills, signup trends (30 days), follow trends (30 days).
 
@@ -247,9 +263,11 @@ The admin dashboard displays:
 |--------|----------|---------|
 | List all | `GET /api/admin/companies` | Search by name/industry, filter by status |
 | Add new | `POST /api/admin/companies` | Name (required), Industry (required), Website, Description. Auto-generates slug. Status set to `AUTO_GENERATED`. |
-| Edit | `PUT /api/admin/companies/[id]` | Update name, industry, featured flag, status |
+| Edit | `PUT /api/admin/companies/[id]` | Update name, industry, description, website, LinkedIn, careers URL, logo, cover image, size, founded, locations, technologies, featured flag, VC funded flag, status |
 | Delete | `DELETE /api/admin/companies/[id]` | Permanently removes company and cascaded records |
-| Feature/Unfeature | `PUT /api/admin/companies/[id]` | Set `featured: true/false` -- featured companies appear in the homepage section |
+| Feature/Unfeature | `PUT /api/admin/companies/[id]` | Set `featured: true/false` -- featured companies show a star badge on cards |
+| VC Funded | `PUT /api/admin/companies/[id]` | Set `vcFunded: true/false` -- VC-funded companies show a blue badge on cards |
+| Assign Representative | `POST /api/admin/companies/[id]/representative` | Add a point of contact (see Section 4.5.1) |
 
 ### 4.3 Company Enrichment
 
@@ -315,20 +333,48 @@ After reviewing scraped results, the admin selects jobs to import.
 ### 4.5 Claim Review
 
 **Endpoints:**
-- `GET /api/admin/claims` -- list all pending claims with company and user details.
+- `GET /api/admin/claims` -- returns three data sets: `claims` (CompanyClaim records, including inline pending verifications), `listingRequests` (PENDING companies with contactInfo).
 - `PUT /api/admin/claims/[id]` -- approve or reject a claim.
+- `DELETE /api/admin/pending-claims/[id]` -- dismiss an unverified pending claim.
+- `PUT /api/admin/listing-requests/[id]` -- approve or reject a listing request.
 
-**Approve:**
+The Claims Queue UI displays three sections:
+1. **Listing Requests** -- companies submitted via the "List my company" form (both auth and non-auth). Shows contact info (name, email, phone, role, message). Approve sets company to `AUTO_GENERATED`; Reject deletes the company record.
+2. **Company Claims** -- regular `CompanyClaim` records from logged-in users. Approve/reject as below.
+3. **Unverified Public Claims** -- `PendingClaim` records from non-auth users who haven't clicked the email verification link yet. Shown with a violet "Email unverified" badge. Can be dismissed by admin.
+
+**Approve (CompanyClaim):**
 - Sets claim status to `APPROVED`.
 - Sets company status to `VERIFIED`.
 - Sets user role to `COMPANY_REP`.
 - All three updates run in a single database transaction.
 
-**Reject:**
+**Reject (CompanyClaim):**
 - Sets claim status to `REJECTED`.
 - A review note (reason) is **required** when rejecting.
 
+**KPI counter:** The admin dashboard "Pending Claims" count includes CompanyClaims + unverified PendingClaims + pending listing requests.
+
 **Restrictions:** Only claims with status `PENDING` can be reviewed. Already-reviewed claims return an error.
+
+### 4.5.1 Company Representatives
+
+**Endpoint:** `POST/GET/DELETE /api/admin/companies/[id]/representative`
+
+Admin can assign a representative (point of contact) to any company via the **edit company sheet** in the Companies tab:
+
+1. Open the edit sheet for a company (pencil icon).
+2. Scroll to the "Representative" section at the bottom.
+3. Fill in Full Name, Job Title, Work Email, and optionally LinkedIn URL.
+4. Click "Save Representative" -- this creates an APPROVED `CompanyClaim` and sets the company status to `VERIFIED`.
+5. The representative's name, title, and LinkedIn link are displayed on the public company profile page.
+6. Existing representatives can be removed via the "Remove" button.
+
+**Public display:**
+- **VERIFIED companies** show a green badge with the representative's name and title.
+- **CLAIMED companies** show an amber badge with the claimant's name and "pending verification" label.
+
+**Note:** Company representatives (COMPANY_REP users) do **not** have access to edit company data. They use the same candidate dashboard as regular users. All company editing is handled by admin.
 
 ### 4.6 Job Management
 
@@ -403,6 +449,7 @@ Partners are displayed on the homepage in the "Our Partners" section.
 - Search by name/email.
 - Filter by experience level.
 - **CSV export:** Add `?format=csv` to download as CSV file (columns: Name, Email, Experience Level, Skills, Joined).
+- **Profile view:** Admin can view any candidate's profile (including private profiles) at `/profile/[id]`. The candidate's email is displayed below their name as a clickable mailto link (visible to admin only).
 
 ### 4.12 Analytics
 
@@ -609,6 +656,7 @@ Athens, Thessaloniki, Patras, Heraklion, Larissa, Remote, Hybrid, Anywhere in Gr
 |--------|------|------|---------|
 | GET | `/api/jobs` | Public | List/search jobs with filters and sort |
 | POST | `/api/jobs/[id]/save` | User | Toggle save/unsave a job |
+| POST | `/api/jobs/[id]/interest` | Candidate | Toggle express interest in a job |
 
 ### Event Routes (Public)
 
@@ -628,23 +676,25 @@ Athens, Thessaloniki, Patras, Heraklion, Larissa, Remote, Hybrid, Anywhere in Gr
 | POST | `/api/candidate/alerts/read` | Candidate | Mark alerts as read |
 | POST | `/api/onboarding` | User | Submit onboarding wizard data |
 
-### Company Dashboard Routes
+### Company Dashboard Routes (Admin Only)
+
+> **Note:** These routes previously allowed `COMPANY_REP` access. As of 2026-04-03, all company editing is restricted to `ADMIN` only. Company representatives use the candidate dashboard.
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
-| GET | `/api/dashboard/company/profile` | Company Rep | Get company profile |
-| PUT | `/api/dashboard/company/profile` | Company Rep | Update company profile |
-| GET | `/api/dashboard/company/jobs` | Company Rep | List company's jobs |
-| POST | `/api/dashboard/company/jobs` | Company Rep | Create a job listing |
-| PUT | `/api/dashboard/company/jobs/[id]` | Company Rep | Update a job listing |
-| DELETE | `/api/dashboard/company/jobs/[id]` | Company Rep | Delete a job listing |
-| GET | `/api/dashboard/company/events` | Company Rep | List company's events |
-| POST | `/api/dashboard/company/events` | Company Rep | Create an event |
-| PUT | `/api/dashboard/company/events/[id]` | Company Rep | Update an event |
-| DELETE | `/api/dashboard/company/events/[id]` | Company Rep | Delete an event |
-| GET | `/api/dashboard/company/gallery` | Company Rep | Get company gallery |
-| POST | `/api/dashboard/company/gallery` | Company Rep | Upload gallery image |
-| GET | `/api/dashboard/company/analytics` | Company Rep | Get company analytics |
+| GET | `/api/dashboard/company/profile` | Admin | Get company profile |
+| PUT | `/api/dashboard/company/profile` | Admin | Update company profile |
+| GET | `/api/dashboard/company/jobs` | Admin | List company's jobs |
+| POST | `/api/dashboard/company/jobs` | Admin | Create a job listing |
+| PUT | `/api/dashboard/company/jobs/[id]` | Admin | Update a job listing |
+| DELETE | `/api/dashboard/company/jobs/[id]` | Admin | Delete a job listing |
+| GET | `/api/dashboard/company/events` | Admin | List company's events |
+| POST | `/api/dashboard/company/events` | Admin | Create an event |
+| PUT | `/api/dashboard/company/events/[id]` | Admin | Update an event |
+| DELETE | `/api/dashboard/company/events/[id]` | Admin | Delete an event |
+| GET | `/api/dashboard/company/gallery` | Admin | Get company gallery |
+| POST | `/api/dashboard/company/gallery` | Admin | Upload gallery image |
+| GET | `/api/dashboard/company/analytics` | Admin | Get company analytics |
 
 ### Admin Routes
 
@@ -661,6 +711,11 @@ Athens, Thessaloniki, Patras, Heraklion, Larissa, Remote, Hybrid, Anywhere in Gr
 | POST | `/api/admin/companies/[id]/enrich` | Admin | Trigger company data enrichment from website |
 | POST | `/api/admin/companies/[id]/scrape-jobs` | Admin | Scan company careers page for jobs |
 | POST | `/api/admin/companies/[id]/import-jobs` | Admin | Import selected scraped jobs |
+| GET | `/api/admin/companies/[id]/representative` | Admin | Get current representative for a company |
+| POST | `/api/admin/companies/[id]/representative` | Admin | Assign a representative to a company |
+| DELETE | `/api/admin/companies/[id]/representative` | Admin | Remove representative(s) from a company |
+| DELETE | `/api/admin/pending-claims/[id]` | Admin | Dismiss an unverified pending claim |
+| PUT | `/api/admin/listing-requests/[id]` | Admin | Approve or reject a listing request |
 | GET | `/api/admin/content` | Admin | List CMS content blocks |
 | PUT | `/api/admin/content` | Admin | Batch upsert content blocks |
 | GET | `/api/admin/events` | Admin | List all events |
@@ -670,6 +725,7 @@ Athens, Thessaloniki, Patras, Heraklion, Larissa, Remote, Hybrid, Anywhere in Gr
 | GET | `/api/admin/jobs` | Admin | List all jobs |
 | PUT | `/api/admin/jobs/[id]` | Admin | Toggle job status (ACTIVE/PAUSED) |
 | DELETE | `/api/admin/jobs/[id]` | Admin | Delete a job |
+| GET | `/api/admin/jobs/[id]/interested` | Admin | List candidates who expressed interest in a job |
 | GET | `/api/admin/newsletters` | Admin | List all newsletters |
 | POST | `/api/admin/newsletters` | Admin | Create newsletter draft |
 | PUT | `/api/admin/newsletters/[id]` | Admin | Send a newsletter |
