@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
+import { Prisma } from "@/generated/prisma/client";
 import { getSession } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
 import { AdminDashboardClient } from "@/components/admin/admin-dashboard-client";
@@ -23,13 +24,14 @@ export default async function AdminPage({
   }
 
   // Fetch KPI stats
-  const [totalCompanies, totalCandidates, pendingCompanyClaims, pendingVerificationClaims, activeJobs] =
+  const [totalCompanies, totalCandidates, pendingCompanyClaims, pendingVerificationClaims, activeJobs, pendingListings] =
     await Promise.all([
       prisma.company.count(),
       prisma.user.count({ where: { role: "CANDIDATE" } }),
       prisma.companyClaim.count({ where: { status: "PENDING" } }),
       prisma.pendingClaim.count({ where: { verified: false } }),
       prisma.jobListing.count({ where: { status: "ACTIVE" } }),
+      prisma.company.count({ where: { status: "PENDING", contactInfo: { not: Prisma.DbNull } } }),
     ]);
 
   const pendingClaims = pendingCompanyClaims + pendingVerificationClaims;
@@ -48,7 +50,7 @@ export default async function AdminPage({
       kpis={{
         totalCompanies,
         totalCandidates,
-        pendingClaims,
+        pendingClaims: pendingClaims + pendingListings,
         activeJobs,
       }}
       topCompanies={topCompanies.map((c) => ({

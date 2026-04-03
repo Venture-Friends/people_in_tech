@@ -44,8 +44,25 @@ interface Claim {
   reviewedAt: string | null;
 }
 
+interface ListingRequest {
+  id: string;
+  type: "LISTING_REQUEST";
+  companyName: string;
+  companySlug: string;
+  website: string | null;
+  contactInfo: {
+    name: string | null;
+    email: string | null;
+    phone: string | null;
+    role: string | null;
+    message: string | null;
+  };
+  createdAt: string;
+}
+
 export function ClaimsQueue({ onClaimProcessed }: { onClaimProcessed?: () => void }) {
   const [claims, setClaims] = useState<Claim[]>([]);
+  const [listingRequests, setListingRequests] = useState<ListingRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [reviewNotes, setReviewNotes] = useState<Record<string, string>>({});
@@ -58,6 +75,7 @@ export function ClaimsQueue({ onClaimProcessed }: { onClaimProcessed?: () => voi
       const res = await fetch(`/api/admin/claims?status=${statusFilter}`);
       const data = await res.json();
       setClaims(data.claims || []);
+      setListingRequests(data.listingRequests || []);
     } catch {
       toast.error("Failed to load claims");
     } finally {
@@ -161,6 +179,56 @@ export function ClaimsQueue({ onClaimProcessed }: { onClaimProcessed?: () => voi
     }
   };
 
+  const handleListingApprove = async (lr: ListingRequest) => {
+    setProcessingId(lr.id);
+    try {
+      const res = await fetch(`/api/admin/listing-requests/${lr.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "approve" }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        toast.error(data.error || "Failed to approve listing request");
+        return;
+      }
+
+      toast.success(`Listing request approved! ${lr.companyName} is now listed.`);
+      setListingRequests((prev) => prev.filter((r) => r.id !== lr.id));
+      onClaimProcessed?.();
+    } catch {
+      toast.error("Failed to approve listing request");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const handleListingReject = async (lr: ListingRequest) => {
+    setProcessingId(lr.id);
+    try {
+      const res = await fetch(`/api/admin/listing-requests/${lr.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "reject" }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        toast.error(data.error || "Failed to reject listing request");
+        return;
+      }
+
+      toast.success(`Listing request for ${lr.companyName} has been rejected.`);
+      setListingRequests((prev) => prev.filter((r) => r.id !== lr.id));
+      onClaimProcessed?.();
+    } catch {
+      toast.error("Failed to reject listing request");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
   const statusOptions: { value: ClaimStatus; label: string }[] = [
     { value: "PENDING", label: "Pending" },
     { value: "APPROVED", label: "Approved" },
@@ -195,6 +263,131 @@ export function ClaimsQueue({ onClaimProcessed }: { onClaimProcessed?: () => voi
           </button>
         ))}
       </div>
+
+      {/* Listing Requests section */}
+      {!loading && listingRequests.length > 0 && (
+        <div className="space-y-4">
+          <div>
+            <h3 className="font-display text-lg font-semibold tracking-tight text-foreground">
+              Listing Requests
+            </h3>
+            <p className="text-sm text-white/[0.35] mt-0.5">
+              Companies submitted via the &quot;List my company&quot; form
+            </p>
+          </div>
+          {listingRequests.map((lr) => (
+            <div
+              key={lr.id}
+              className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-5"
+            >
+              {/* Header */}
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h3 className="font-display text-base font-semibold text-foreground flex items-center gap-2">
+                    <Building2 className="size-4 text-primary" />
+                    {lr.companyName}
+                  </h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    {lr.website && (
+                      <a
+                        href={lr.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-primary hover:underline truncate"
+                      >
+                        {lr.website}
+                      </a>
+                    )}
+                    <span className="flex items-center gap-1 text-xs text-white/30">
+                      <Clock className="size-3" />
+                      {new Date(lr.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                </div>
+                <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium border bg-amber-500/20 text-amber-400 border-amber-500/30">
+                  Listing Request
+                </span>
+              </div>
+
+              <div className="h-px bg-white/[0.04] my-3" />
+
+              {/* Contact info */}
+              <div className="grid gap-3 sm:grid-cols-2 text-sm">
+                {lr.contactInfo.name && (
+                  <div className="flex items-center gap-2">
+                    <User className="size-4 text-white/30 shrink-0" />
+                    <span className="text-white/30">Name:</span>
+                    <span className="font-medium text-foreground">
+                      {lr.contactInfo.name}
+                    </span>
+                  </div>
+                )}
+                {lr.contactInfo.email && (
+                  <div className="flex items-center gap-2">
+                    <Mail className="size-4 text-white/30 shrink-0" />
+                    <span className="text-white/30">Email:</span>
+                    <span className="font-medium text-foreground">
+                      {lr.contactInfo.email}
+                    </span>
+                  </div>
+                )}
+                {lr.contactInfo.role && (
+                  <div className="flex items-center gap-2">
+                    <Briefcase className="size-4 text-white/30 shrink-0" />
+                    <span className="text-white/30">Role:</span>
+                    <span className="font-medium text-foreground">
+                      {lr.contactInfo.role}
+                    </span>
+                  </div>
+                )}
+                {lr.contactInfo.phone && (
+                  <div className="flex items-center gap-2">
+                    <User className="size-4 text-white/30 shrink-0" />
+                    <span className="text-white/30">Phone:</span>
+                    <span className="font-medium text-foreground">
+                      {lr.contactInfo.phone}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {lr.contactInfo.message && (
+                <div className="mt-3 flex items-start gap-2 text-sm">
+                  <MessageSquare className="size-4 text-white/30 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="text-white/30">Message: </span>
+                    <span className="text-foreground">{lr.contactInfo.message}</span>
+                  </div>
+                </div>
+              )}
+
+              <div className="h-px bg-white/[0.04] my-3" />
+
+              {/* Actions */}
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  className="bg-primary text-primary-foreground rounded-lg"
+                  onClick={() => handleListingApprove(lr)}
+                  disabled={processingId === lr.id}
+                >
+                  <CheckCircle2 className="size-4 mr-1" />
+                  Approve
+                </Button>
+                <Button
+                  size="sm"
+                  className="border border-red-400/30 text-red-400 hover:bg-red-400/10 rounded-lg bg-transparent"
+                  onClick={() => handleListingReject(lr)}
+                  disabled={processingId === lr.id}
+                >
+                  <XCircle className="size-4 mr-1" />
+                  Reject
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {loading ? (
         <div className="space-y-4">

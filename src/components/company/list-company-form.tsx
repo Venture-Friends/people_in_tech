@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { CheckCircle, Loader2, Building2 } from "lucide-react";
+import { CheckCircle, Loader2, Building2, AlertTriangle } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +26,10 @@ type ListCompanyInput = z.infer<typeof listCompanySchema>;
 export function ListCompanyForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [existingCompany, setExistingCompany] = useState<{
+    name: string;
+    slug: string;
+  } | null>(null);
 
   const {
     register,
@@ -45,6 +49,7 @@ export function ListCompanyForm() {
 
   async function onSubmit(data: ListCompanyInput) {
     setIsLoading(true);
+    setExistingCompany(null);
     try {
       // For MVP: create a placeholder company (PENDING status) and attach a claim
       const res = await fetch("/api/companies/list-request", {
@@ -55,6 +60,12 @@ export function ListCompanyForm() {
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
+
+        if (res.status === 409 && body.error === "COMPANY_EXISTS") {
+          setExistingCompany(body.existingCompany);
+          return;
+        }
+
         toast.error(body.error || "Something went wrong. Please try again.");
         return;
       }
@@ -104,6 +115,31 @@ export function ListCompanyForm() {
           Get your company featured on the platform. Reach candidates in Greek tech.
         </p>
       </div>
+
+      {existingCompany && (
+        <div className="mb-6 rounded-2xl border border-amber-500/20 bg-amber-500/[0.05] backdrop-blur-[8px] p-5">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="size-5 text-amber-400 mt-0.5 shrink-0" />
+            <div className="text-[14px] text-white/60">
+              <p>
+                <span className="font-semibold text-white/90">{existingCompany.name}</span>{" "}
+                is already listed on our platform.
+              </p>
+              <p className="mt-2">
+                Visit the{" "}
+                <Link
+                  href={`/companies/${existingCompany.slug}`}
+                  className="text-primary font-medium hover:underline"
+                >
+                  company page
+                </Link>{" "}
+                and use the <span className="font-medium text-white/80">&quot;Claim this company&quot;</span> feature
+                to request ownership.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-[8px] p-6 md:p-8">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">

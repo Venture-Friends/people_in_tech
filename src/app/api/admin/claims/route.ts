@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth-session";
 
@@ -61,6 +62,7 @@ export async function GET(request: Request) {
       reviewedAt: c.reviewedAt?.toISOString() || null,
     }));
 
+    // Also fetch unverified PendingClaim records (from non-auth public claims)
     let pendingMapped: typeof mapped = [];
     if (status === "PENDING" || status === "ALL") {
       const pendingVerifications = await prisma.pendingClaim.findMany({
@@ -95,7 +97,23 @@ export async function GET(request: Request) {
       (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
 
-    return NextResponse.json({ claims: allClaims });
+    // Also fetch listing requests (PENDING companies with contactInfo, no CompanyClaim)
+    const listingRequests = await prisma.company.findMany({
+      where: { status: "PENDING", contactInfo: { not: Prisma.DbNull } },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const mappedListingRequests = listingRequests.map((c) => ({
+      id: c.id,
+      type: "LISTING_REQUEST" as const,
+      companyName: c.name,
+      companySlug: c.slug,
+      website: c.website,
+      contactInfo: c.contactInfo as Record<string, string | null>,
+      createdAt: c.createdAt.toISOString(),
+    }));
+
+    return NextResponse.json({ claims: allClaims, listingRequests: mappedListingRequests });
   } catch (error) {
     console.error("Admin claims GET error:", error);
     return NextResponse.json({ error: "Failed to fetch claims" }, { status: 500 });

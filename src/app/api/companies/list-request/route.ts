@@ -15,6 +15,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check for existing company with similar name (case-insensitive)
+    const existingCompany = await prisma.company.findFirst({
+      where: {
+        name: { equals: companyName, mode: "insensitive" },
+      },
+      select: { id: true, name: true, slug: true, status: true },
+    });
+
+    if (existingCompany) {
+      return NextResponse.json(
+        {
+          error: "COMPANY_EXISTS",
+          existingCompany: {
+            id: existingCompany.id,
+            name: existingCompany.name,
+            slug: existingCompany.slug,
+            status: existingCompany.status,
+          },
+        },
+        { status: 409 }
+      );
+    }
+
     // Create a placeholder company with PENDING status
     const slug = companyName
       .toLowerCase()
@@ -29,6 +52,13 @@ export async function POST(request: NextRequest) {
         website: website || null,
         industry: "Other",
         status: "PENDING",
+        contactInfo: {
+          name: session?.user?.name || contactEmail.split("@")[0],
+          email: contactEmail,
+          phone: contactPhone || null,
+          role: yourRole,
+          message: message || null,
+        },
       },
     });
 
