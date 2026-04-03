@@ -31,6 +31,12 @@ interface CompanyHeroProps {
   initialFollowed: boolean;
   followerCount: number;
   userHasPendingClaim?: boolean;
+  representativeClaim?: {
+    fullName: string;
+    jobTitle: string;
+    linkedinUrl: string | null;
+    status: string;
+  } | null;
 }
 
 const SIZE_LABELS: Record<string, string> = {
@@ -56,6 +62,7 @@ export function CompanyHero({
   initialFollowed,
   followerCount,
   userHasPendingClaim = false,
+  representativeClaim,
 }: CompanyHeroProps) {
   const t = useTranslations("company");
   const [claimModalOpen, setClaimModalOpen] = useState(false);
@@ -102,7 +109,7 @@ export function CompanyHero({
         {/* Name */}
         <div className="flex items-center gap-2">
           <h1 className="font-display text-[26px] font-bold text-foreground">{name}</h1>
-          {status === "VERIFIED" && (
+          {status === "VERIFIED" && representativeClaim && (
             <svg
               className="size-5 shrink-0"
               viewBox="0 0 20 20"
@@ -191,15 +198,15 @@ export function CompanyHero({
 
         {/* Status / Claim section */}
         <div className="mt-4">
-          {status === "CLAIMED" || userHasPendingClaim ? (
+          {userHasPendingClaim ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-white/[0.04] border border-white/[0.06] px-3 py-1 text-xs text-white/40">
               <Clock className="size-3" />
               {t("claimPending")}
             </span>
-          ) : status !== "VERIFIED" ? (
+          ) : status === "VERIFIED" ? null : (
             <div className="flex items-center gap-2">
               <span className="rounded-full bg-white/[0.04] border border-white/[0.06] px-3 py-1 text-xs text-white/40">
-                Auto-generated profile
+                {status === "CLAIMED" ? "Claim in review" : "Auto-generated profile"}
               </span>
               <Button
                 variant="link"
@@ -211,8 +218,40 @@ export function CompanyHero({
                 <ArrowRight className="size-3.5" />
               </Button>
             </div>
-          ) : null}
+          )}
         </div>
+
+        {/* Representative info for VERIFIED companies */}
+        {representativeClaim && status === "VERIFIED" && (
+          <div className="mt-3 flex items-center gap-2 rounded-lg bg-emerald-500/[0.06] border border-emerald-500/[0.12] px-3 py-2">
+            <div className="flex size-7 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold">
+              {representativeClaim.fullName.charAt(0)}
+            </div>
+            <div className="text-sm">
+              <span className="font-medium text-emerald-400">{representativeClaim.fullName}</span>
+              <span className="text-white/30"> · {representativeClaim.jobTitle}</span>
+            </div>
+            {representativeClaim.linkedinUrl && (
+              <a href={representativeClaim.linkedinUrl} target="_blank" rel="noopener noreferrer" className="ml-auto text-white/30 hover:text-primary">
+                <Linkedin className="size-4" />
+              </a>
+            )}
+          </div>
+        )}
+
+        {/* Representative info for CLAIMED companies */}
+        {representativeClaim && status === "CLAIMED" && (
+          <div className="mt-2 flex items-center gap-2 rounded-lg bg-amber-500/[0.06] border border-amber-500/[0.12] px-3 py-2">
+            <div className="flex size-7 items-center justify-center rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold">
+              {representativeClaim.fullName.charAt(0)}
+            </div>
+            <div className="text-sm">
+              <span className="font-medium text-amber-400">{representativeClaim.fullName}</span>
+              <span className="text-white/30"> · {representativeClaim.jobTitle}</span>
+              <span className="text-white/20"> (pending verification)</span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Claim modal */}

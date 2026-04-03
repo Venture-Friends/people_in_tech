@@ -122,6 +122,24 @@ export default async function CompanyProfilePage({ params }: PageProps) {
     userHasPendingClaim = !!pendingClaim;
   }
 
+  // Fetch the representative claim for display
+  let representativeClaim = null;
+  if (company.status === "VERIFIED" || company.status === "CLAIMED") {
+    representativeClaim = await prisma.companyClaim.findFirst({
+      where: {
+        companyId: company.id,
+        status: company.status === "VERIFIED" ? "APPROVED" : "PENDING",
+      },
+      orderBy: { createdAt: "desc" },
+      select: {
+        fullName: true,
+        jobTitle: true,
+        linkedinUrl: true,
+        status: true,
+      },
+    });
+  }
+
   const locations = parseJsonArray(company.locations);
   const technologies = parseJsonArray(company.technologies);
 
@@ -170,6 +188,7 @@ export default async function CompanyProfilePage({ params }: PageProps) {
         initialFollowed={isFollowing}
         followerCount={company._count.followers}
         userHasPendingClaim={userHasPendingClaim}
+        representativeClaim={representativeClaim}
       />
 
       <div className="mt-8">
