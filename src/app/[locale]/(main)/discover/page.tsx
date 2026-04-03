@@ -39,6 +39,7 @@ async function getInitialCompanies(): Promise<{
     locations: c.locations,
     status: c.status,
     featured: c.featured,
+    vcFunded: c.vcFunded,
     followerCount: c._count.followers,
     jobCount: c._count.jobs,
     representative: c.claims[0]
