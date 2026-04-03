@@ -32,6 +32,7 @@ async function getUser(id: string) {
     select: {
       id: true,
       name: true,
+      email: true,
       image: true,
       avatarUrl: true,
       bio: true,
@@ -143,6 +144,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
 
       <ProfileHero
         name={user.name}
+        email={viewerRole === "ADMIN" ? user.email : null}
         avatarUrl={user.avatarUrl}
         publicTitle={user.publicTitle}
         headline={profile?.headline ?? null}

@@ -7,6 +7,7 @@ import {
   ExternalLink,
   MapPin,
   Briefcase,
+  Mail,
 } from "lucide-react";
 
 const AVAILABILITY_CONFIG: Record<
@@ -41,6 +42,7 @@ const WORK_TYPE_LABELS: Record<string, string> = {
 
 interface ProfileHeroProps {
   name: string;
+  email?: string | null;
   avatarUrl: string | null;
   publicTitle: string | null;
   headline: string | null;
@@ -56,6 +58,7 @@ interface ProfileHeroProps {
 
 export function ProfileHero({
   name,
+  email,
   avatarUrl,
   publicTitle,
   headline,
@@ -100,6 +103,16 @@ export function ProfileHero({
           <h1 className="font-display text-2xl font-bold text-white">
             {name}
           </h1>
+
+          {email && (
+            <a
+              href={`mailto:${email}`}
+              className="mt-1 inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-primary transition-colors"
+            >
+              <Mail className="size-3.5" />
+              {email}
+            </a>
+          )}
 
           {(publicTitle || headline) && (
             <p className="mt-1 text-base text-white/50">
