@@ -46,12 +46,21 @@ function FeedbackWidgetInner() {
   const [editingPinIndex, setEditingPinIndex] = useState<number | null>(null);
   const [pinComment, setPinComment] = useState("");
   const [feedbackComment, setFeedbackComment] = useState("");
+  const [viewportSize, setViewportSize] = useState({ w: 1920, h: 1080 });
 
   const svgRef = useRef<SVGSVGElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const isDrawing = useRef(false);
   const currentStrokePoints = useRef<[number, number][]>([]);
   const [liveStroke, setLiveStroke] = useState<[number, number][] | null>(null);
+
+  // Set viewport size on client to avoid SSR mismatch
+  useEffect(() => {
+    const update = () => setViewportSize({ w: window.innerWidth, h: window.innerHeight });
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
 
   const pins = annotations.filter((a): a is { type: "pin"; pin: Pin } => a.type === "pin");
   const strokes = annotations.filter(
@@ -189,8 +198,8 @@ function FeedbackWidgetInner() {
     setState("submitting");
     try {
       // Build annotated screenshot by rendering annotations onto a canvas
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+      const w = viewportSize.w;
+      const h = viewportSize.h;
       const canvas = document.createElement("canvas");
       canvas.width = w;
       canvas.height = h;
@@ -280,8 +289,8 @@ function FeedbackWidgetInner() {
     <>
       {/* Transparent overlay for capturing mouse events */}
       <div
-        className="fixed inset-0 z-[100]"
-        style={{ cursor: "crosshair" }}
+        className="fixed inset-0 z-[100] select-none"
+        style={{ cursor: "crosshair", touchAction: "none" }}
         onMouseDown={handleOverlayMouseDown}
         onMouseMove={handleOverlayMouseMove}
         onMouseUp={handleOverlayMouseUp}
@@ -291,7 +300,7 @@ function FeedbackWidgetInner() {
         <svg
           ref={svgRef}
           className="absolute inset-0 w-full h-full pointer-events-none"
-          viewBox={`0 0 ${typeof window !== "undefined" ? window.innerWidth : 1920} ${typeof window !== "undefined" ? window.innerHeight : 1080}`}
+          viewBox={`0 0 ${viewportSize.w} ${viewportSize.h}`}
         >
           {/* Subtle border to show annotation mode is active */}
           <rect
