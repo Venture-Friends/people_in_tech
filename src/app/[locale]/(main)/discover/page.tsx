@@ -20,6 +20,12 @@ async function getInitialCompanies(): Promise<{
             },
           },
         },
+        claims: {
+          where: { status: "APPROVED" },
+          orderBy: { createdAt: "desc" },
+          take: 1,
+          select: { fullName: true, jobTitle: true },
+        },
       },
     }),
     prisma.company.count(),
@@ -35,6 +41,9 @@ async function getInitialCompanies(): Promise<{
     featured: c.featured,
     followerCount: c._count.followers,
     jobCount: c._count.jobs,
+    representative: c.claims[0]
+      ? { name: c.claims[0].fullName, title: c.claims[0].jobTitle }
+      : null,
   }));
 
   return { companies: mapped, total };

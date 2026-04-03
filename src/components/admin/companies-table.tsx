@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Search, Plus, Pencil, Trash2, Sparkles, Loader2, ScanSearch, ExternalLink } from "lucide-react";
+import { Search, Plus, Pencil, Trash2, Sparkles, Loader2, ScanSearch, ExternalLink, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -118,6 +118,12 @@ export function CompaniesTable() {
     website: "",
     description: "",
   });
+
+  // Representative dialog state
+  const [repDialogOpen, setRepDialogOpen] = useState(false);
+  const [repCompany, setRepCompany] = useState<Company | null>(null);
+  const [repForm, setRepForm] = useState({ fullName: "", jobTitle: "", workEmail: "", linkedinUrl: "" });
+  const [repSaving, setRepSaving] = useState(false);
 
   // Edit sheet state
   const [editSheetOpen, setEditSheetOpen] = useState(false);
@@ -382,6 +388,41 @@ export function CompaniesTable() {
     }
   };
 
+  const openRepDialog = (company: Company) => {
+    setRepCompany(company);
+    setRepForm({ fullName: "", jobTitle: "", workEmail: "", linkedinUrl: "" });
+    setRepDialogOpen(true);
+  };
+
+  const handleAddRep = async () => {
+    if (!repCompany || !repForm.fullName || !repForm.jobTitle || !repForm.workEmail) {
+      toast.error("Name, job title, and work email are required");
+      return;
+    }
+    setRepSaving(true);
+    try {
+      const res = await fetch(`/api/admin/companies/${repCompany.id}/representative`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(repForm),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        toast.error(data.error || "Failed to add representative");
+        return;
+      }
+      toast.success(`${repForm.fullName} added as representative for ${repCompany.name}`);
+      setRepDialogOpen(false);
+      setCompanies((prev) =>
+        prev.map((c) => c.id === repCompany.id ? { ...c, status: "VERIFIED" } : c)
+      );
+    } catch {
+      toast.error("Failed to add representative");
+    } finally {
+      setRepSaving(false);
+    }
+  };
+
   const openEdit = (company: Company) => {
     setEditingCompany(company);
     const locations = parseJsonArray(company.locations);
@@ -593,6 +634,15 @@ export function CompaniesTable() {
                           ) : (
                             <Sparkles className="size-3.5" />
                           )}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          className="text-emerald-400/60 hover:text-emerald-400"
+                          onClick={() => openRepDialog(company)}
+                          title="Add representative"
+                        >
+                          <UserPlus className="size-3.5" />
                         </Button>
                         <Button
                           variant="ghost"
@@ -1003,6 +1053,71 @@ export function CompaniesTable() {
           </SheetFooter>
         </SheetContent>
       </Sheet>
+
+      {/* Representative Dialog */}
+      <Dialog open={repDialogOpen} onOpenChange={setRepDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add Representative{repCompany ? ` — ${repCompany.name}` : ""}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="rep-name" className={labelClass}>Full Name *</Label>
+              <Input
+                id="rep-name"
+                value={repForm.fullName}
+                onChange={(e) => setRepForm({ ...repForm, fullName: e.target.value })}
+                placeholder="Jane Doe"
+                className={inputClass}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="rep-title" className={labelClass}>Job Title *</Label>
+              <Input
+                id="rep-title"
+                value={repForm.jobTitle}
+                onChange={(e) => setRepForm({ ...repForm, jobTitle: e.target.value })}
+                placeholder="Head of Engineering"
+                className={inputClass}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="rep-email" className={labelClass}>Work Email *</Label>
+              <Input
+                id="rep-email"
+                type="email"
+                value={repForm.workEmail}
+                onChange={(e) => setRepForm({ ...repForm, workEmail: e.target.value })}
+                placeholder="jane@company.com"
+                className={inputClass}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="rep-linkedin" className={labelClass}>LinkedIn URL</Label>
+              <Input
+                id="rep-linkedin"
+                value={repForm.linkedinUrl}
+                onChange={(e) => setRepForm({ ...repForm, linkedinUrl: e.target.value })}
+                placeholder="https://linkedin.com/in/..."
+                className={inputClass}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <DialogClose render={<Button variant="outline" className="rounded-lg" />}>
+              Cancel
+            </DialogClose>
+            <Button
+              onClick={handleAddRep}
+              disabled={repSaving}
+              className="bg-primary text-primary-foreground rounded-lg"
+            >
+              {repSaving ? <Loader2 className="size-4 mr-1.5 animate-spin" /> : null}
+              Add Representative
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
