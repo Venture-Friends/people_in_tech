@@ -60,7 +60,34 @@ export async function GET(request: Request) {
       reviewedAt: c.reviewedAt?.toISOString() || null,
     }));
 
-    return NextResponse.json({ claims: mapped });
+    // Also fetch unverified PendingClaim records (from non-auth public claims)
+    const pendingVerifications = await prisma.pendingClaim.findMany({
+      where: { verified: false },
+      orderBy: { createdAt: "desc" },
+      include: {
+        company: {
+          select: { id: true, name: true, slug: true, industry: true },
+        },
+      },
+    });
+
+    const mappedPendingVerifications = pendingVerifications.map((p) => ({
+      id: p.id,
+      type: "PENDING_VERIFICATION" as const,
+      companyId: p.companyId,
+      companyName: p.company.name,
+      companySlug: p.company.slug,
+      companyIndustry: p.company.industry,
+      fullName: p.fullName,
+      jobTitle: p.jobTitle,
+      workEmail: p.workEmail,
+      linkedinUrl: p.linkedinUrl,
+      message: p.message,
+      tokenExpiry: p.tokenExpiry.toISOString(),
+      createdAt: p.createdAt.toISOString(),
+    }));
+
+    return NextResponse.json({ claims: mapped, pendingVerifications: mappedPendingVerifications });
   } catch (error) {
     console.error("Admin claims GET error:", error);
     return NextResponse.json({ error: "Failed to fetch claims" }, { status: 500 });

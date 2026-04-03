@@ -23,13 +23,16 @@ export default async function AdminPage({
   }
 
   // Fetch KPI stats
-  const [totalCompanies, totalCandidates, pendingClaims, activeJobs] =
+  const [totalCompanies, totalCandidates, pendingCompanyClaims, pendingVerificationClaims, activeJobs] =
     await Promise.all([
       prisma.company.count(),
       prisma.user.count({ where: { role: "CANDIDATE" } }),
       prisma.companyClaim.count({ where: { status: "PENDING" } }),
+      prisma.pendingClaim.count({ where: { verified: false } }),
       prisma.jobListing.count({ where: { status: "ACTIVE" } }),
     ]);
+
+  const pendingClaims = pendingCompanyClaims + pendingVerificationClaims;
 
   // Top followed companies for overview
   const topCompanies = await prisma.company.findMany({
