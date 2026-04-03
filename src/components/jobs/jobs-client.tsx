@@ -107,7 +107,7 @@ export function JobsClient({ initialJobs, initialTotal }: JobsClientProps) {
             ))}
           </div>
           {!isAuthenticated && jobs.length > ANONYMOUS_LIMIT && (
-            <AuthGate message={`Sign up to browse all ${total} open roles in Greek tech`} />
+            <AuthGate message="Sign up to browse all open roles in Greek tech" />
           )}
         </>
       )}

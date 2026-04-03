@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Search, Plus, Pencil, Trash2, Sparkles, Loader2, ScanSearch, ExternalLink } from "lucide-react";
+import { useSortableTable, SortableHead } from "@/components/admin/sortable-header";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -118,6 +119,16 @@ export function CompaniesTable() {
     website: "",
     description: "",
   });
+
+  const companyGetters = useMemo(() => ({
+    name: (c: Company) => c.name,
+    industry: (c: Company) => c.industry,
+    status: (c: Company) => c.status,
+    followers: (c: Company) => c.followerCount,
+    jobs: (c: Company) => c.jobCount,
+    featured: (c: Company) => c.featured,
+  }), []);
+  const { sorted: sortedCompanies, sort: companySort, toggle: toggleCompanySort } = useSortableTable(companies, companyGetters);
 
   // Edit sheet state
   const [editSheetOpen, setEditSheetOpen] = useState(false);
@@ -518,12 +529,12 @@ export function CompaniesTable() {
           <Table>
             <TableHeader>
               <TableRow className="border-b border-white/[0.04] hover:bg-transparent">
-                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Name</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Industry</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Status</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02] text-right">Followers</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02] text-right">Jobs</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Featured</TableHead>
+                <SortableHead label="Name" sortKey="name" currentKey={companySort.key} direction={companySort.direction} onToggle={toggleCompanySort} />
+                <SortableHead label="Industry" sortKey="industry" currentKey={companySort.key} direction={companySort.direction} onToggle={toggleCompanySort} />
+                <SortableHead label="Status" sortKey="status" currentKey={companySort.key} direction={companySort.direction} onToggle={toggleCompanySort} />
+                <SortableHead label="Followers" sortKey="followers" currentKey={companySort.key} direction={companySort.direction} onToggle={toggleCompanySort} className="text-right" />
+                <SortableHead label="Jobs" sortKey="jobs" currentKey={companySort.key} direction={companySort.direction} onToggle={toggleCompanySort} className="text-right" />
+                <SortableHead label="Featured" sortKey="featured" currentKey={companySort.key} direction={companySort.direction} onToggle={toggleCompanySort} />
                 <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02] text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -538,7 +549,7 @@ export function CompaniesTable() {
                   </TableCell>
                 </TableRow>
               ) : (
-                companies.map((company) => (
+                sortedCompanies.map((company) => (
                   <TableRow key={company.id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
                     <TableCell className="font-medium text-[13px]">
                       {company.name}

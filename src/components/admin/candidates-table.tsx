@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Download, Eye } from "lucide-react";
+import { useSortableTable, SortableHead } from "@/components/admin/sortable-header";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,6 +59,15 @@ export function CandidatesTable() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [expFilter, setExpFilter] = useState("ALL");
+
+  const candidateGetters = useMemo(() => ({
+    name: (c: Candidate) => c.name,
+    email: (c: Candidate) => c.email,
+    experience: (c: Candidate) => c.experienceLevel,
+    onboarding: (c: Candidate) => c.onboardingComplete,
+    joined: (c: Candidate) => c.joinedAt,
+  }), []);
+  const { sorted: sortedCandidates, sort: candidateSort, toggle: toggleCandidateSort } = useSortableTable(candidates, candidateGetters);
 
   const fetchCandidates = useCallback(async () => {
     try {
@@ -157,12 +167,12 @@ export function CandidatesTable() {
           <Table>
             <TableHeader>
               <TableRow className="border-b border-white/[0.04] hover:bg-transparent">
-                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Name</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Email</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Experience</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Onboarding</TableHead>
+                <SortableHead label="Name" sortKey="name" currentKey={candidateSort.key} direction={candidateSort.direction} onToggle={toggleCandidateSort} />
+                <SortableHead label="Email" sortKey="email" currentKey={candidateSort.key} direction={candidateSort.direction} onToggle={toggleCandidateSort} />
+                <SortableHead label="Experience" sortKey="experience" currentKey={candidateSort.key} direction={candidateSort.direction} onToggle={toggleCandidateSort} />
+                <SortableHead label="Onboarding" sortKey="onboarding" currentKey={candidateSort.key} direction={candidateSort.direction} onToggle={toggleCandidateSort} />
                 <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Skills</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02]">Joined</TableHead>
+                <SortableHead label="Joined" sortKey="joined" currentKey={candidateSort.key} direction={candidateSort.direction} onToggle={toggleCandidateSort} />
                 <TableHead className="text-[11px] uppercase tracking-wider text-white/30 bg-white/[0.02] text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -177,7 +187,7 @@ export function CandidatesTable() {
                   </TableCell>
                 </TableRow>
               ) : (
-                candidates.map((candidate) => (
+                sortedCandidates.map((candidate) => (
                   <TableRow key={candidate.id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
                     <TableCell
                       className="font-medium text-[13px] cursor-pointer hover:text-primary transition-colors"
