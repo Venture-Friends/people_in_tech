@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { authClient } from "@/lib/auth-client";
 
 type Mode = "pin" | "draw";
 type State = "idle" | "annotate" | "submitting";
@@ -30,7 +31,10 @@ interface Stroke {
 type Annotation = { type: "pin"; pin: Pin } | { type: "stroke"; stroke: Stroke };
 
 export function FeedbackWidget() {
-  if (process.env.NODE_ENV !== "development") return null;
+  const { data: session } = authClient.useSession();
+  const isAdmin = session?.user?.role === "ADMIN";
+
+  if (process.env.NODE_ENV !== "development" && !isAdmin) return null;
 
   return <FeedbackWidgetInner />;
 }
