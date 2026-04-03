@@ -494,16 +494,6 @@
   animation: ticker-scroll-reverse 35s linear infinite;
 }
 
-/* Trusted By marquee — seamless right-to-left scroll */
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-
-.animate-marquee {
-  animation: marquee 20s linear infinite;
-}
-
 /* Company logo ticker */
 @keyframes logo-scroll-left {
   0% { transform: translateX(0); }
