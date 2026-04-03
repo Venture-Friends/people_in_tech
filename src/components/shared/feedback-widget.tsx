@@ -87,10 +87,6 @@ function FeedbackWidgetInner() {
     setState("annotate");
   };
 
-  const getPos = (e: React.MouseEvent): [number, number] => {
-    return [e.clientX, e.clientY];
-  };
-
   const findPinAtPos = (x: number, y: number): number | null => {
     // Check if click is within 20px of an existing pin (check in reverse so topmost pin wins)
     for (let i = annotations.length - 1; i >= 0; i--) {
@@ -104,9 +100,51 @@ function FeedbackWidgetInner() {
     return null;
   };
 
+  // Use document-level listeners for draw drag — React synthetic events on a div
+  // can miss mousemove during rapid re-renders and native drag interference.
+  const modeRef = useRef(mode);
+  modeRef.current = mode;
+
+  useEffect(() => {
+    if (state !== "annotate") return;
+
+    const onMouseMove = (e: MouseEvent) => {
+      if (modeRef.current !== "draw" || !isDrawing.current) return;
+      currentStrokePoints.current.push([e.clientX, e.clientY]);
+      setLiveStroke([...currentStrokePoints.current]);
+    };
+
+    const onMouseUp = () => {
+      if (modeRef.current !== "draw" || !isDrawing.current) return;
+      isDrawing.current = false;
+      if (currentStrokePoints.current.length >= 2) {
+        setAnnotations((prev) => [
+          ...prev,
+          {
+            type: "stroke",
+            stroke: {
+              points: [...currentStrokePoints.current],
+              color: "#ef4444",
+            },
+          },
+        ]);
+      }
+      currentStrokePoints.current = [];
+      setLiveStroke(null);
+    };
+
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+    return () => {
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
+    };
+  }, [state]);
+
   const handleOverlayMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent native drag/selection so mousemove fires during draw
-    const [x, y] = getPos(e);
+    e.preventDefault();
+    const x = e.clientX;
+    const y = e.clientY;
 
     // If currently editing a pin comment, submit it first
     if (editingPinIndex !== null) {
@@ -136,32 +174,6 @@ function FeedbackWidgetInner() {
       currentStrokePoints.current = [[x, y]];
       setLiveStroke([[x, y]]);
     }
-  };
-
-  const handleOverlayMouseMove = (e: React.MouseEvent) => {
-    if (mode !== "draw" || !isDrawing.current) return;
-    const [x, y] = getPos(e);
-    currentStrokePoints.current.push([x, y]);
-    setLiveStroke([...currentStrokePoints.current]);
-  };
-
-  const handleOverlayMouseUp = () => {
-    if (mode !== "draw" || !isDrawing.current) return;
-    isDrawing.current = false;
-    if (currentStrokePoints.current.length >= 2) {
-      setAnnotations((prev) => [
-        ...prev,
-        {
-          type: "stroke",
-          stroke: {
-            points: [...currentStrokePoints.current],
-            color: "#ef4444",
-          },
-        },
-      ]);
-    }
-    currentStrokePoints.current = [];
-    setLiveStroke(null);
   };
 
   const handlePinCommentSubmit = () => {
@@ -292,9 +304,6 @@ function FeedbackWidgetInner() {
         className="fixed inset-0 z-[100] select-none"
         style={{ cursor: "crosshair", touchAction: "none" }}
         onMouseDown={handleOverlayMouseDown}
-        onMouseMove={handleOverlayMouseMove}
-        onMouseUp={handleOverlayMouseUp}
-        onMouseLeave={handleOverlayMouseUp}
       >
         {/* SVG layer for rendering annotations */}
         <svg
