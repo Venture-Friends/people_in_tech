@@ -23,9 +23,9 @@ export async function GET(request: NextRequest) {
     if (search) {
       conditions.push({
         OR: [
-          { name: { contains: search } },
-          { description: { contains: search } },
-          { technologies: { contains: search } },
+          { name: { contains: search, mode: "insensitive" } },
+          { description: { contains: search, mode: "insensitive" } },
+          { technologies: { contains: search, mode: "insensitive" } },
         ],
       });
     }
