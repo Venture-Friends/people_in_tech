@@ -119,9 +119,7 @@ export function CompaniesTable() {
     description: "",
   });
 
-  // Representative dialog state
-  const [repDialogOpen, setRepDialogOpen] = useState(false);
-  const [repCompany, setRepCompany] = useState<Company | null>(null);
+  // Representative form state (shown inside edit sheet)
   const [repForm, setRepForm] = useState({ fullName: "", jobTitle: "", workEmail: "", linkedinUrl: "" });
   const [repSaving, setRepSaving] = useState(false);
 
@@ -388,20 +386,14 @@ export function CompaniesTable() {
     }
   };
 
-  const openRepDialog = (company: Company) => {
-    setRepCompany(company);
-    setRepForm({ fullName: "", jobTitle: "", workEmail: "", linkedinUrl: "" });
-    setRepDialogOpen(true);
-  };
-
   const handleAddRep = async () => {
-    if (!repCompany || !repForm.fullName || !repForm.jobTitle || !repForm.workEmail) {
+    if (!editingCompany || !repForm.fullName || !repForm.jobTitle || !repForm.workEmail) {
       toast.error("Name, job title, and work email are required");
       return;
     }
     setRepSaving(true);
     try {
-      const res = await fetch(`/api/admin/companies/${repCompany.id}/representative`, {
+      const res = await fetch(`/api/admin/companies/${editingCompany.id}/representative`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(repForm),
@@ -411,10 +403,9 @@ export function CompaniesTable() {
         toast.error(data.error || "Failed to add representative");
         return;
       }
-      toast.success(`${repForm.fullName} added as representative for ${repCompany.name}`);
-      setRepDialogOpen(false);
+      toast.success(`${repForm.fullName} added as representative for ${editingCompany.name}`);
       setCompanies((prev) =>
-        prev.map((c) => c.id === repCompany.id ? { ...c, status: "VERIFIED" } : c)
+        prev.map((c) => c.id === editingCompany.id ? { ...c, status: "VERIFIED" } : c)
       );
     } catch {
       toast.error("Failed to add representative");
@@ -423,10 +414,53 @@ export function CompaniesTable() {
     }
   };
 
-  const openEdit = (company: Company) => {
+  const handleRemoveRep = async () => {
+    if (!editingCompany) return;
+    setRepSaving(true);
+    try {
+      const res = await fetch(`/api/admin/companies/${editingCompany.id}/representative`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        toast.error(data.error || "Failed to remove representative");
+        return;
+      }
+      toast.success("Representative removed");
+      setRepForm({ fullName: "", jobTitle: "", workEmail: "", linkedinUrl: "" });
+      setCompanies((prev) =>
+        prev.map((c) => c.id === editingCompany.id ? { ...c, status: "AUTO_GENERATED" } : c)
+      );
+    } catch {
+      toast.error("Failed to remove representative");
+    } finally {
+      setRepSaving(false);
+    }
+  };
+
+  const openEdit = async (company: Company) => {
     setEditingCompany(company);
     const locations = parseJsonArray(company.locations);
     const technologies = parseJsonArray(company.technologies);
+
+    // Load existing representative
+    setRepForm({ fullName: "", jobTitle: "", workEmail: "", linkedinUrl: "" });
+    try {
+      const res = await fetch(`/api/admin/companies/${company.id}/representative`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.representative) {
+          setRepForm({
+            fullName: data.representative.fullName || "",
+            jobTitle: data.representative.jobTitle || "",
+            workEmail: data.representative.workEmail || "",
+            linkedinUrl: data.representative.linkedinUrl || "",
+          });
+        }
+      }
+    } catch {
+      // ignore - just means no existing rep
+    }
 
     setEditFormData({
       name: company.name,
@@ -634,15 +668,6 @@ export function CompaniesTable() {
                           ) : (
                             <Sparkles className="size-3.5" />
                           )}
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon-sm"
-                          className="text-emerald-400/60 hover:text-emerald-400"
-                          onClick={() => openRepDialog(company)}
-                          title="Add representative"
-                        >
-                          <UserPlus className="size-3.5" />
                         </Button>
                         <Button
                           variant="ghost"
@@ -1030,6 +1055,75 @@ export function CompaniesTable() {
                 />
               </div>
             </div>
+
+            {/* Representative / Point of Contact */}
+            <div className="space-y-3">
+              <h3 className={sectionHeaderClass}>Representative</h3>
+              <p className="text-[11px] text-white/25">Point of contact for this company. Assigning a representative sets the company to Verified.</p>
+              <div className="space-y-1.5">
+                <Label htmlFor="rep-name" className={labelClass}>Full Name</Label>
+                <Input
+                  id="rep-name"
+                  value={repForm.fullName}
+                  onChange={(e) => setRepForm({ ...repForm, fullName: e.target.value })}
+                  placeholder="Jane Doe"
+                  className={inputClass}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="rep-title" className={labelClass}>Job Title</Label>
+                <Input
+                  id="rep-title"
+                  value={repForm.jobTitle}
+                  onChange={(e) => setRepForm({ ...repForm, jobTitle: e.target.value })}
+                  placeholder="Head of Engineering"
+                  className={inputClass}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="rep-email" className={labelClass}>Work Email</Label>
+                <Input
+                  id="rep-email"
+                  type="email"
+                  value={repForm.workEmail}
+                  onChange={(e) => setRepForm({ ...repForm, workEmail: e.target.value })}
+                  placeholder="jane@company.com"
+                  className={inputClass}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="rep-linkedin" className={labelClass}>LinkedIn URL</Label>
+                <Input
+                  id="rep-linkedin"
+                  value={repForm.linkedinUrl}
+                  onChange={(e) => setRepForm({ ...repForm, linkedinUrl: e.target.value })}
+                  placeholder="https://linkedin.com/in/..."
+                  className={inputClass}
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleAddRep}
+                  disabled={repSaving || !repForm.fullName || !repForm.jobTitle || !repForm.workEmail}
+                  size="sm"
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg"
+                >
+                  {repSaving ? <Loader2 className="size-3 mr-1 animate-spin" /> : <UserPlus className="size-3 mr-1" />}
+                  {repForm.fullName ? "Save Representative" : "Add Representative"}
+                </Button>
+                {repForm.fullName && (
+                  <Button
+                    onClick={handleRemoveRep}
+                    disabled={repSaving}
+                    variant="outline"
+                    size="sm"
+                    className="rounded-lg text-red-400 border-red-400/20 hover:bg-red-400/10"
+                  >
+                    Remove
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
 
           <SheetFooter className="border-t border-white/[0.06] pt-4 flex-row gap-2">
@@ -1054,70 +1148,6 @@ export function CompaniesTable() {
         </SheetContent>
       </Sheet>
 
-      {/* Representative Dialog */}
-      <Dialog open={repDialogOpen} onOpenChange={setRepDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Add Representative{repCompany ? ` — ${repCompany.name}` : ""}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="rep-name" className={labelClass}>Full Name *</Label>
-              <Input
-                id="rep-name"
-                value={repForm.fullName}
-                onChange={(e) => setRepForm({ ...repForm, fullName: e.target.value })}
-                placeholder="Jane Doe"
-                className={inputClass}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="rep-title" className={labelClass}>Job Title *</Label>
-              <Input
-                id="rep-title"
-                value={repForm.jobTitle}
-                onChange={(e) => setRepForm({ ...repForm, jobTitle: e.target.value })}
-                placeholder="Head of Engineering"
-                className={inputClass}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="rep-email" className={labelClass}>Work Email *</Label>
-              <Input
-                id="rep-email"
-                type="email"
-                value={repForm.workEmail}
-                onChange={(e) => setRepForm({ ...repForm, workEmail: e.target.value })}
-                placeholder="jane@company.com"
-                className={inputClass}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="rep-linkedin" className={labelClass}>LinkedIn URL</Label>
-              <Input
-                id="rep-linkedin"
-                value={repForm.linkedinUrl}
-                onChange={(e) => setRepForm({ ...repForm, linkedinUrl: e.target.value })}
-                placeholder="https://linkedin.com/in/..."
-                className={inputClass}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <DialogClose render={<Button variant="outline" className="rounded-lg" />}>
-              Cancel
-            </DialogClose>
-            <Button
-              onClick={handleAddRep}
-              disabled={repSaving}
-              className="bg-primary text-primary-foreground rounded-lg"
-            >
-              {repSaving ? <Loader2 className="size-4 mr-1.5 animate-spin" /> : null}
-              Add Representative
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

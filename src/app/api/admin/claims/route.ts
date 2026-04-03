@@ -42,14 +42,14 @@ export async function GET(request: Request) {
 
     const mapped = claims.map((c) => ({
       id: c.id,
-      source: "claim" as const,
+      source: "claim" as "claim" | "pending",
       companyId: c.companyId,
       companyName: c.company.name,
       companySlug: c.company.slug,
       companyIndustry: c.company.industry,
-      userId: c.userId,
-      userName: c.user.name,
-      userEmail: c.user.email,
+      userId: c.userId as string | null,
+      userName: c.user.name as string | null,
+      userEmail: c.user.email as string | null,
       fullName: c.fullName,
       jobTitle: c.jobTitle,
       workEmail: c.workEmail,
