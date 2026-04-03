@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>People in Tech — Platform Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  :root {
+    --bg: #09090b;
+    --card: rgba(255,255,255,0.02);
+    --card-border: rgba(255,255,255,0.05);
+    --card-border-hover: rgba(255,255,255,0.1);
+    --text: rgba(255,255,255,0.88);
+    --text-secondary: rgba(255,255,255,0.45);
+    --text-muted: rgba(255,255,255,0.25);
+    --accent: #9fef00;
+    --accent-dim: rgba(159,239,0,0.12);
+    --accent-border: rgba(159,239,0,0.2);
+    --blue: #60a5fa;
+    --blue-dim: rgba(96,165,250,0.1);
+    --amber: #fbbf24;
+    --amber-dim: rgba(251,191,36,0.1);
+    --emerald: #34d399;
+    --emerald-dim: rgba(52,211,153,0.1);
+    --violet: #a78bfa;
+    --violet-dim: rgba(167,139,250,0.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 100px 0 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(159,239,0,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    border: 1px solid var(--accent-border);
+    background: var(--accent-dim);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-size: 48px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+  .hero h1 .dot { color: var(--accent); }
+  .hero p {
+    font-size: 17px;
+    color: var(--text-secondary);
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+  .hero-meta {
+    margin-top: 32px;
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .hero-meta span { display: flex; align-items: center; gap: 6px; }
+
+  /* SECTIONS */
+  section { padding: 48px 0; }
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  section h2 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  section > .container > p {
+    color: var(--text-secondary);
+    font-size: 15px;
+    margin-bottom: 32px;
+  }
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 32px 0 12px;
+    letter-spacing: -0.3px;
+  }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    height: 1px;
+    background: var(--card-border);
+    margin: 0;
+  }
+
+  /* CARDS */
+  .card {
+    border: 1px solid var(--card-border);
+    background: var(--card);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 16px;
+    backdrop-filter: blur(8px);
+  }
+  .card h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .card p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  /* FEATURE ROWS */
+  .feature-row {
+    display: flex;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+  .feature-row:last-child { border-bottom: none; }
+  .feature-icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+  .feature-icon.green { background: var(--accent-dim); }
+  .feature-icon.blue { background: var(--blue-dim); }
+  .feature-icon.amber { background: var(--amber-dim); }
+  .feature-icon.violet { background: var(--violet-dim); }
+  .feature-icon.emerald { background: var(--emerald-dim); }
+  .feature-row .feature-body h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .feature-row .feature-body p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* STEPS */
+  .steps { counter-reset: step; }
+  .step {
+    display: flex;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    counter-increment: step;
+  }
+  .step:last-child { border-bottom: none; }
+  .step-number {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--accent-dim);
+    border: 1px solid var(--accent-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .step-number::before { content: counter(step); }
+  .step-body h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .step-body p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* BADGE */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid;
+  }
+  .badge.green { color: var(--accent); border-color: var(--accent-border); background: var(--accent-dim); }
+  .badge.blue { color: var(--blue); border-color: rgba(96,165,250,0.2); background: var(--blue-dim); }
+  .badge.amber { color: var(--amber); border-color: rgba(251,191,36,0.2); background: var(--amber-dim); }
+  .badge.emerald { color: var(--emerald); border-color: rgba(52,211,153,0.2); background: var(--emerald-dim); }
+
+  /* TABLE */
+  .table-wrap {
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 16px 0;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid var(--card-border);
+  }
+  td {
+    padding: 10px 16px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid rgba(255,255,255,0.02);
+  }
+  tr:last-child td { border-bottom: none; }
+  td:first-child { color: var(--text); font-weight: 500; }
+
+  /* CALLOUT */
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-dim);
+    border-radius: 0 12px 12px 0;
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+  }
+  .callout strong { color: var(--accent); }
+
+  /* CHECKLIST */
+  .checklist { list-style: none; padding: 0; }
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid rgba(255,255,255,0.02);
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .check-box {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    border: 1.5px solid rgba(255,255,255,0.15);
+    margin-top: 1px;
+  }
+
+  /* URL TABLE */
+  .url { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; color: var(--accent); opacity: 0.7; }
+
+  /* FOOTER */
+  .footer {
+    padding: 60px 0;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+  .footer .logo { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+  .footer .logo .dot { color: var(--accent); }
+
+  /* PRINT */
+  @media print {
+    body { background: #fff; color: #111; }
+    .card { border-color: #e5e5e5; background: #fafafa; }
+    .hero::before { display: none; }
+    h1, h2, h3, h4 { color: #111; }
+    p, td, li { color: #444; }
+    .section-label { color: #16a34a; }
+    .badge { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .callout { background: #f0fdf4; border-color: #16a34a; color: #333; }
+    .callout strong { color: #16a34a; }
+    th { background: #f5f5f5; color: #666; }
+    .check-box { border-color: #999; }
+  }
+
+  @page { margin: 20mm; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="container">
+    <div class="hero-badge">Platform Guide</div>
+    <h1>People in Tech<span class="dot">.</span></h1>
+    <p>Greece's premier talent discovery platform connecting tech professionals with the companies shaping the future of the Greek tech ecosystem.</p>
+    <div class="hero-meta">
+      <span>Version 1.0</span>
+      <span>April 2026</span>
+      <span>Prepared for Venture Friends</span>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- WHAT IS IT -->
+<section>
+  <div class="container">
+    <div class="section-label">Overview</div>
+    <h2>What is People in Tech?</h2>
+    <p>A curated discovery platform where tech companies in Greece showcase their teams, culture, and open roles — and where tech professionals build profiles, follow companies, and express interest in opportunities.</p>
+
+    <div class="grid-3">
+      <div class="card">
+        <h4>For Candidates</h4>
+        <p>Discover companies, follow them, express interest in roles, and build a professional profile that companies can view.</p>
+      </div>
+      <div class="card">
+        <h4>For Companies</h4>
+        <p>Claim your company page, showcase your team and tech stack, post jobs, and see which candidates are interested.</p>
+      </div>
+      <div class="card">
+        <h4>For Admins</h4>
+        <p>Manage the entire platform — companies, jobs, events, claims, content, newsletters, and candidate outreach.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- CANDIDATE EXPERIENCE -->
+<section>
+  <div class="container">
+    <div class="section-label">Candidate Experience</div>
+    <h2>How It Works for Candidates</h2>
+    <p>The journey from sign-up to expressing interest in a role.</p>
+
+    <h3>1. Registration &amp; Onboarding</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="step-number"></div>
+        <div class="step-body">
+          <h4>Create Account</h4>
+          <p>Sign up with name, email, and password. A verification email is sent — click the link to activate your account.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number"></div>
+        <div class="step-body">
+          <h4>Onboarding Wizard — About You</h4>
+          <p>Enter your professional headline, experience level (from Student to Executive), and LinkedIn URL.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number"></div>
+        <div class="step-body">
+          <h4>Onboarding Wizard — Skills &amp; Interests</h4>
+          <p>Select up to 5 role interests, add your skills (95+ predefined + custom), pick industries and preferred locations.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number"></div>
+        <div class="step-body">
+          <h4>Onboarding Wizard — Preferences</h4>
+          <p>Choose email notification preferences: weekly digest, event announcements, and newsletter.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number"></div>
+        <div class="step-body">
+          <h4>Start Discovering</h4>
+          <p>You land on the Discover page — browse companies, follow them, and explore open roles.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>2. Discover Companies</h3>
+    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;">The main hub for browsing the platform. Search by company name and narrow down with filters:</p>
+
+    <div class="table-wrap">
+      <table>
+        <tr><th>Filter</th><th>What It Does</th></tr>
+        <tr><td>Industry</td><td>FinTech, SaaS, HealthTech, AI/ML, and 12 more sectors</td></tr>
+        <tr><td>Location</td><td>Athens, Thessaloniki, Patras, Heraklion, Remote, and more</td></tr>
+        <tr><td>Company Size</td><td>Small (1-50) through Enterprise (1000+)</td></tr>
+        <tr><td>Has Open Roles</td><td>Only show companies actively hiring</td></tr>
+        <tr><td>Verified</td><td>Only companies with a confirmed representative</td></tr>
+        <tr><td>VC Funded</td><td>Only venture-backed companies</td></tr>
+      </table>
+    </div>
+
+    <p style="color: var(--text-secondary); font-size: 14px; margin: 16px 0 8px;">Company cards display:</p>
+    <div class="grid-2">
+      <div class="card">
+        <p>Logo, name, industry, location, follower count, open roles count</p>
+      </div>
+      <div class="card">
+        <p>Badges: <span class="badge green">Featured</span> <span class="badge blue">VC Funded</span> and a verified checkmark</p>
+      </div>
+    </div>
+
+    <h3>3. Company Profiles</h3>
+    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;">Each company has a rich profile page with four tabs:</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <h4>About</h4>
+        <p>Company description, technologies, team size, founded year, locations, and team members.</p>
+      </div>
+      <div class="card">
+        <h4>Open Roles</h4>
+        <p>Active job listings with title, location, type, and direct links to apply.</p>
+      </div>
+      <div class="card">
+        <h4>Events</h4>
+        <p>Upcoming workshops, meetups, and webinars hosted by the company.</p>
+      </div>
+      <div class="card">
+        <h4>Gallery</h4>
+        <p>Photos showcasing the company's office, team, and culture.</p>
+      </div>
+    </div>
+
+    <p style="color: var(--text-secondary); font-size: 14px; margin-top: 16px;">The hero section shows the company's representative (name, title, LinkedIn) for verified companies, a follow button with live follower count, and links to the company website and LinkedIn.</p>
+
+    <h3>4. Jobs</h3>
+    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;">Browse all active roles across the platform. Search by title or company, filter by job type (Remote, Hybrid, On-site), and sort by date or company name.</p>
+
+    <div class="card">
+      <h4>Job Detail Page</h4>
+      <p>Each job has a dedicated page with: full description, requirements, tech stack, experience level, and an <strong>"Apply"</strong> button linking to the company's application page. Candidates can also <strong>"Express Interest"</strong> — this signals to the company that they're interested, and the company can then view the candidate's profile. Jobs can be saved to the dashboard.</p>
+    </div>
+
+    <div class="callout">
+      <strong>Auth Gate:</strong> Anonymous visitors can preview the first 6 jobs. Signing up unlocks the full listing.
+    </div>
+
+    <h3>5. Events</h3>
+    <p style="color: var(--text-secondary); font-size: 14px;">Browse upcoming and past tech events — workshops, meetups, webinars. Filter by type, date range, and online/in-person. Save events and register directly from the platform.</p>
+
+    <h3>6. Candidate Dashboard</h3>
+    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;">A personal hub with four tabs:</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <h4>Saved Companies</h4>
+        <p>Companies you follow — manage from here.</p>
+      </div>
+      <div class="card">
+        <h4>Saved Jobs</h4>
+        <p>Bookmarked jobs for quick access.</p>
+      </div>
+      <div class="card">
+        <h4>Alerts</h4>
+        <p>New jobs and events from followed companies (30-day rolling window).</p>
+      </div>
+      <div class="card">
+        <h4>Saved Events</h4>
+        <p>Events you've saved or registered for.</p>
+      </div>
+    </div>
+
+    <h3>7. Candidate Profile</h3>
+    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;">Candidates can build a comprehensive profile through the profile editor:</p>
+
+    <div class="table-wrap">
+      <table>
+        <tr><th>Section</th><th>What You Add</th></tr>
+        <tr><td>About</td><td>Name, bio, public title, avatar, LinkedIn, website</td></tr>
+        <tr><td>Availability</td><td>Open to work / Not looking / Open to freelance, preferred work type</td></tr>
+        <tr><td>Skills</td><td>Technical and professional skills, role interests, industries, locations</td></tr>
+        <tr><td>Experience</td><td>Work history with company, role, dates, description</td></tr>
+        <tr><td>Education</td><td>Degrees with institution, field, and years</td></tr>
+        <tr><td>Certifications</td><td>Professional certifications with issuer and year</td></tr>
+        <tr><td>Languages</td><td>Spoken languages with proficiency level</td></tr>
+        <tr><td>CV</td><td>Upload a resume file</td></tr>
+        <tr><td>Visibility</td><td>Toggle profile public or private</td></tr>
+      </table>
+    </div>
+    <p style="color: var(--text-secondary); font-size: 14px;">A completeness meter shows progress and highlights missing sections. The profile can be previewed as others would see it.</p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- COMPANY EXPERIENCE -->
+<section>
+  <div class="container">
+    <div class="section-label">Company Experience</div>
+    <h2>How It Works for Companies</h2>
+    <p>Companies can claim their page or request a new listing.</p>
+
+    <h3>Claiming an Existing Company</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="step-number"></div>
+        <div class="step-body">
+          <h4>Find Your Company</h4>
+          <p>Search for your company on the Discover page and visit the profile.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number"></div>
+        <div class="step-body">
+          <h4>Click "Claim This Company"</h4>
+          <p>A form asks for your name, job title, work email, and optionally your LinkedIn and a message.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number"></div>
+        <div class="step-body">
+          <h4>Verification</h4>
+          <p>If you're logged in, the claim is submitted directly. If not, a verification email is sent to your work email — click the link to confirm.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number"></div>
+        <div class="step-body">
+          <h4>Admin Review</h4>
+          <p>The platform admin reviews and approves or rejects the claim. On approval, the company becomes verified and shows your info as representative.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Multiple Claims:</strong> If a company already has a pending claim from someone else, you can still submit your own. The admin decides who to approve. A "Claim in review" label is shown alongside the claim button.
+    </div>
+
+    <h3>Listing a New Company</h3>
+    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 12px;">If your company isn't on the platform yet, use the "List Your Company" form. Enter the company name, website, your contact details, and role. The request goes to admin for review.</p>
+    <p style="color: var(--text-secondary); font-size: 14px;">If a company with the same name already exists, you'll see a warning directing you to claim the existing page instead — preventing duplicates.</p>
+
+    <div class="callout">
+      <strong>Note:</strong> Company representatives do not have direct editing access to company profiles. All company data is managed by the platform admin in communication with the representative. This ensures quality control and consistency.
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ADMIN GUIDE -->
+<section>
+  <div class="container">
+    <div class="section-label">Admin Guide</div>
+    <h2>Platform Administration</h2>
+    <p>Everything the admin can do from the admin panel at <span class="url">/admin</span>.</p>
+
+    <h3>Dashboard Overview</h3>
+    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;">The admin dashboard shows key metrics at a glance:</p>
+    <div class="grid-2">
+      <div class="card">
+        <h4>KPI Cards</h4>
+        <p>Total companies, total candidates, pending claims (includes all types), and active jobs.</p>
+      </div>
+      <div class="card">
+        <h4>Quick Actions</h4>
+        <p>Pending claims alert with a direct link to the review queue. Top 5 companies by follower count.</p>
+      </div>
+    </div>
+
+    <h3>Company Management</h3>
+    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;">Full control over all company profiles from the Companies tab.</p>
+
+    <div class="feature-row">
+      <div class="feature-icon green">+</div>
+      <div class="feature-body">
+        <h4>Add &amp; Edit Companies</h4>
+        <p>Create companies manually or edit any existing profile. The edit panel covers: name, description, industry, website, LinkedIn, careers URL, logo, cover image, size, founded year, locations, and technologies.</p>
+      </div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-icon blue">&#10024;</div>
+      <div class="feature-body">
+        <h4>AI Enrichment</h4>
+        <p>Click the sparkle icon to auto-extract company data from their website — description, logo, LinkedIn URL, and technologies. Review the results before applying.</p>
+      </div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-icon amber">&#128269;</div>
+      <div class="feature-body">
+        <h4>Job Scraping</h4>
+        <p>Scan a company's careers page for open roles. Supports Greenhouse, Lever, Workable, and generic career pages. Review scraped results and selectively import them as job listings.</p>
+      </div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-icon emerald">&#9733;</div>
+      <div class="feature-body">
+        <h4>Badges &amp; Status</h4>
+        <p>Toggle <span class="badge green">Featured</span> to highlight a company on the homepage and cards. Toggle <span class="badge blue">VC Funded</span> to show a VC-backed badge. Both are visible across the platform.</p>
+      </div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-icon violet">&#128100;</div>
+      <div class="feature-body">
+        <h4>Assign Representatives</h4>
+        <p>In the edit panel, scroll to the "Representative" section. Enter the contact person's name, job title, work email, and LinkedIn. Saving sets the company to Verified and shows the representative on the public profile with a green badge.</p>
+      </div>
+    </div>
+
+    <h3>Claims Queue</h3>
+    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;">The claims queue surfaces three types of requests in one view:</p>
+
+    <div class="card" style="margin-bottom: 12px;">
+      <h4><span class="badge amber">Listing Request</span></h4>
+      <p style="margin-top: 8px;">Companies submitted via the "List my company" form. Shows contact info (name, email, phone, role, message). <strong>Approve</strong> to add the company to the platform. <strong>Reject</strong> to delete the record.</p>
+    </div>
+    <div class="card" style="margin-bottom: 12px;">
+      <h4><span class="badge emerald">Company Claim</span></h4>
+      <p style="margin-top: 8px;">Ownership claims from logged-in users. Shows claimant details and company info. <strong>Approve</strong> to verify the company and promote the user. <strong>Reject</strong> requires a written reason.</p>
+    </div>
+    <div class="card">
+      <h4><span class="badge" style="color: var(--violet); border-color: rgba(167,139,250,0.2); background: var(--violet-dim);">Email Unverified</span></h4>
+      <p style="margin-top: 8px;">Public claims where the person hasn't clicked the email verification link yet. <strong>Dismiss</strong> to remove stale or spam entries.</p>
+    </div>
+
+    <h3>Job Management</h3>
+    <p style="color: var(--text-secondary); font-size: 14px;">View all jobs across the platform. Toggle status between Active and Paused. Click the interest count badge on any job to see which candidates expressed interest — each links to the candidate's full profile.</p>
+
+    <h3>Candidate Management</h3>
+    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 12px;">Search candidates by name or email. View any candidate's profile — including private profiles. The candidate's <strong>email is shown on their profile</strong> (visible to admin only) for direct outreach. Export the full candidate list to CSV.</p>
+
+    <h3>Other Admin Features</h3>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Feature</th><th>What It Does</th></tr>
+        <tr><td>Events</td><td>Create, edit, and delete platform-wide events (workshops, meetups, webinars)</td></tr>
+        <tr><td>Partners</td><td>Manage partner logos on the homepage — add, reorder, toggle visibility</td></tr>
+        <tr><td>Content (CMS)</td><td>Edit homepage text, hero section, and footer per language (EN/GR)</td></tr>
+        <tr><td>Newsletter</td><td>Create and send newsletters to all subscribers</td></tr>
+        <tr><td>Analytics</td><td>Platform-wide stats: signup trends, skill distribution, top companies</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- TESTING CHECKLIST -->
+<section>
+  <div class="container">
+    <div class="section-label">Testing</div>
+    <h2>Testing Checklist</h2>
+    <p>Use this to verify every feature on the platform.</p>
+
+    <h3>Public Pages</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div>Homepage loads with hero, companies, jobs, and events sections</li>
+      <li><div class="check-box"></div>Discover page loads with company cards, search, and all filters work</li>
+      <li><div class="check-box"></div>Featured and VC Funded badges appear on the correct company cards</li>
+      <li><div class="check-box"></div>Company profile pages load with all four tabs (About, Roles, Events, Gallery)</li>
+      <li><div class="check-box"></div>Verified companies show a green representative badge with name and title</li>
+      <li><div class="check-box"></div>Jobs page loads, filters by type, and sorts correctly</li>
+      <li><div class="check-box"></div>Events page shows upcoming and past events</li>
+      <li><div class="check-box"></div>"List Your Company" form submits successfully</li>
+      <li><div class="check-box"></div>Entering a duplicate company name shows a warning instead of creating a duplicate</li>
+    </ul>
+
+    <h3>Authentication</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div>Register with name, email, password — receive verification email — verify — onboarding starts</li>
+      <li><div class="check-box"></div>Login with email and password works</li>
+      <li><div class="check-box"></div>Forgot password sends a reset email — new password can be set</li>
+      <li><div class="check-box"></div>Logout clears the session</li>
+    </ul>
+
+    <h3>Candidate Features</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div>Onboarding wizard completes all 3 steps and redirects to Discover</li>
+      <li><div class="check-box"></div>Dashboard shows saved companies, jobs, alerts, and events</li>
+      <li><div class="check-box"></div>Follow and unfollow companies (count updates in real time)</li>
+      <li><div class="check-box"></div>Save and unsave jobs and events</li>
+      <li><div class="check-box"></div>Express interest on a job detail page — toggle on and off</li>
+      <li><div class="check-box"></div>Profile editor saves all sections (about, skills, experience, education, etc.)</li>
+      <li><div class="check-box"></div>Profile completeness meter updates as sections are filled</li>
+      <li><div class="check-box"></div>Public profile looks correct when viewed by an admin</li>
+    </ul>
+
+    <h3>Company Claims</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div>Claim modal opens from a company profile page</li>
+      <li><div class="check-box"></div>Logged-in claim submits and shows "Claim Pending" badge</li>
+      <li><div class="check-box"></div>Logged-out claim sends a verification email</li>
+      <li><div class="check-box"></div>Claim appears in admin Claims Queue</li>
+      <li><div class="check-box"></div>Admin can approve and reject claims</li>
+      <li><div class="check-box"></div>Listing request appears in admin Claims Queue and can be approved/rejected</li>
+    </ul>
+
+    <h3>Admin Panel</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div>Dashboard KPIs show accurate numbers</li>
+      <li><div class="check-box"></div>Companies table: add, edit, delete, enrich from website, scrape jobs</li>
+      <li><div class="check-box"></div>Representative section in edit sheet: add, save, and remove a representative</li>
+      <li><div class="check-box"></div>Featured and VC Funded toggles work and badges appear on Discover</li>
+      <li><div class="check-box"></div>Jobs table: view interested candidates, toggle status, delete</li>
+      <li><div class="check-box"></div>Candidates table: search, view profiles with email, export CSV</li>
+      <li><div class="check-box"></div>Events: create, edit, delete</li>
+      <li><div class="check-box"></div>Partners: add, reorder, toggle active</li>
+      <li><div class="check-box"></div>Content CMS: edit text per language and save</li>
+      <li><div class="check-box"></div>Newsletter: create draft and send</li>
+    </ul>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- PAGE REFERENCE -->
+<section>
+  <div class="container">
+    <div class="section-label">Reference</div>
+    <h2>Page Directory</h2>
+    <p>Quick reference for all pages on the platform.</p>
+
+    <div class="table-wrap">
+      <table>
+        <tr><th>Page</th><th>URL</th><th>Access</th></tr>
+        <tr><td>Homepage</td><td class="url">/</td><td>Everyone</td></tr>
+        <tr><td>Discover</td><td class="url">/discover</td><td>Everyone</td></tr>
+        <tr><td>Company Profile</td><td class="url">/companies/[slug]</td><td>Everyone</td></tr>
+        <tr><td>Jobs</td><td class="url">/jobs</td><td>Everyone (limited for anonymous)</td></tr>
+        <tr><td>Job Detail</td><td class="url">/jobs/[id]</td><td>Everyone</td></tr>
+        <tr><td>Events</td><td class="url">/events</td><td>Everyone</td></tr>
+        <tr><td>List Company</td><td class="url">/list-company</td><td>Everyone</td></tr>
+        <tr><td>Register</td><td class="url">/register</td><td>Anonymous</td></tr>
+        <tr><td>Login</td><td class="url">/login</td><td>Anonymous</td></tr>
+        <tr><td>Onboarding</td><td class="url">/onboarding</td><td>New users</td></tr>
+        <tr><td>Dashboard</td><td class="url">/dashboard</td><td>Logged in</td></tr>
+        <tr><td>Profile Editor</td><td class="url">/dashboard/profile</td><td>Logged in</td></tr>
+        <tr><td>Candidate Profile</td><td class="url">/profile/[id]</td><td>Admin &amp; authorized reps</td></tr>
+        <tr><td>Admin Panel</td><td class="url">/admin</td><td>Admin only</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="container">
+    <div class="logo">People in Tech<span class="dot">.</span></div>
+    <p>Connecting Greece's tech talent with the companies building the future.</p>
+    <p style="margin-top: 16px; font-size: 11px;">Powered by POS4work &middot; Venture Friends &middot; April 2026</p>
+  </div>
+</div>
+
+</body>
+</html>
