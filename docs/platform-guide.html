@@ -44,9 +44,12 @@
     padding: 0 32px;
   }
 
-  /* HERO */
+  /* HERO — cover page */
   .hero {
-    padding: 100px 0 80px;
+    min-height: calc(100vh - 30mm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -143,12 +146,12 @@
 
   /* CARDS */
   .card {
-    border: 1px solid var(--card-border);
-    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.08);
+    background: #131316;
     border-radius: 16px;
     padding: 28px;
     margin-bottom: 16px;
-    backdrop-filter: blur(8px);
+    break-inside: avoid;
   }
   .card h4 {
     font-size: 15px;
@@ -161,9 +164,11 @@
     line-height: 1.65;
   }
 
-  /* GRID */
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  /* GRID — use flexbox for PDF safety */
+  .grid-2 { display: flex; flex-wrap: wrap; gap: 16px; }
+  .grid-2 > * { flex: 1 1 calc(50% - 8px); min-width: 200px; }
+  .grid-3 { display: flex; flex-wrap: wrap; gap: 16px; }
+  .grid-3 > * { flex: 1 1 calc(33.333% - 11px); min-width: 180px; }
 
   /* FEATURE ROWS */
   .feature-row {
@@ -173,6 +178,7 @@
     border-bottom: 1px solid rgba(255,255,255,0.03);
   }
   .feature-row:last-child { border-bottom: none; }
+  .feature-row { break-inside: avoid; }
   .feature-icon {
     flex-shrink: 0;
     width: 40px;
@@ -209,6 +215,7 @@
     counter-increment: step;
   }
   .step:last-child { border-bottom: none; }
+  .step { break-inside: avoid; }
   .step-number {
     flex-shrink: 0;
     width: 32px;
@@ -253,28 +260,29 @@
 
   /* TABLE */
   .table-wrap {
-    border: 1px solid var(--card-border);
+    border: 1px solid rgba(255,255,255,0.1);
     border-radius: 12px;
     overflow: hidden;
     margin: 16px 0;
+    break-inside: avoid;
   }
   table { width: 100%; border-collapse: collapse; }
   th {
     text-align: left;
-    padding: 10px 16px;
+    padding: 12px 16px;
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     color: var(--text-muted);
-    background: rgba(255,255,255,0.02);
-    border-bottom: 1px solid var(--card-border);
+    background: #18181b;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
   }
   td {
-    padding: 10px 16px;
+    padding: 12px 16px;
     font-size: 13px;
     color: var(--text-secondary);
-    border-bottom: 1px solid rgba(255,255,255,0.02);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
   }
   tr:last-child td { border-bottom: none; }
   td:first-child { color: var(--text); font-weight: 500; }
@@ -282,13 +290,14 @@
   /* CALLOUT */
   .callout {
     border-left: 3px solid var(--accent);
-    background: var(--accent-dim);
+    background: rgba(159,239,0,0.06);
     border-radius: 0 12px 12px 0;
     padding: 16px 20px;
     margin: 20px 0;
     font-size: 13px;
     color: rgba(255,255,255,0.7);
     line-height: 1.6;
+    break-inside: avoid;
   }
   .callout strong { color: var(--accent); }
 
@@ -302,6 +311,7 @@
     font-size: 13px;
     color: var(--text-secondary);
     border-bottom: 1px solid rgba(255,255,255,0.02);
+    break-inside: avoid;
   }
   .checklist li:last-child { border-bottom: none; }
   .check-box {
@@ -309,7 +319,8 @@
     width: 18px;
     height: 18px;
     border-radius: 4px;
-    border: 1.5px solid rgba(255,255,255,0.15);
+    border: 1.5px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.03);
     margin-top: 1px;
   }
 
@@ -326,27 +337,24 @@
   .footer .logo { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
   .footer .logo .dot { color: var(--accent); }
 
-  /* PRINT */
+  /* PRINT — preserve dark theme */
   @media print {
-    body { background: #fff; color: #111; }
-    .card { border-color: #e5e5e5; background: #fafafa; }
+    * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    body { background: var(--bg); color: var(--text); }
     .hero::before { display: none; }
-    h1, h2, h3, h4 { color: #111; }
-    p, td, li { color: #444; }
-    .section-label { color: #16a34a; }
-    .badge { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-    .callout { background: #f0fdf4; border-color: #16a34a; color: #333; }
-    .callout strong { color: #16a34a; }
-    th { background: #f5f5f5; color: #666; }
-    .check-box { border-color: #999; }
+    h2, h3 { break-after: avoid; }
   }
 
-  @page { margin: 20mm; }
+  /* Selective page breaks — only before major sections */
+  hr.divider { border: none; height: 1px; background: var(--card-border); margin: 0; }
+  hr.divider.page-break { break-after: page; height: 0; background: none; }
+
+  @page { margin: 0; }
 </style>
 </head>
 <body>
 
-<!-- HERO -->
+<!-- HERO (cover page) -->
 <div class="hero">
   <div class="container">
     <div class="hero-badge">Platform Guide</div>
@@ -360,7 +368,7 @@
   </div>
 </div>
 
-<hr class="divider">
+<hr class="divider page-break">
 
 <!-- WHAT IS IT -->
 <section>
@@ -541,7 +549,7 @@
   </div>
 </section>
 
-<hr class="divider">
+<hr class="divider page-break">
 
 <!-- COMPANY EXPERIENCE -->
 <section>
@@ -596,7 +604,7 @@
   </div>
 </section>
 
-<hr class="divider">
+<hr class="divider page-break">
 
 <!-- ADMIN GUIDE -->
 <section>
@@ -693,7 +701,7 @@
   </div>
 </section>
 
-<hr class="divider">
+<hr class="divider page-break">
 
 <!-- TESTING CHECKLIST -->
 <section>
